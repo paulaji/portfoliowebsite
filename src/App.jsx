@@ -150,70 +150,15 @@ export default function Portfolio() {
     }
   ];
 
-  const bgClass = darkMode ? 'bg-black' : 'bg-white';
-  const textClass = darkMode ? 'text-slate-100' : 'text-slate-900';
-  const borderClass = darkMode ? 'border-slate-800' : 'border-slate-200';
-  const cardBgClass = darkMode ? 'bg-slate-900/50' : 'bg-slate-50';
-  const secondaryBgClass = darkMode ? 'bg-slate-900/30' : 'bg-slate-100/30';
-  const hoverBgClass = darkMode ? 'hover:bg-slate-900/50' : 'hover:bg-slate-100/50';
-  const mutedTextClass = darkMode ? 'text-slate-400' : 'text-slate-600';
-  const buttonBgClass = darkMode ? 'bg-white' : 'bg-slate-200';
-  const buttonHoverClass = darkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-300';
-
-  const downloadResume = () => {
-    const resumeContent = `PAUL AJI 
-Ireland | +353 89 432 4914 | paulajiparayil123@gmail.com | linkedin.com/in/paulaji/ | github.com/paulaji 
-
-PROFESSIONAL SUMMARY  
-Full-stack software engineer with 3 years designing and deploying scalable solutions across distributed teams. Expertise in enterprise architecture, microservices, cloud infrastructure, and real-time systems. Strong foundation in generative AI and agentic systems, actively exploring GenAI to enhance software engineering workflows. Proficient in Python, JavaScript, TypeScript and containerization technologies. Demonstrated ability collaborating globally and delivering robust, maintainable code throughout the SDLC.
-
-TECHNICAL SKILLS 
-• Programming Languages: Python (Django, Flask, FastAPI), JavaScript/Node.js (Express.js), React.js, Next.js, TypeScript, HTML/CSS 
-• Enterprise Systems: Database design (MySQL, PostgreSQL, MSSQL, MongoDB, Firestore), RESTful APIs, WebSockets, OAuth, SSO, event-driven architecture, distributed systems 
-• Cloud & DevOps: Docker, AWS ECS, AWS (EC2, S3, Lambda, RDS, CloudFront, CloudWatch), Firebase, Cloudflare CDN, GitHub Actions CI/CD, infrastructure design 
-• AI/ML: Generative AI, LLMs (Llama, GPT, Claude, Groq), prompt engineering, agentic AI workflows 
-• Tools: Git, Postman, CloudWatch monitoring, Stripe, Twilio, agile methodologies
-
-EXPERIENCE
-Backend Developer - Pixel Forge Design Limited (May 2025 - September 2025)
-Architected scalable payment marketplace using Stripe Connect handling real-time payment intents, secure payouts, automated refunds, and recurring transactions across multiple vendors.
-
-Web Development Lead / Full Stack Engineer - Ineffable Design Solutions (March 2024 - May 2025)
-Led team to build dynamic, multilingual full-stack app using Next.js. Architected network infrastructure using Cloudflare CDN with intelligent routing and edge caching.
-
-Fullstack Python Developer - Trusttech Solutions LLP (September 2023 - July 2024)
-Built TrustPMS and maintained Trust Capital CRM serving 4000+ active traders with real-time market data integration.
-
-Solutions Developer - Wrecked Tech Private Limited (April 2023 - June 2023)
-Built automated chatbot solutions integrating third-party APIs using Node.js and Python.
-
-Web Developer - Biowel Industries (September 2022 - March 2023)
-Designed and built company website using Figma, React.js frontend and Node.js backend.
-
-EDUCATION 
-MEng – Computer Vision and Artificial Intelligence | University of Limerick (September 2024 - September 2025)
-First Class Honours | QCA: 3.37
-
-Bachelor of Technology – Computer Science | Adi Shankara Institute of Engineering and Technology (2018 - February 2023)
-GPA: 2.76
-
-ACHIEVEMENTS & LEADERSHIP
-• AI & Agentic Systems Consultant for medical company on sales automation and insights
-• Frontend Developer at Edith (EdTech Startup)
-• Conducted Prompt Engineering and AI classes at Sevana Electricals & Biowel Inc (30-50 attendees)
-• Java Teaching Assistant at Adi Shankara Institute
-• Lead Vocal Singer at college band
-• Event Organizer & Coordinator for Industrial Visits and Cultural Fests
-• Awarded Proficiency Award and Student of the Year`;
-
-    const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(resumeContent));
-    element.setAttribute('download', 'Paul_Aji_Resume.txt');
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-  };
+  const bgClass = darkMode ? 'bg-white' : 'bg-black';
+  const textClass = darkMode ? 'text-slate-900' : 'text-slate-100';
+  const borderClass = darkMode ? 'border-slate-200' : 'border-slate-800';
+  const cardBgClass = darkMode ? 'bg-slate-50' : 'bg-slate-900/50';
+  const secondaryBgClass = darkMode ? 'bg-slate-100/30' : 'bg-slate-900/30';
+  const hoverBgClass = darkMode ? 'hover:bg-slate-100/50' : 'hover:bg-slate-900/50';
+  const mutedTextClass = darkMode ? 'text-slate-600' : 'text-slate-400';
+  const buttonBgClass = darkMode ? 'bg-slate-200' : 'bg-white';
+  const buttonHoverClass = darkMode ? 'hover:bg-slate-300' : 'hover:bg-slate-700';
 
   return (
     <div className={`min-h-screen font-sans transition-colors duration-300 ${bgClass}`}>
@@ -249,16 +194,10 @@ ACHIEVEMENTS & LEADERSHIP
               <a href="#contact" className={`${mutedTextClass} hover:${textClass} transition`}>Contact</a>
             </nav>
             <button
-              onClick={downloadResume}
-              className={`inline-flex items-center gap-2 px-4 py-2 ${buttonBgClass} ${buttonHoverClass} rounded transition text-sm`}
-            >
-              <Download size={18} /> Resume
-            </button>
-            <button
               onClick={() => setDarkMode(!darkMode)}
               className={`p-2 ${buttonBgClass} ${buttonHoverClass} rounded transition`}
             >
-              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+              {darkMode ? <Moon size={20} /> : <Sun size={20} />}
             </button>
           </div>
         </div>
