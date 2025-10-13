@@ -22,7 +22,7 @@ export default function Portfolio() {
         "Implemented comprehensive error handling, distributed logging, and real-time monitoring"
       ],
       tech: ["Node.js", "Firestore", "Stripe Connect", "Firebase", "GitHub Actions", "RESTful APIs"],
-      images: ['./projectsnippets/FindASide.png'],
+      images: ['./projectsnippets/FindASide.png', './projectsnippets/FindASideLogin.png', './projectsnippets/FindASidePayment.png'],
     },
     {
       id: 2,
@@ -38,7 +38,7 @@ export default function Portfolio() {
         "Architected network infrastructure using Cloudflare CDN with intelligent routing and edge caching"
       ],
       tech: ["Next.js", "React", "MySQL", "TailwindCSS", "Cloudflare CDN", "Lottie"],
-      images: ['./projectsnippets/MahaMeru.png'],
+      images: ['./projectsnippets/MahaMeru.png', './projectsnippets/MahaMeruAnimation.png', './projectsnippets/MahaMeruLogo.png'],
     },
     {
       id: 3,
@@ -218,7 +218,18 @@ export default function Portfolio() {
       {/* Hero */}
       <section className={`max-w-6xl mx-auto px-6 py-20 ${secondaryBgClass} transition-colors duration-300`}>
         <div className="space-y-4">
-          <h1 className={`text-5xl font-bold ${textClass}`}>Paul Aji</h1>
+          <div className="space-y-4 flex items-center">
+            {/* Profile Image */}
+            <img
+              src="./otherimages/profilephoto.jpg" // Replace with your actual image path
+              alt="Profile"
+              className="w-40 h-40 rounded-full object-cover mr-4" // Makes the image round and adds some margin
+            />
+
+            {/* Name */}
+            <h1 className={`text-5xl font-bold ${textClass}`}>Paul Aji</h1>
+          </div>
+
           <p className={`text-xl ${mutedTextClass}`}>Full-stack Software Engineer • Cloud Architecture • GenAI & LLMs</p>
           <p className={`${mutedTextClass} max-w-2xl`}>
             3 years designing and deploying scalable solutions across distributed teams. Expertise in enterprise architecture, microservices, cloud infrastructure, and AI-powered systems.
@@ -306,18 +317,24 @@ export default function Portfolio() {
 
                     <div className="mb-6">
                       <h4 className="text-red-600 font-mono font-bold mb-3">Project Photos</h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {project.images.map((image, i) => (
-                          <img
-                            key={i}
-                            src={image}
-                            alt={`Project ${project.id} Image ${i + 1}`}
-                            className="w-full h-auto rounded-lg shadow-lg cursor-pointer"
-                            onClick={() => openModal(image)} // Open modal on image click
-                          />
-                        ))}
+                      <span className="text-red-300 text-sm">click on image(s) to expand</span>
+
+                      {/* Horizontal scrolling container */}
+                      <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-red-600 scrollbar-track-gray-300">
+                        <div className="flex gap-4">
+                          {project.images.map((image, i) => (
+                            <img
+                              key={i}
+                              src={image}
+                              alt={`Project ${project.id} Image ${i + 1}`}
+                              className="w-64 h-64 object-cover rounded-lg shadow-lg cursor-pointer"  // Fixed size for images
+                              onClick={() => openModal(image)} // Open modal on image click
+                            />
+                          ))}
+                        </div>
                       </div>
                     </div>
+
                   </div>
                   {/* Modal for Image Expansion */}
                   {isModalOpen && (
