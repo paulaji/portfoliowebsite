@@ -1,0 +1,455 @@
+import React, { useState, useEffect } from 'react';
+import { Github, Linkedin, Mail, ExternalLink, ChevronDown, ChevronUp, Moon, Sun, Download } from 'lucide-react';
+
+export default function Portfolio() {
+  const [expandedProject, setExpandedProject] = useState(null);
+  const [darkMode, setDarkMode] = useState(true);
+
+  const projects = [
+    {
+      id: 1,
+      title: "FindASide - Sports Facility Booking Marketplace",
+      company: "Pixel Forge Design Limited",
+      role: "Backend Developer",
+      description: "A sports facility booking and payment marketplace with real-time payment processing.",
+      highlights: [
+        "Architected scalable payment marketplace using Stripe Connect handling real-time payment intents, secure payouts, automated refunds, and recurring transactions",
+        "Developed distributed Node.js backend with Firestore NoSQL database, optimized for performance and horizontal scalability",
+        "Designed RESTful APIs for booking management and payment processing with Firebase Authentication",
+        "Established CI/CD pipeline using GitHub Actions enabling automated testing and zero-downtime deployments",
+        "Implemented comprehensive error handling, distributed logging, and real-time monitoring"
+      ],
+      tech: ["Node.js", "Firestore", "Stripe Connect", "Firebase", "GitHub Actions", "RESTful APIs"],
+      snippetPlaceholder: "// Add your code snippets here"
+    },
+    {
+      id: 2,
+      title: "MahaMeru Innovations - Full Stack Web App",
+      company: "Ineffable Design Solutions",
+      role: "Web Development Lead / Full Stack Engineer",
+      description: "Dynamic, multilingual full-stack application with advanced animations and CDN optimization.",
+      highlights: [
+        "Led team to build dynamic, multilingual full-stack app using Next.js with server-side rendering",
+        "Designed and implemented data structures, managed MySQL database, and developed custom APIs for production traffic",
+        "Integrated TailwindCSS, GSAP-like animations and Lottie animations for interactive user experience",
+        "Built custom CMS dashboard to manage all site content and images",
+        "Architected network infrastructure using Cloudflare CDN with intelligent routing and edge caching"
+      ],
+      tech: ["Next.js", "React", "MySQL", "TailwindCSS", "Cloudflare CDN", "Lottie"],
+      snippetPlaceholder: "// Add your Next.js code snippets here"
+    },
+    {
+      id: 3,
+      title: "TrustPMS - Internal Project Management System",
+      company: "Trusttech Solutions LLP",
+      role: "Fullstack Python Developer",
+      description: "Enterprise project management system handling payroll, attendance, and bug tracking for 50+ employees.",
+      highlights: [
+        "Built TrustPMS handling payroll, attendance, and bug tracking for 50+ employees",
+        "Implemented using React.js, Redux, Socket.io, Django/DRF, MSSQL, and Docker",
+        "Container orchestration on AWS ECS for high availability, auto-scaling, and health checks",
+        "Real-time notifications and data synchronization across distributed teams"
+      ],
+      tech: ["React.js", "Redux", "Django", "DRF", "MSSQL", "Docker", "AWS ECS", "Socket.io"],
+      snippetPlaceholder: "// Add your Django/React code snippets here"
+    },
+    {
+      id: 4,
+      title: "Trust Capital CRM - Cryptocurrency Trading Platform",
+      company: "Trusttech Solutions LLP",
+      role: "Fullstack Python Developer",
+      description: "High-performance CRM serving 4000+ active traders with real-time market data and WebSocket notifications.",
+      highlights: [
+        "Maintained and extended cryptocurrency trading platform CRM built with Django and Django REST Framework",
+        "Served 4000+ active traders with real-time market data integration",
+        "Developed new APIs for trade execution and integrated MetaTrader 5 DLL for account data",
+        "Implemented WebSocket-based notifications for instant alerts to concurrent traders",
+        "Optimized MSSQL queries for high-frequency trading data retrieval"
+      ],
+      tech: ["Django", "Django REST Framework", "WebSockets", "MetaTrader 5", "MSSQL", "Real-time Systems"],
+      snippetPlaceholder: "// Add your trading platform code snippets here"
+    },
+    {
+      id: 5,
+      title: "Learning to Program with Comprehensive Feedback",
+      company: "University of Limerick",
+      role: "MEng Thesis Project",
+      description: "AI-powered Python learning platform using LLMs to generate personalized feedback and programming questions.",
+      highlights: [
+        "Built full-stack web app to teach Python using React.js (frontend) and Flask (backend)",
+        "Leveraged Groq API, Prompt Engineering, NLP techniques and Llama 3.3 70B AI model",
+        "Generated programming questions, feedback, and tips across six topics",
+        "Implemented Pyodide for in-browser Python code execution with real-time feedback",
+        "Grade: A1 | Demonstrates expertise in GenAI and agentic AI workflows"
+      ],
+      tech: ["React.js", "Flask", "Groq API", "Llama 3.3", "Pyodide", "NLP", "Prompt Engineering"],
+      snippetPlaceholder: "// Add your AI learning platform code snippets here"
+    },
+    {
+      id: 6,
+      title: "Carvetpro - AWS & OAuth Integration",
+      company: "Ineffable Design Solutions",
+      role: "Development Coordinator",
+      description: "Full-stack platform with advanced AWS network architecture and automated PDF generation.",
+      highlights: [
+        "Coordinated 3-person engineering team using agile methodologies and conducted code reviews",
+        "Designed AWS network architecture with CloudFront CDN, S3 origin configuration, and CloudWatch monitoring",
+        "Built React.js frontend and Node.js backend with Google OAuth authentication",
+        "Automated PDF generation via Twilio WhatsApp integration"
+      ],
+      tech: ["React.js", "Node.js", "AWS", "CloudFront", "Google OAuth", "Twilio", "WhatsApp API"],
+      snippetPlaceholder: "// Add your AWS/OAuth code snippets here"
+    }
+  ];
+
+  const achievements = [
+    {
+      title: "AI & Agentic Systems Consultant",
+      subtitle: "Medical Company Mentorship",
+      description: "Consulting on building agentic AI systems to improve sales, sales insights, and business automation"
+    },
+    {
+      title: "Frontend Developer",
+      subtitle: "Edith - EdTech Startup",
+      description: "Built user-facing features for an educational technology platform"
+    },
+    {
+      title: "AI & Prompt Engineering Educator",
+      subtitle: "Sevana Electricals & Biowel Inc",
+      description: "Conducted multiple Prompt Engineering and AI classes for businesses (30-50 attendees each)"
+    },
+    {
+      title: "Java Teaching Assistant",
+      subtitle: "Adi Shankara Institute of Engineering and Technology",
+      description: "Mentored undergrad software engineering students"
+    },
+    {
+      title: "Lead Vocal Singer",
+      subtitle: "College Band - ASIET",
+      description: "Performed at college events and cultural activities"
+    },
+    {
+      title: "Event Organizer & Coordinator",
+      subtitle: "Adi Shankara Institute",
+      description: "Organized and coordinated Industrial Visits, Cultural Fests (Christmas, Halloween), and college events"
+    },
+    {
+      title: "Academic Awards",
+      subtitle: "Proficiency Award & Student of the Year",
+      description: "Recognized for academic excellence and leadership throughout schooling"
+    },
+    {
+      title: "Community Mentor",
+      subtitle: "Peer Programming Educator",
+      description: "Helped friends and peers learn programming concepts and best practices"
+    },
+    {
+      title: "Sports & Cultural Activities",
+      subtitle: "Multi-Sport Participant",
+      description: "Active participation in multiple sports and cultural events at ASIET"
+    }
+  ];
+
+  const bgClass = darkMode ? 'bg-black' : 'bg-white';
+  const textClass = darkMode ? 'text-slate-100' : 'text-slate-900';
+  const borderClass = darkMode ? 'border-slate-800' : 'border-slate-200';
+  const cardBgClass = darkMode ? 'bg-slate-900/50' : 'bg-slate-50';
+  const secondaryBgClass = darkMode ? 'bg-slate-900/30' : 'bg-slate-100/30';
+  const hoverBgClass = darkMode ? 'hover:bg-slate-900/50' : 'hover:bg-slate-100/50';
+  const mutedTextClass = darkMode ? 'text-slate-400' : 'text-slate-600';
+  const buttonBgClass = darkMode ? 'bg-white' : 'bg-slate-200';
+  const buttonHoverClass = darkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-300';
+
+  const downloadResume = () => {
+    const resumeContent = `PAUL AJI 
+Ireland | +353 89 432 4914 | paulajiparayil123@gmail.com | linkedin.com/in/paulaji/ | github.com/paulaji 
+
+PROFESSIONAL SUMMARY  
+Full-stack software engineer with 3 years designing and deploying scalable solutions across distributed teams. Expertise in enterprise architecture, microservices, cloud infrastructure, and real-time systems. Strong foundation in generative AI and agentic systems, actively exploring GenAI to enhance software engineering workflows. Proficient in Python, JavaScript, TypeScript and containerization technologies. Demonstrated ability collaborating globally and delivering robust, maintainable code throughout the SDLC.
+
+TECHNICAL SKILLS 
+• Programming Languages: Python (Django, Flask, FastAPI), JavaScript/Node.js (Express.js), React.js, Next.js, TypeScript, HTML/CSS 
+• Enterprise Systems: Database design (MySQL, PostgreSQL, MSSQL, MongoDB, Firestore), RESTful APIs, WebSockets, OAuth, SSO, event-driven architecture, distributed systems 
+• Cloud & DevOps: Docker, AWS ECS, AWS (EC2, S3, Lambda, RDS, CloudFront, CloudWatch), Firebase, Cloudflare CDN, GitHub Actions CI/CD, infrastructure design 
+• AI/ML: Generative AI, LLMs (Llama, GPT, Claude, Groq), prompt engineering, agentic AI workflows 
+• Tools: Git, Postman, CloudWatch monitoring, Stripe, Twilio, agile methodologies
+
+EXPERIENCE
+Backend Developer - Pixel Forge Design Limited (May 2025 - September 2025)
+Architected scalable payment marketplace using Stripe Connect handling real-time payment intents, secure payouts, automated refunds, and recurring transactions across multiple vendors.
+
+Web Development Lead / Full Stack Engineer - Ineffable Design Solutions (March 2024 - May 2025)
+Led team to build dynamic, multilingual full-stack app using Next.js. Architected network infrastructure using Cloudflare CDN with intelligent routing and edge caching.
+
+Fullstack Python Developer - Trusttech Solutions LLP (September 2023 - July 2024)
+Built TrustPMS and maintained Trust Capital CRM serving 4000+ active traders with real-time market data integration.
+
+Solutions Developer - Wrecked Tech Private Limited (April 2023 - June 2023)
+Built automated chatbot solutions integrating third-party APIs using Node.js and Python.
+
+Web Developer - Biowel Industries (September 2022 - March 2023)
+Designed and built company website using Figma, React.js frontend and Node.js backend.
+
+EDUCATION 
+MEng – Computer Vision and Artificial Intelligence | University of Limerick (September 2024 - September 2025)
+First Class Honours | QCA: 3.37
+
+Bachelor of Technology – Computer Science | Adi Shankara Institute of Engineering and Technology (2018 - February 2023)
+GPA: 2.76
+
+ACHIEVEMENTS & LEADERSHIP
+• AI & Agentic Systems Consultant for medical company on sales automation and insights
+• Frontend Developer at Edith (EdTech Startup)
+• Conducted Prompt Engineering and AI classes at Sevana Electricals & Biowel Inc (30-50 attendees)
+• Java Teaching Assistant at Adi Shankara Institute
+• Lead Vocal Singer at college band
+• Event Organizer & Coordinator for Industrial Visits and Cultural Fests
+• Awarded Proficiency Award and Student of the Year`;
+
+    const element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(resumeContent));
+    element.setAttribute('download', 'Paul_Aji_Resume.txt');
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
+  return (
+    <div className={`min-h-screen font-sans transition-colors duration-300 ${bgClass}`}>
+      <style>{`
+        @keyframes color-cycle {
+          0%, 100% { 
+            --tw-bg-opacity: 1;
+          }
+        }
+        
+        .animate-green-cycle {
+          animation: green-glow 0.6s ease-in-out infinite;
+        }
+        
+        @keyframes green-glow {
+          0%, 100% { box-shadow: 0 0 8px rgba(34, 197, 94, 0.4); }
+          50% { box-shadow: 0 0 16px rgba(34, 197, 94, 0.8); }
+        }
+      `}</style>
+
+      {/* Header */}
+      <header className={`border-b ${borderClass} ${cardBgClass} sticky top-0 z-50 backdrop-blur transition-colors duration-300`}>
+        <div className="max-w-6xl mx-auto px-6 py-6 flex justify-between items-center">
+          <div className={`text-xl font-bold ${textClass}`}>
+            <span className="text-red-500">&lt;</span>
+            <span><span className="text-red-500">p</span>aulaji</span>
+            <span className="text-red-500">/&gt;</span>
+          </div>
+          <div className="flex gap-6 items-center">
+            <nav className="flex gap-6 items-center">
+              <a href="#projects" className={`${mutedTextClass} hover:${textClass} transition`}>Projects</a>
+              <a href="#achievements" className={`${mutedTextClass} hover:${textClass} transition`}>Achievements</a>
+              <a href="#contact" className={`${mutedTextClass} hover:${textClass} transition`}>Contact</a>
+            </nav>
+            <button
+              onClick={downloadResume}
+              className={`inline-flex items-center gap-2 px-4 py-2 ${buttonBgClass} ${buttonHoverClass} rounded transition text-sm`}
+            >
+              <Download size={18} /> Resume
+            </button>
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className={`p-2 ${buttonBgClass} ${buttonHoverClass} rounded transition`}
+            >
+              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero */}
+      <section className={`max-w-6xl mx-auto px-6 py-20 ${secondaryBgClass} transition-colors duration-300`}>
+        <div className="space-y-4">
+          <h1 className={`text-5xl font-bold ${textClass}`}>Paul Aji</h1>
+          <p className={`text-xl ${mutedTextClass}`}>Full-stack Software Engineer • Cloud Architecture • GenAI & LLMs</p>
+          <p className={`${mutedTextClass} max-w-2xl`}>
+            3 years designing and deploying scalable solutions across distributed teams. Expertise in enterprise architecture, microservices, cloud infrastructure, and AI-powered systems.
+          </p>
+          <div className="flex gap-4 pt-4">
+            <a href="https://github.com/paulaji" target="_blank" rel="noopener noreferrer" className={`inline-flex items-center gap-2 px-4 py-2 ${buttonBgClass} ${buttonHoverClass} rounded transition`}>
+              <Github size={20} /> GitHub
+            </a>
+            <a href="https://linkedin.com/in/paulaji/" target="_blank" rel="noopener noreferrer" className={`inline-flex items-center gap-2 px-4 py-2 ${buttonBgClass} ${buttonHoverClass} rounded transition`}>
+              <Linkedin size={20} /> LinkedIn
+            </a>
+            <a href="mailto:paulajiparayil123@gmail.com" className={`inline-flex items-center gap-2 px-4 py-2 ${buttonBgClass} ${buttonHoverClass} rounded transition`}>
+              <Mail size={20} /> Email
+            </a>
+          </div>
+        </div>
+      </section>
+
+
+      {/* Skills */}
+      <section className={`border-t ${borderClass} ${secondaryBgClass} transition-colors duration-300`}>
+        <div className="max-w-6xl mx-auto px-6 py-16">
+          <h2 className={`text-2xl font-bold ${textClass} mb-8`}>Tech Stack</h2>
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="text-red-500 font-mono font-bold mb-3">Languages</h3>
+              <p className={`${mutedTextClass} text-sm`}>Python, JavaScript, TypeScript, HTML/CSS</p>
+            </div>
+            <div>
+              <h3 className="text-red-500 font-mono font-bold mb-3">Backend</h3>
+              <p className={`${mutedTextClass} text-sm`}>Django, FastAPI, Node.js, Express.js</p>
+            </div>
+            <div>
+              <h3 className="text-red-500 font-mono font-bold mb-3">Frontend</h3>
+              <p className={`${mutedTextClass} text-sm`}>React, Next.js, TailwindCSS</p>
+            </div>
+            <div>
+              <h3 className="text-red-500 font-mono font-bold mb-3">Cloud & DevOps</h3>
+              <p className={`${mutedTextClass} text-sm`}>AWS, Docker, CI/CD, Firebase, Cloudflare</p>
+            </div>
+            <div>
+              <h3 className="text-red-500 font-mono font-bold mb-3">AI/ML</h3>
+              <p className={`${mutedTextClass} text-sm`}>LLMs, Prompt Engineering, Agentic AI</p>
+            </div>
+            <div>
+              <h3 className="text-red-500 font-mono font-bold mb-3">Databases</h3>
+              <p className={`${mutedTextClass} text-sm`}>PostgreSQL, MySQL, MongoDB, Firestore</p>
+            </div>
+            <div>
+              <h3 className="text-red-500 font-mono font-bold mb-3">Real-time</h3>
+              <p className={`${mutedTextClass} text-sm`}>WebSockets, Socket.io, Event-driven</p>
+            </div>
+            <div>
+              <h3 className="text-red-500 font-mono font-bold mb-3">Tools & Services</h3>
+              <p className={`${mutedTextClass} text-sm`}>Stripe, Twilio, GitHub, Postman</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Projects */}
+      <section id="projects" className={`border-t ${borderClass} max-w-6xl mx-auto px-6 py-16 transition-colors duration-300`}>
+        <h2 className={`text-2xl font-bold ${textClass} mb-8`}>Projects & Experience</h2>
+        <div className="space-y-6">
+          {projects.map((project) => (
+            <div key={project.id} className={`border ${borderClass} rounded-lg overflow-hidden ${darkMode ? 'hover:border-slate-700' : 'hover:border-slate-400'} transition`}>
+              <button
+                onClick={() => setExpandedProject(expandedProject === project.id ? null : project.id)}
+                className={`w-full p-6 ${hoverBgClass} transition text-left`}
+              >
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <h3 className={`text-lg font-bold ${textClass} mb-1`}>{project.title}</h3>
+                    <p className="text-red-500 text-sm font-mono mb-2">{project.company}</p>
+                    <p className={mutedTextClass}>{project.duration}</p>
+                  </div>
+                  {expandedProject === project.id ? <ChevronUp /> : <ChevronDown />}
+                </div>
+              </button>
+
+              {expandedProject === project.id && (
+                <div className={`border-t ${borderClass} p-6 ${secondaryBgClass}`}>
+                  <p className={`${mutedTextClass} mb-4`}>{project.description}</p>
+
+                  <div className="mb-6">
+                    <h4 className="text-red-500 font-mono font-bold mb-3">Key Highlights</h4>
+                    <ul className="space-y-2">
+                      {project.highlights.map((highlight, i) => (
+                        <li key={i} className={`${mutedTextClass} text-sm flex gap-3`}>
+                          <span className="text-red-500 mt-1">▸</span>
+                          <span>{highlight}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="mb-6">
+                    <h4 className="text-red-500 font-mono font-bold mb-3">Tech Stack</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {project.tech.map((tech, i) => (
+                        <span key={i} className={`px-3 py-1 ${buttonBgClass} ${mutedTextClass} text-xs rounded font-mono`}>
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-red-500 font-mono font-bold mb-3">Code Snippets</h4>
+                    <div className={`${darkMode ? 'bg-slate-950' : 'bg-slate-100'} border ${borderClass} rounded p-4`}>
+                      <p className={`${darkMode ? 'text-slate-500' : 'text-slate-600'} font-mono text-sm`}>{project.snippetPlaceholder}</p>
+                      <p className={`${darkMode ? 'text-slate-500' : 'text-slate-600'} text-xs mt-2`}>👉 Add your code snippets here</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Achievements & Leadership */}
+      <section id="achievements" className={`border-t ${borderClass} ${secondaryBgClass} transition-colors duration-300`}>
+        <div className="max-w-6xl mx-auto px-6 py-16">
+          <h2 className={`text-2xl font-bold ${textClass} mb-8`}>Achievements & Leadership</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            {achievements.map((achievement, i) => (
+              <div key={i} className={`border ${borderClass} rounded-lg p-6 ${darkMode ? 'hover:border-slate-700' : 'hover:border-slate-400'} transition`}>
+                <h3 className={`${textClass} font-bold mb-1`}>{achievement.title}</h3>
+                <p className="text-red-500 text-sm font-mono mb-2">{achievement.subtitle}</p>
+                <p className={mutedTextClass}>{achievement.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Education */}
+      <section className={`border-t ${borderClass} transition-colors duration-300`}>
+        <div className="max-w-6xl mx-auto px-6 py-16">
+          <h2 className={`text-2xl font-bold ${textClass} mb-8`}>Education</h2>
+          <div className="space-y-6">
+            <div className={`border ${borderClass} rounded-lg p-6`}>
+              <h3 className={`text-lg font-bold ${textClass} mb-1`}>MEng – Computer Vision and Artificial Intelligence</h3>
+              <p className="text-red-500 text-sm font-mono mb-2">University of Limerick | September 2024 - September 2025</p>
+              <p className={mutedTextClass}>First Class Honours | QCA: 3.37</p>
+            </div>
+            <div className={`border ${borderClass} rounded-lg p-6`}>
+              <h3 className={`text-lg font-bold ${textClass} mb-1`}>Bachelor of Technology – Computer Science</h3>
+              <p className="text-red-500 text-sm font-mono mb-2">Adi Shankara Institute of Engineering and Technology | 2018 - February 2023</p>
+              <p className={mutedTextClass}>GPA: 2.76</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact */}
+      <section id="contact" className={`border-t ${borderClass} ${secondaryBgClass} transition-colors duration-300`}>
+        <div className="max-w-6xl mx-auto px-6 py-16 text-center">
+          <h2 className={`text-2xl font-bold ${textClass} mb-6`}>Let's Connect</h2>
+          <p className={`${mutedTextClass} mb-8`}>Feel free to reach out for opportunities, collaborations, or just to chat about tech.</p>
+          <div className="flex justify-center gap-6">
+            <a href="https://github.com/paulaji" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-500 text-white rounded font-mono font-bold transition">
+              <Github size={20} /> GitHub
+            </a>
+            <a href="mailto:paulajiparayil123@gmail.com" className={`inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-500 text-white rounded font-mono font-bold transition`}>
+              <Mail size={20} /> Email
+            </a>
+            <a href="https://linkedin.com/in/paulaji/" target="_blank" rel="noopener noreferrer" className={`inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-500 text-white rounded font-mono font-bold transition`}>
+              <Linkedin size={20} /> LinkedIn
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className={`border-t ${borderClass} ${cardBgClass} py-8 transition-colors duration-300`}>
+        <div className={`max-w-6xl mx-auto px-6 text-center ${mutedTextClass} text-sm font-mono`}>
+          <p>Built with React & TailwindCSS | Hosted on GitHub Pages</p>
+          <p className="mt-2">© 2025 Paul Aji. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  );
+};
