@@ -20,7 +20,7 @@ export default function Portfolio() {
         "Implemented comprehensive error handling, distributed logging, and real-time monitoring"
       ],
       tech: ["Node.js", "Firestore", "Stripe Connect", "Firebase", "GitHub Actions", "RESTful APIs"],
-      snippetPlaceholder: "// Add your code snippets here"
+      images: ['./projectsnippets/FindASide.png'],
     },
     {
       id: 2,
@@ -36,7 +36,7 @@ export default function Portfolio() {
         "Architected network infrastructure using Cloudflare CDN with intelligent routing and edge caching"
       ],
       tech: ["Next.js", "React", "MySQL", "TailwindCSS", "Cloudflare CDN", "Lottie"],
-      snippetPlaceholder: "// Add your Next.js code snippets here"
+      images: ['./projectsnippets/MahaMeru.png'],
     },
     {
       id: 3,
@@ -281,7 +281,6 @@ export default function Portfolio() {
                   <div className="flex-1">
                     <h3 className={`text-lg font-bold ${textClass} mb-1`}>{project.title}</h3>
                     <p className="text-red-500 text-sm font-mono mb-2">{project.company}</p>
-                    <p className={mutedTextClass}>{project.duration}</p>
                   </div>
                   {expandedProject === project.id ? <ChevronUp /> : <ChevronDown />}
                 </div>
@@ -290,6 +289,15 @@ export default function Portfolio() {
               {expandedProject === project.id && (
                 <div className={`border-t ${borderClass} p-6 ${secondaryBgClass}`}>
                   <p className={`${mutedTextClass} mb-4`}>{project.description}</p>
+
+                  <div className="mb-6">
+                    <h4 className="text-red-600 font-mono font-bold mb-3">Project Photos</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {project.images.map((image, i) => (
+                        <img key={i} src={image} alt={`Project ${project.id} Image ${i + 1}`} className="w-full h-auto rounded-lg shadow-lg" />
+                      ))}
+                    </div>
+                  </div>
 
                   <div className="mb-6">
                     <h4 className="text-red-500 font-mono font-bold mb-3">Key Highlights</h4>
@@ -314,13 +322,7 @@ export default function Portfolio() {
                     </div>
                   </div>
 
-                  <div>
-                    <h4 className="text-red-500 font-mono font-bold mb-3">Code Snippets</h4>
-                    <div className={`${darkMode ? 'bg-slate-950' : 'bg-slate-100'} border ${borderClass} rounded p-4`}>
-                      <p className={`${darkMode ? 'text-slate-500' : 'text-slate-600'} font-mono text-sm`}>{project.snippetPlaceholder}</p>
-                      <p className={`${darkMode ? 'text-slate-500' : 'text-slate-600'} text-xs mt-2`}>👉 Add your code snippets here</p>
-                    </div>
-                  </div>
+
                 </div>
               )}
             </div>
