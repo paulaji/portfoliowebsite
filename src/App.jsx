@@ -4,6 +4,8 @@ import { Github, Linkedin, Mail, ExternalLink, ChevronDown, ChevronUp, Moon, Sun
 export default function Portfolio() {
   const [expandedProject, setExpandedProject] = useState(null);
   const [darkMode, setDarkMode] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const projects = [
     {
@@ -51,7 +53,7 @@ export default function Portfolio() {
         "Real-time notifications and data synchronization across distributed teams"
       ],
       tech: ["React.js", "Redux", "Django", "DRF", "MSSQL", "Docker", "AWS ECS", "Socket.io"],
-      snippetPlaceholder: "// Add your Django/React code snippets here"
+      images: ['./projectsnippets/TrustPMS.png'],
     },
     {
       id: 4,
@@ -67,7 +69,7 @@ export default function Portfolio() {
         "Optimized MSSQL queries for high-frequency trading data retrieval"
       ],
       tech: ["Django", "Django REST Framework", "WebSockets", "MetaTrader 5", "MSSQL", "Real-time Systems"],
-      snippetPlaceholder: "// Add your trading platform code snippets here"
+      images: ['./projectsnippets/TrustCapitalCRM.png'],
     },
     {
       id: 5,
@@ -83,7 +85,7 @@ export default function Portfolio() {
         "Grade: A1 | Demonstrates expertise in GenAI and agentic AI workflows"
       ],
       tech: ["React.js", "Flask", "Groq API", "Llama 3.3", "Pyodide", "NLP", "Prompt Engineering"],
-      snippetPlaceholder: "// Add your AI learning platform code snippets here"
+      images: ['./projectsnippets/FinalProject.jpeg'],
     },
     {
       id: 6,
@@ -98,9 +100,19 @@ export default function Portfolio() {
         "Automated PDF generation via Twilio WhatsApp integration"
       ],
       tech: ["React.js", "Node.js", "AWS", "CloudFront", "Google OAuth", "Twilio", "WhatsApp API"],
-      snippetPlaceholder: "// Add your AWS/OAuth code snippets here"
+      images: ['./projectsnippets/CarvetPro.png'],
     }
   ];
+
+  const openModal = (image) => {
+    setSelectedImage(image);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage(null);
+  };
 
   const achievements = [
     {
@@ -291,13 +303,40 @@ export default function Portfolio() {
                   <p className={`${mutedTextClass} mb-4`}>{project.description}</p>
 
                   <div className="mb-6">
-                    <h4 className="text-red-600 font-mono font-bold mb-3">Project Photos</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {project.images.map((image, i) => (
-                        <img key={i} src={image} alt={`Project ${project.id} Image ${i + 1}`} className="w-full h-auto rounded-lg shadow-lg" />
-                      ))}
+
+                    <div className="mb-6">
+                      <h4 className="text-red-600 font-mono font-bold mb-3">Project Photos</h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {project.images.map((image, i) => (
+                          <img
+                            key={i}
+                            src={image}
+                            alt={`Project ${project.id} Image ${i + 1}`}
+                            className="w-full h-auto rounded-lg shadow-lg cursor-pointer"
+                            onClick={() => openModal(image)} // Open modal on image click
+                          />
+                        ))}
+                      </div>
                     </div>
                   </div>
+                  {/* Modal for Image Expansion */}
+                  {isModalOpen && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                      <div className="relative bg-white rounded-lg overflow-hidden w-full max-w-3xl max-h-[90vh] p-6">
+                        {/* Scrollable container for the image */}
+                        <div className="overflow-auto max-h-full">
+                          <img src={selectedImage} alt="Expanded view" className="w-full h-auto" />
+                        </div>
+                        <button
+                          onClick={closeModal}
+                          className="absolute top-2 right-2 text-white bg-red-600 p-2 rounded-full"
+                        >
+                          X
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
 
                   <div className="mb-6">
                     <h4 className="text-red-500 font-mono font-bold mb-3">Key Highlights</h4>
