@@ -57,9 +57,17 @@ const TechBanner = () => {
 
     return (
         <div className="mb-8 flex justify-center">
-            <div className="w-1/2 relative">
+            <div className="w-full sm:w-3/4 md:w-1/2 relative">
                 <style jsx>{`
             @keyframes scroll {
+              0% {
+                transform: translateX(0);
+              }
+              100% {
+                transform: translateX(-50%);
+              }
+            }
+            @keyframes scrollFast {
               0% {
                 transform: translateX(0);
               }
@@ -70,17 +78,17 @@ const TechBanner = () => {
           `}</style>
 
                 {/* Gradient fade on edges */}
-                <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
-                <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
+                <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
+                <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
 
                 <div className="overflow-hidden">
-                    <div className="flex animate-[scroll_30s_linear_infinite] hover:[animation-play-state:paused]">
+                    <div className="flex animate-[scrollFast_15s_linear_infinite] sm:animate-[scroll_30s_linear_infinite] hover:[animation-play-state:paused]">
                         {/* First set of icons */}
-                        <div className="flex gap-8 px-4 items-center min-w-max">
+                        <div className="flex gap-6 sm:gap-8 px-3 sm:px-4 items-center min-w-max">
                             {techIcons.map((tech, index) => (
                                 <tech.Icon
                                     key={index}
-                                    className="w-10 h-10 transition-colors cursor-pointer"
+                                    className="w-8 h-8 sm:w-10 sm:h-10 transition-colors cursor-pointer"
                                     style={{ color: '#6B7280' }}
                                     onMouseEnter={(e) => e.currentTarget.style.color = tech.color}
                                     onMouseLeave={(e) => e.currentTarget.style.color = '#6B7280'}
@@ -89,11 +97,11 @@ const TechBanner = () => {
                         </div>
 
                         {/* Duplicate set for seamless loop */}
-                        <div className="flex gap-8 px-4 items-center min-w-max">
+                        <div className="flex gap-6 sm:gap-8 px-3 sm:px-4 items-center min-w-max">
                             {techIcons.map((tech, index) => (
                                 <tech.Icon
                                     key={`duplicate-${index}`}
-                                    className="w-10 h-10 transition-colors cursor-pointer"
+                                    className="w-8 h-8 sm:w-10 sm:h-10 transition-colors cursor-pointer"
                                     style={{ color: '#6B7280' }}
                                     onMouseEnter={(e) => e.currentTarget.style.color = tech.color}
                                     onMouseLeave={(e) => e.currentTarget.style.color = '#6B7280'}

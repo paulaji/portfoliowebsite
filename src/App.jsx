@@ -386,29 +386,29 @@ export default function Portfolio() {
                             <div key={project.id} className="group">
                                 <button
                                     onClick={() => setExpandedProject(expandedProject === project.id ? null : project.id)}
-                                    className="w-full py-6 flex items-center justify-between border-t border-white/5 hover:border-white/20 transition"
+                                    className="w-full py-4 sm:py-6 flex items-center justify-between border-t border-white/5 hover:border-white/20 transition"
                                 >
                                     <div className="flex-1 text-left">
-                                        <div className="flex items-baseline gap-4">
-                                            <h3 className="text-xl font-light">{project.title}</h3>
+                                        <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+                                            <h3 className="text-lg sm:text-xl font-light">{project.title}</h3>
                                             <span className="text-sm text-neutral-500">{project.subtitle}</span>
                                         </div>
                                         <p className="text-sm text-neutral-500 mt-1">{project.company}</p>
                                     </div>
                                     <ChevronRight
-                                        className={`w-5 h-5 text-neutral-500 transition-transform ${expandedProject === project.id ? 'rotate-90' : ''}`}
+                                        className={`w-5 h-5 text-neutral-500 transition-transform flex-shrink-0 ml-2 sm:ml-4 ${expandedProject === project.id ? 'rotate-90' : ''}`}
                                     />
                                 </button>
 
                                 {expandedProject === project.id && (
-                                    <div className="py-8 space-y-8 border-t border-white/5">
+                                    <div className="py-6 sm:py-8 space-y-6 sm:space-y-8 border-t border-white/5">
                                         {/* Images */}
-                                        <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-4">
+                                        <div className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide pb-4">
                                             {project.images.map((image, i) => (
                                                 <div
                                                     key={i}
                                                     onClick={() => openModal(image)}
-                                                    className="relative flex-shrink-0 w-80 h-52 bg-neutral-900 rounded cursor-pointer overflow-hidden group/img"
+                                                    className="relative flex-shrink-0 w-64 sm:w-80 h-40 sm:h-52 bg-neutral-900 rounded cursor-pointer overflow-hidden group/img"
                                                 >
                                                     <img
                                                         src={image}
@@ -421,12 +421,12 @@ export default function Portfolio() {
                                         </div>
 
                                         {/* Description */}
-                                        <p className="text-neutral-400 leading-relaxed">{project.description}</p>
+                                        <p className="text-sm sm:text-base text-neutral-400 leading-relaxed">{project.description}</p>
 
                                         {/* Highlights */}
                                         <div className="space-y-3">
                                             {project.highlights.map((highlight, i) => (
-                                                <div key={i} className="flex gap-4">
+                                                <div key={i} className="flex gap-3 sm:gap-4">
                                                     <div className="w-1 h-1 bg-red-500 rounded-full mt-2 flex-shrink-0" />
                                                     <p className="text-sm text-neutral-400 leading-relaxed">{highlight}</p>
                                                 </div>
