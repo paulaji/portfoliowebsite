@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Github, Linkedin, Mail, ExternalLink, ChevronDown, ChevronUp, Moon, Sun, Download } from 'lucide-react';
 
+import Banner from './components/Banner';
+
 export default function Portfolio() {
   const [expandedProject, setExpandedProject] = useState(null);
   const [darkMode, setDarkMode] = useState(true);
@@ -241,7 +243,6 @@ export default function Portfolio() {
           </div>
         </div>
       </header>
-
       {/* Hero */}
       <section className={`max-w-6xl mx-auto px-6 py-20 ${secondaryBgClass} transition-colors duration-300`}>
         <div className="space-y-4">
@@ -256,7 +257,7 @@ export default function Portfolio() {
             {/* Name */}
             <h1 className={`text-5xl font-bold ${textClass}`}>Paul Aji</h1>
           </div>
-
+          <Banner />
           <p className={`text-xl ${mutedTextClass}`}>Full-stack Software Engineer • Cloud Architecture • GenAI & LLMs</p>
           <p className={`${mutedTextClass} max-w-2xl`}>
             Full Stack Engineer with experience in building scalable backend systems on AWS and GCP. Specialised in Node.js, Python, React.js
