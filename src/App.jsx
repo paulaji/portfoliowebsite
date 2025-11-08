@@ -12,7 +12,7 @@ export default function Portfolio() {
       id: 1,
       title: "FindASide - Sports Facility Booking Marketplace",
       company: "Pixel Forge Design Limited",
-      role: "Backend Developer",
+      role: "Backend Engineer",
       description: "A sports facility booking and payment marketplace with real-time payment processing.",
       highlights: [
         "Architected scalable payment marketplace using Stripe Connect handling real-time payment intents, secure payouts, automated refunds, and recurring transactions",
@@ -28,7 +28,7 @@ export default function Portfolio() {
       id: 2,
       title: "MahaMeru Innovations - Full Stack Web App",
       company: "Ineffable Design Solutions",
-      role: "Web Development Lead / Full Stack Engineer",
+      role: "Lead Full Stack Engineer",
       description: "Dynamic, multilingual full-stack application with advanced animations and CDN optimization.",
       highlights: [
         "Led team to build dynamic, multilingual full-stack app using Next.js with server-side rendering",
@@ -89,7 +89,7 @@ export default function Portfolio() {
     },
     {
       id: 6,
-      title: "Carvetpro - AWS & OAuth Integration",
+      title: "Carvetpro",
       company: "Ineffable Design Solutions",
       role: "Development Coordinator",
       description: "Full-stack platform with advanced AWS network architecture and automated PDF generation.",
@@ -101,6 +101,33 @@ export default function Portfolio() {
       ],
       tech: ["React.js", "Node.js", "AWS", "CloudFront", "Google OAuth", "Twilio", "WhatsApp API"],
       images: ['./projectsnippets/CarvetPro.png'],
+    },
+    {
+      id: 7,
+      title: "Discord Bots",
+      company: "Wrecked Tech Private Limited",
+      role: "Solutions Developer",
+      description: "Development of multiple Discord bots for user engagement.",
+      highlights: [
+        "OpenAI API powered community chatbot",
+        "cr(AI)yon API powered image generator",
+        "Poll bot",
+        "Feedback bot - Routed to Admin channels",
+      ],
+      tech: ["Discord.js", "Discord.py"],
+      images: ['./projectsnippets/gator1.png', './projectsnippets/gator2.png', './projectsnippets/gator3.png', './projectsnippets/gptbot1.png', './projectsnippets/gptbot2.png', './projectsnippets/nortpoll1.png', './projectsnippets/nortpoll2.png'],
+    },
+    {
+      id: 8,
+      title: "Biowel Website",
+      company: "Biowel Industries",
+      role: "Web Developer",
+      description: "Design, Development, Hosting and Maintenance of the company website.",
+      highlights: [
+        "Company Website",
+      ],
+      tech: ["Figma", "Node.js", "React.js", "AWS", "VPS"],
+      images: ['./projectsnippets/biowelweb1.png', './projectsnippets/biowelweb2.png', './projectsnippets/biowelweb3.png'],
     }
   ];
 
@@ -132,8 +159,8 @@ export default function Portfolio() {
     },
     {
       title: "Java Teaching Assistant",
-      subtitle: "Adi Shankara Institute of Engineering and Technology",
-      description: "Mentored undergrad software engineering students"
+      subtitle: "University of Limerick",
+      description: "Mentored undergrad software engineering students for a brief time"
     },
     {
       title: "Lead Vocal Singer",
@@ -232,7 +259,10 @@ export default function Portfolio() {
 
           <p className={`text-xl ${mutedTextClass}`}>Full-stack Software Engineer • Cloud Architecture • GenAI & LLMs</p>
           <p className={`${mutedTextClass} max-w-2xl`}>
-            3 years designing and deploying scalable solutions across distributed teams. Expertise in enterprise architecture, microservices, cloud infrastructure, and AI-powered systems.
+            Full Stack Engineer with experience in building scalable backend systems on AWS and GCP. Specialised in Node.js, Python, React.js
+            and distributed architectures, delivering systems with 99.9% uptime and handling thousands of concurrent users. Expert in RESTful
+            APIs, payment processing, and CI/CD automation. MEng in Computer Vision and AI (First Class Honours), combining production
+            engineering with AI capabilities.
           </p>
           <div className="flex gap-4 pt-4">
             <a href="https://github.com/paulaji" target="_blank" rel="noopener noreferrer" className={`inline-flex items-center gap-2 px-4 py-2 ${buttonBgClass} ${buttonHoverClass} rounded transition`}>
@@ -256,27 +286,27 @@ export default function Portfolio() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <h3 className="text-red-500 font-mono font-bold mb-3">Languages</h3>
-              <p className={`${mutedTextClass} text-sm`}>Python, JavaScript, TypeScript, HTML/CSS</p>
+              <p className={`${mutedTextClass} text-sm`}>Python, JavaScript, TypeScript, Go, HTML/CSS</p>
             </div>
             <div>
               <h3 className="text-red-500 font-mono font-bold mb-3">Backend</h3>
-              <p className={`${mutedTextClass} text-sm`}>Django, FastAPI, Node.js, Express.js</p>
+              <p className={`${mutedTextClass} text-sm`}>Django, Flask, FastAPI, Node.js, Express.js</p>
             </div>
             <div>
               <h3 className="text-red-500 font-mono font-bold mb-3">Frontend</h3>
-              <p className={`${mutedTextClass} text-sm`}>React, Next.js, TailwindCSS</p>
+              <p className={`${mutedTextClass} text-sm`}>React, Redux, Next.js, TailwindCSS, jQuery</p>
             </div>
             <div>
               <h3 className="text-red-500 font-mono font-bold mb-3">Cloud & DevOps</h3>
-              <p className={`${mutedTextClass} text-sm`}>AWS, Docker, CI/CD, Firebase, Cloudflare</p>
+              <p className={`${mutedTextClass} text-sm`}>AWS, GCP, Azure, Firebase, Docker, CI/CD, Cloudflare, Github Actions, Kubernetes</p>
             </div>
             <div>
               <h3 className="text-red-500 font-mono font-bold mb-3">AI/ML</h3>
-              <p className={`${mutedTextClass} text-sm`}>LLMs, Prompt Engineering, Agentic AI</p>
+              <p className={`${mutedTextClass} text-sm`}>LLMs, Prompt Engineering, Agentic AI, AI APIs</p>
             </div>
             <div>
               <h3 className="text-red-500 font-mono font-bold mb-3">Databases</h3>
-              <p className={`${mutedTextClass} text-sm`}>PostgreSQL, MySQL, MongoDB, Firestore</p>
+              <p className={`${mutedTextClass} text-sm`}>PostgreSQL, MySQL, MSSQL, MongoDB, Firestore, DynamoDB</p>
             </div>
             <div>
               <h3 className="text-red-500 font-mono font-bold mb-3">Real-time</h3>
@@ -284,7 +314,11 @@ export default function Portfolio() {
             </div>
             <div>
               <h3 className="text-red-500 font-mono font-bold mb-3">Tools & Services</h3>
-              <p className={`${mutedTextClass} text-sm`}>Stripe, Twilio, GitHub, Postman</p>
+              <p className={`${mutedTextClass} text-sm`}>Stripe, Twilio, GitHub, Postman, WhatsApp Business</p>
+            </div>
+            <div>
+              <h3 className="text-red-500 font-mono font-bold mb-3">Development Practices & Others</h3>
+              <p className={`${mutedTextClass} text-sm`}>TDD, Agile/Kanban, code reviews, OAuth, SSL/TLS, CDN, DNS</p>
             </div>
           </div>
         </div>
@@ -295,12 +329,12 @@ export default function Portfolio() {
         <h2 className={`text-2xl font-bold ${textClass} mb-8`}>Projects & Experience</h2>
         <div className="space-y-6">
           {projects.map((project) => (
-            <div key={project.id} className={`border ${borderClass} rounded-lg overflow-hidden ${darkMode ? 'hover:border-slate-700' : 'hover:border-slate-400'} transition`}>
+            <div key={project.id} className={`border ${borderClass} rounded-lg overflow-hidden ${darkMode ? 'hover:border-slate-700' : 'hover:border-slate-400'} transition cursor-pointer`}>
               <button
                 onClick={() => setExpandedProject(expandedProject === project.id ? null : project.id)}
                 className={`w-full p-6 ${hoverBgClass} transition text-left`}
               >
-                <div className="flex justify-between items-start">
+                <div className="flex justify-between items-start cursor-pointer">
                   <div className="flex-1">
                     <h3 className={`text-lg font-bold ${textClass} mb-1`}>{project.title}</h3>
                     <p className="text-red-500 text-sm font-mono mb-2">{project.company}</p>
@@ -312,9 +346,7 @@ export default function Portfolio() {
               {expandedProject === project.id && (
                 <div className={`border-t ${borderClass} p-6 ${secondaryBgClass}`}>
                   <p className={`${mutedTextClass} mb-4`}>{project.description}</p>
-
                   <div className="mb-6">
-
                     <div className="mb-6">
                       <h4 className="text-red-600 font-mono font-bold mb-3">Project Photos</h4>
                       <span className="text-red-300 text-sm">click on image(s) to expand</span>
