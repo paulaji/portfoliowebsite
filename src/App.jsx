@@ -258,7 +258,7 @@ export default function Portfolio() {
             <h1 className={`text-5xl font-bold ${textClass}`}>Paul Aji</h1>
           </div>
           <Banner />
-          <p className={`text-xl ${mutedTextClass}`}>Full-stack Software Engineer • Cloud Architecture • GenAI & LLMs</p>
+          <p className={`text-xl text-gray-900`}>Full-stack Software Engineer • Cloud Architecture • GenAI & LLMs</p>
           <p className={`${mutedTextClass} max-w-2xl`}>
             Full Stack Engineer with experience in building scalable backend systems on AWS and GCP. Specialised in Node.js, Python, React.js
             and distributed architectures, delivering systems with 99.9% uptime and handling thousands of concurrent users. Expert in RESTful

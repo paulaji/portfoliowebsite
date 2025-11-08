@@ -32,14 +32,14 @@ const Banner = () => {
         { Icon: SiJavascript, color: '#F7DF1E' },
         { Icon: SiTypescript, color: '#3178C6' },
         { Icon: SiGo, color: '#00ADD8' },
-        { Icon: SiDjango, color: '#092E20' },
-        { Icon: SiFlask, color: '#000000' },
+        { Icon: SiDjango, color: '#44B78B' },
+        { Icon: SiFlask, color: '#6B7280' },
         { Icon: SiFastapi, color: '#009688' },
         { Icon: SiNodedotjs, color: '#339933' },
-        { Icon: SiExpress, color: '#000000' },
+        { Icon: SiExpress, color: '#6B7280' },
         { Icon: SiReact, color: '#61DAFB' },
         { Icon: SiRedux, color: '#764ABC' },
-        { Icon: SiNextdotjs, color: '#000000' },
+        { Icon: SiNextdotjs, color: '#6B7280' },
         { Icon: SiTailwindcss, color: '#06B6D4' },
         { Icon: SiAmazon, color: '#FF9900' },
         { Icon: SiGooglecloud, color: '#4285F4' },
@@ -47,11 +47,11 @@ const Banner = () => {
         { Icon: SiDocker, color: '#2496ED' },
         { Icon: SiKubernetes, color: '#326CE5' },
         { Icon: SiCloudflare, color: '#F38020' },
-        { Icon: SiGithub, color: '#181717' },
+        { Icon: SiGithub, color: '#6B7280' },
         { Icon: SiPostgresql, color: '#4169E1' },
         { Icon: SiMysql, color: '#4479A1' },
         { Icon: SiMongodb, color: '#47A248' },
-        { Icon: SiSocketdotio, color: '#010101' },
+        { Icon: SiSocketdotio, color: '#6B7280' },
         { Icon: SiStripe, color: '#008CDD' },
     ];
 
@@ -74,9 +74,8 @@ const Banner = () => {
                     {techIcons.map((tech, index) => (
                         <tech.Icon
                             key={index}
-                            className="w-10 h-10 grayscale hover:grayscale-0 transition-all cursor-pointer text-gray-600"
-                            onMouseEnter={(e) => e.currentTarget.style.color = tech.color}
-                            onMouseLeave={(e) => e.currentTarget.style.color = ''}
+                            className="w-10 h-10 transition-all cursor-pointer hover:scale-110"
+                            style={{ color: tech.color }}
                         />
                     ))}
                 </div>
@@ -86,9 +85,8 @@ const Banner = () => {
                     {techIcons.map((tech, index) => (
                         <tech.Icon
                             key={`duplicate-${index}`}
-                            className="w-10 h-10 grayscale hover:grayscale-0 transition-all cursor-pointer text-gray-600"
-                            onMouseEnter={(e) => e.currentTarget.style.color = tech.color}
-                            onMouseLeave={(e) => e.currentTarget.style.color = ''}
+                            className="w-10 h-10 transition-all cursor-pointer hover:scale-110"
+                            style={{ color: tech.color }}
                         />
                     ))}
                 </div>
