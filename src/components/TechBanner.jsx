@@ -33,13 +33,13 @@ const TechBanner = () => {
         { Icon: SiTypescript, color: '#3178C6' },
         { Icon: SiGo, color: '#00ADD8' },
         { Icon: SiDjango, color: '#44B78B' },
-        { Icon: SiFlask, color: '#6B7280' },
+        { Icon: SiFlask, color: '#1C1B19' },
         { Icon: SiFastapi, color: '#009688' },
         { Icon: SiNodedotjs, color: '#339933' },
-        { Icon: SiExpress, color: '#6B7280' },
+        { Icon: SiExpress, color: '#1C1B19' },
         { Icon: SiReact, color: '#61DAFB' },
         { Icon: SiRedux, color: '#764ABC' },
-        { Icon: SiNextdotjs, color: '#6B7280' },
+        { Icon: SiNextdotjs, color: '#1C1B19' },
         { Icon: SiTailwindcss, color: '#06B6D4' },
         { Icon: SiAmazon, color: '#FF9900' },
         { Icon: SiGooglecloud, color: '#4285F4' },
@@ -47,69 +47,27 @@ const TechBanner = () => {
         { Icon: SiDocker, color: '#2496ED' },
         { Icon: SiKubernetes, color: '#326CE5' },
         { Icon: SiCloudflare, color: '#F38020' },
-        { Icon: SiGithub, color: '#6B7280' },
+        { Icon: SiGithub, color: '#1C1B19' },
         { Icon: SiPostgresql, color: '#4169E1' },
         { Icon: SiMysql, color: '#4479A1' },
         { Icon: SiMongodb, color: '#47A248' },
-        { Icon: SiSocketdotio, color: '#6B7280' },
+        { Icon: SiSocketdotio, color: '#1C1B19' },
         { Icon: SiStripe, color: '#008CDD' },
     ];
 
     return (
-        <div className="mb-8 flex justify-center">
-            <div className="w-full sm:w-3/4 md:w-1/2 relative">
-                <style jsx>{`
-            @keyframes scroll {
-              0% {
-                transform: translateX(0);
-              }
-              100% {
-                transform: translateX(-50%);
-              }
-            }
-            @keyframes scrollFast {
-              0% {
-                transform: translateX(0);
-              }
-              100% {
-                transform: translateX(-50%);
-              }
-            }
-          `}</style>
-
-                {/* Gradient fade on edges */}
-                <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
-                <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
-
-                <div className="overflow-hidden">
-                    <div className="flex animate-[scrollFast_15s_linear_infinite] sm:animate-[scroll_30s_linear_infinite] hover:[animation-play-state:paused]">
-                        {/* First set of icons */}
-                        <div className="flex gap-6 sm:gap-8 px-3 sm:px-4 items-center min-w-max">
-                            {techIcons.map((tech, index) => (
-                                <tech.Icon
-                                    key={index}
-                                    className="w-8 h-8 sm:w-10 sm:h-10 transition-colors cursor-pointer"
-                                    style={{ color: '#6B7280' }}
-                                    onMouseEnter={(e) => e.currentTarget.style.color = tech.color}
-                                    onMouseLeave={(e) => e.currentTarget.style.color = '#6B7280'}
-                                />
-                            ))}
-                        </div>
-
-                        {/* Duplicate set for seamless loop */}
-                        <div className="flex gap-6 sm:gap-8 px-3 sm:px-4 items-center min-w-max">
-                            {techIcons.map((tech, index) => (
-                                <tech.Icon
-                                    key={`duplicate-${index}`}
-                                    className="w-8 h-8 sm:w-10 sm:h-10 transition-colors cursor-pointer"
-                                    style={{ color: '#6B7280' }}
-                                    onMouseEnter={(e) => e.currentTarget.style.color = tech.color}
-                                    onMouseLeave={(e) => e.currentTarget.style.color = '#6B7280'}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                </div>
+        <div className="mb-16 max-w-3xl mx-auto px-2">
+            <p className="font-mono2 text-[10px] tracking-[0.2em] text-[#1C1B19]/45 text-center mb-6 uppercase">/&nbsp;THE&nbsp;TOOLKIT&nbsp;/</p>
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-5 sm:gap-x-7">
+                {techIcons.map((tech, index) => (
+                    <tech.Icon
+                        key={index}
+                        className="w-6 h-6 sm:w-8 sm:h-8 transition-colors duration-200 cursor-pointer"
+                        style={{ color: '#1C1B19' }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = tech.color}
+                        onMouseLeave={(e) => e.currentTarget.style.color = '#1C1B19'}
+                    />
+                ))}
             </div>
         </div>
     );

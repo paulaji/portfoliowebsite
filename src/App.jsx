@@ -1,39 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Github, Linkedin, Mail, ExternalLink, ChevronRight, ArrowUpRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Github, Linkedin, Mail, ChevronRight, ArrowUpRight } from 'lucide-react';
 
 import TechBanner from './components/TechBanner';
-
-const Banner = () => {
-    const texts = [
-        "Full Stack Engineer",
-        "Cloud",
-        "AI/ML",
-        "DevOps"
-    ];
-    const [currentIndex, setCurrentIndex] = useState(0);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % texts.length);
-        }, 3000);
-        return () => clearInterval(interval);
-    }, []);
-
-    return (
-        <div className="h-8 overflow-hidden">
-            <div
-                className="transition-transform duration-700 ease-in-out"
-                style={{ transform: `translateY(-${currentIndex * 2}rem)` }}
-            >
-                {texts.map((text, i) => (
-                    <div key={i} className="h-8 flex items-center text-xl font-light text-neutral-400">
-                        {text}
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
 
 export default function Portfolio() {
     const [expandedProject, setExpandedProject] = useState(null);
@@ -54,9 +22,9 @@ export default function Portfolio() {
             subtitle: "Settlement, Reconciliation & Billing",
             company: "Infinite Payment Technology",
             role: "Full Stack Developer · Settle Team",
-            description: "Full stack developer on the Settle core team of a merchant onboarding and payments platform — building money movement, reconciliation, merchant billing/statements, and retry systems integrating with acquirers and processors (Worldline, ACI, Banking Circle, B4B).",
+            description: "Full stack developer on the Settle core team of a merchant onboarding and payments platform, building money movement, reconciliation, merchant billing/statements, and retry systems integrating with acquirers and processors (Worldline, ACI, Banking Circle, B4B).",
             highlights: [
-                "Work in an Nx monorepo spanning multiple deployable modules — payment/settlement services run as AWS Lambda, other modules as standalone apps; Vitest and Jest across the codebase",
+                "Work in an Nx monorepo spanning multiple deployable modules: payment/settlement services run as AWS Lambda, other modules as standalone apps; Vitest and Jest across the codebase",
                 "PostgreSQL via AWS RDS with Prisma ORM (Prisma Studio, DBeaver for inspection); config and secrets managed via AWS Parameter Store",
                 "Built event-driven Lambda pipelines triggered by S3 uploads: parsing CSV/XML merchant files, matching records against a merchant DB, persisting unmatched records, and emailing unmatched-record reports as CSV",
                 "Refactored three separate settlement report features (daily, daily rejected, incomplete) onto one shared query/CSV/orchestration layer, removing duplicated logic",
@@ -261,121 +229,151 @@ export default function Portfolio() {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white font-sans">
+        <div className="grain min-h-screen bg-[#E9E4DA] text-[#1C1B19] font-sans selection:bg-[#A8442A] selection:text-[#E9E4DA]">
             <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
         * {
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+          font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
         }
-        
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
+
+        .font-display { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; letter-spacing: -0.03em; }
+        .font-mono2 { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Off-White style caution stripes */
+        .stripes {
+          background-image: repeating-linear-gradient(-45deg, #1C1B19 0 10px, transparent 10px 20px);
         }
-        
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
+        .stripes-o {
+          background-image: repeating-linear-gradient(-45deg, #A8442A 0 10px, transparent 10px 20px);
         }
-        
-        .gradient-border {
-          position: relative;
-        }
-        
-        .gradient-border::before {
+
+        /* subtle paper grain */
+        .grain::after {
           content: '';
-          position: absolute;
+          position: fixed;
           inset: 0;
-          border-radius: 0.5rem;
-          padding: 1px;
-          background: linear-gradient(135deg, #ef4444, #000);
-          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          -webkit-mask-composite: xor;
-          mask-composite: exclude;
-          opacity: 0.3;
-          transition: opacity 0.3s;
+          pointer-events: none;
+          opacity: 0.35;
+          mix-blend-mode: multiply;
+          background-image: radial-gradient(#1C1B19 0.5px, transparent 0.5px);
+          background-size: 4px 4px;
+          z-index: 1;
         }
-        
-        .gradient-border:hover::before {
-          opacity: 1;
-        }
+
+        /* equalizer — the quiet music nod */
+        @keyframes eq { 0%,100% { transform: scaleY(0.25); } 50% { transform: scaleY(1); } }
+        .eq-bar { transform-origin: bottom; animation: eq 0.9s ease-in-out infinite; }
+
+        .invert-hover { transition: background .25s, color .25s; }
+        .invert-hover:hover { background: #1C1B19; color: #E9E4DA; }
       `}</style>
 
             {/* Minimal Navigation */}
-            <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/5">
+            <nav className="fixed top-0 left-0 right-0 z-50 bg-[#E9E4DA]/85 backdrop-blur-xl border-b-2 border-[#1C1B19]">
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <a href="#" className="text-sm font-medium tracking-wider">PAUL AJI</a>
-                    <div className="flex items-center gap-8">
-                        <a href="#work" className="text-sm text-neutral-400 hover:text-white transition">Work</a>
-                        <a href="#about" className="text-sm text-neutral-400 hover:text-white transition">About</a>
-                        <a href="#contact" className="text-sm text-neutral-400 hover:text-white transition">Contact</a>
+                    <a href="#" className="font-mono2 text-sm font-bold tracking-wider">PAUL&nbsp;AJI<sup className="text-[#A8442A]">®</sup></a>
+                    <div className="flex items-center gap-6 sm:gap-8 font-mono2 text-xs tracking-wider">
+                        <a href="#work" className="text-[#1C1B19]/60 hover:text-[#A8442A] transition">&ldquo;WORK&rdquo;</a>
+                        <a href="#about" className="text-[#1C1B19]/60 hover:text-[#A8442A] transition">&ldquo;ABOUT&rdquo;</a>
+                        <a href="#contact" className="text-[#1C1B19]/60 hover:text-[#A8442A] transition">&ldquo;CONTACT&rdquo;</a>
                     </div>
                 </div>
             </nav>
 
             {/* Hero Section */}
-            <section className="min-h-screen flex items-center justify-center px-6 pt-16">
-                <div className="max-w-5xl w-full">
+            <section className="relative min-h-screen flex items-center justify-center px-6 pt-16 overflow-hidden">
+                {/* rotated edge meta */}
+                <div className="hidden lg:block absolute left-4 top-1/2 -translate-y-1/2 -rotate-90 origin-center font-mono2 text-[10px] tracking-[0.3em] text-[#1C1B19]/50 whitespace-nowrap">
+                    PORTFOLIO &nbsp;/&nbsp; EST. 2022 &nbsp;/&nbsp; DUBLIN, IE
+                </div>
+                {/* corner register marks */}
+                <div className="absolute top-24 right-8 font-mono2 text-xs text-[#A8442A]">+</div>
+                <div className="absolute bottom-8 left-8 font-mono2 text-xs text-[#A8442A]">+</div>
+
+                <div className="max-w-5xl w-full relative z-10">
                     <div className="space-y-8">
+                        {/* top meta line */}
+                        <div className="flex items-center justify-between gap-4">
+                            <span className="font-mono2 text-[10px] sm:text-xs tracking-[0.2em] text-[#1C1B19]/50">[ DUBLIN,&nbsp;IE &nbsp;/&nbsp; 53.35&deg;N ]</span>
+                            <span className="inline-flex items-center gap-2 border-2 border-[#1C1B19] px-3 py-1">
+                                <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#A8442A] opacity-75" />
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#A8442A]" />
+                                </span>
+                                <span className="font-mono2 text-[10px] tracking-[0.2em]">AVAILABLE&nbsp;FOR&nbsp;WORK</span>
+                            </span>
+                        </div>
+
                         <div className="space-y-6">
-                            <div className="flex items-center gap-4">
-                                <img
-                                    src="./otherimages/profilephoto.jpg"
-                                    alt="Paul Aji"
-                                    className="w-20 h-20 rounded-full object-cover ring-1 ring-white/10"
-                                />
+                            <div className="flex items-center gap-5">
+                                <div className="relative flex-shrink-0">
+                                    <img
+                                        src="./otherimages/profilephoto.jpg"
+                                        alt="Paul Aji"
+                                        className="w-24 h-24 object-cover border-2 border-[#1C1B19] grayscale"
+                                    />
+                                    <span className="absolute -bottom-2 -right-2 bg-[#1C1B19] text-[#E9E4DA] font-mono2 text-[9px] px-1.5 py-0.5">FIG.01</span>
+                                </div>
                                 <div>
-                                    <h1 className="text-6xl font-light tracking-tight">Paul Aji</h1>
-                                    <Banner />
+                                    <h1 className="font-display text-6xl sm:text-8xl uppercase leading-[0.9]">Paul&nbsp;Aji<span className="text-[#A8442A]">.</span></h1>
+                                    <p className="font-mono2 text-[11px] sm:text-sm tracking-[0.15em] text-[#1C1B19]/55 mt-3 uppercase">Full&nbsp;Stack&nbsp;Engineer <span className="text-[#A8442A]">//</span> Payments&nbsp;&amp;&nbsp;Cloud</p>
                                 </div>
                             </div>
-                            <p className="text-xl text-neutral-400 font-light max-w-3xl leading-relaxed">
-                                Full Stack Software Engineer with 3+ years building production systems across Python and JavaScript/TypeScript. Currently on the Settle team at Infinite Payment Technology, building settlement, reconciliation, and billing systems for a merchant payments platform. MEng in Computer Vision and AI (First Class Honours, University of Limerick).
+                            <p className="text-base sm:text-lg text-[#1C1B19]/70 font-normal max-w-2xl leading-[1.7]">
+                                Full-stack engineer, 3+ years shipping production systems in Python and JavaScript/TypeScript that real people somehow depend on. Currently on the Settle team at <span className="text-[#1C1B19] font-medium">Infinite Payment Technology</span>, making sure money actually moves, reconciles, and bills correctly, because &lsquo;close enough&rsquo; isn&rsquo;t a feature in payments. Also holding an MEng in Computer Vision &amp; AI (<span className="text-[#1C1B19] font-medium">First Class Honours</span>, University of Limerick), which mostly qualifies me to explain, with great confidence, exactly why the model is wrong.
                             </p>
                         </div>
 
-                        <div className="flex items-center gap-6">
+                        <div className="flex flex-wrap items-center gap-3 font-mono2 text-xs">
                             <a
                                 href="https://github.com/paulaji"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition group"
+                                className="invert-hover inline-flex items-center gap-2 px-4 py-2 border-2 border-[#1C1B19] group"
                             >
                                 <Github className="w-4 h-4" />
-                                GitHub
-                                <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition" />
+                                GITHUB
+                                <ArrowUpRight className="w-3.5 h-3.5" />
                             </a>
                             <a
                                 href="https://linkedin.com/in/paulaji/"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition group"
+                                className="invert-hover inline-flex items-center gap-2 px-4 py-2 border-2 border-[#1C1B19]"
                             >
                                 <Linkedin className="w-4 h-4" />
-                                LinkedIn
-                                <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition" />
+                                LINKEDIN
+                                <ArrowUpRight className="w-3.5 h-3.5" />
                             </a>
                             <a
                                 href="mailto:paulajiparayil123@gmail.com"
-                                className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition group"
+                                className="invert-hover inline-flex items-center gap-2 px-4 py-2 border-2 border-[#1C1B19]"
                             >
                                 <Mail className="w-4 h-4" />
-                                Email
-                                <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition" />
+                                EMAIL
+                                <ArrowUpRight className="w-3.5 h-3.5" />
                             </a>
                         </div>
                     </div>
                 </div>
+                {/* bottom caution stripe */}
+                <div className="absolute bottom-0 left-0 right-0 h-4 stripes opacity-80" />
             </section>
 
 
             {/* Tech Stack */}
-            <section className="py-32 px-6 border-t border-white/5" id="about">
+            <section className="relative py-28 px-6 border-t-2 border-[#1C1B19]" id="about">
                 <TechBanner />
                 <div className="max-w-5xl mx-auto">
-                    <h2 className="text-sm font-medium tracking-wider text-neutral-500 mb-12">TECHNICAL EXPERTISE</h2>
+                    <div className="flex items-baseline gap-4 mb-12">
+                        <span className="font-mono2 text-xs text-[#A8442A]">01</span>
+                        <h2 className="font-mono2 text-sm tracking-[0.2em]">&ldquo;TECHNICAL&nbsp;EXPERTISE&rdquo;</h2>
+                        <div className="flex-1 h-px bg-[#1C1B19]/20" />
+                    </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-10">
                         {[
                             { label: "Languages", items: ["Python", "JavaScript", "TypeScript", "Java", "SQL"] },
                             { label: "Backend", items: ["NestJS", "Django", "DRF", "Flask", "FastAPI", "Node.js", "Express"] },
@@ -388,11 +386,11 @@ export default function Portfolio() {
                             { label: "Integrations", items: ["Stripe Connect", "Twilio", "OAuth 2.0", "JWT", "MetaTrader 5"] },
                             { label: "AI-Assisted", items: ["Claude Code CLI", "GitHub Copilot", "LLMs", "Prompt Engineering"] },
                         ].map((category, i) => (
-                            <div key={i} className="space-y-3">
-                                <h3 className="text-xs font-medium text-neutral-500 tracking-wider">{category.label}</h3>
-                                <div className="space-y-2">
+                            <div key={i} className="space-y-3 border-t border-[#1C1B19] pt-3">
+                                <h3 className="font-mono2 text-[10px] font-bold text-[#A8442A] tracking-widest uppercase">{String(i + 1).padStart(2, '0')} / {category.label}</h3>
+                                <div className="space-y-1.5">
                                     {category.items.map((item, j) => (
-                                        <div key={j} className="text-sm text-neutral-400">{item}</div>
+                                        <div key={j} className="text-sm text-[#1C1B19]/75">{item}</div>
                                     ))}
                                 </div>
                             </div>
@@ -402,31 +400,37 @@ export default function Portfolio() {
             </section>
 
             {/* Projects */}
-            <section className="py-32 px-6 border-t border-white/5" id="work">
+            <section className="py-28 px-6 border-t-2 border-[#1C1B19]" id="work">
                 <div className="max-w-5xl mx-auto">
-                    <h2 className="text-sm font-medium tracking-wider text-neutral-500 mb-12">SELECTED WORK</h2>
+                    <div className="flex items-baseline gap-4 mb-4">
+                        <span className="font-mono2 text-xs text-[#A8442A]">02</span>
+                        <h2 className="font-mono2 text-sm tracking-[0.2em]">&ldquo;SELECTED&nbsp;WORK&rdquo;</h2>
+                        <div className="flex-1 h-px bg-[#1C1B19]/20" />
+                    </div>
+                    <p className="font-mono2 text-[10px] tracking-[0.2em] text-[#1C1B19]/50 mb-10 pl-8">TRACKLIST &nbsp;/&nbsp; SIDE&nbsp;A: CURRENT &middot; SIDE&nbsp;B: BACK CATALOGUE &nbsp;▸ PLAY TO EXPAND</p>
 
-                    <div className="space-y-1">
-                        {projects.map((project) => (
+                    <div className="space-y-0">
+                        {projects.map((project, idx) => (
                             <div key={project.id} className="group">
                                 <button
                                     onClick={() => setExpandedProject(expandedProject === project.id ? null : project.id)}
-                                    className="w-full py-4 sm:py-6 flex items-center justify-between border-t border-white/5 hover:border-white/20 transition"
+                                    className="w-full py-5 sm:py-6 flex items-center justify-between border-t-2 border-[#1C1B19] hover:bg-[#1C1B19]/[0.03] transition text-left px-2"
                                 >
-                                    <div className="flex-1 text-left">
+                                    <span className="font-mono2 font-bold text-lg sm:text-xl text-[#A8442A] w-12 sm:w-14 flex-shrink-0">{(idx < 4 ? 'A' : 'B') + (idx < 4 ? idx + 1 : idx - 3)}</span>
+                                    <div className="flex-1">
                                         <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
-                                            <h3 className="text-lg sm:text-xl font-light">{project.title}</h3>
-                                            <span className="text-sm text-neutral-500">{project.subtitle}</span>
+                                            <h3 className="text-lg sm:text-2xl font-medium">{project.title}</h3>
+                                            <span className="font-mono2 text-xs text-[#1C1B19]/50">{project.subtitle}</span>
                                         </div>
-                                        <p className="text-sm text-neutral-500 mt-1">{project.company}</p>
+                                        <p className="font-mono2 text-[11px] text-[#1C1B19]/50 mt-1 uppercase tracking-wider">{project.company} &middot; {project.role}</p>
                                     </div>
                                     <ChevronRight
-                                        className={`w-5 h-5 text-neutral-500 transition-transform flex-shrink-0 ml-2 sm:ml-4 ${expandedProject === project.id ? 'rotate-90' : ''}`}
+                                        className={`w-5 h-5 text-[#1C1B19] transition-transform flex-shrink-0 ml-2 sm:ml-4 ${expandedProject === project.id ? 'rotate-90' : ''}`}
                                     />
                                 </button>
 
                                 {expandedProject === project.id && (
-                                    <div className="py-6 sm:py-8 space-y-6 sm:space-y-8 border-t border-white/5">
+                                    <div className="py-6 sm:py-8 px-2 space-y-6 sm:space-y-8 bg-[#1C1B19]/[0.03]">
                                         {/* Images */}
                                         {project.images.length > 0 && (
                                         <div className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide pb-4">
@@ -434,28 +438,29 @@ export default function Portfolio() {
                                                 <div
                                                     key={i}
                                                     onClick={() => openModal(image)}
-                                                    className="relative flex-shrink-0 w-64 sm:w-80 h-40 sm:h-52 bg-neutral-900 rounded cursor-pointer overflow-hidden group/img"
+                                                    className="relative flex-shrink-0 w-64 sm:w-80 h-40 sm:h-52 bg-[#DED9CD] cursor-pointer overflow-hidden group/img"
                                                 >
                                                     <img
                                                         src={image}
                                                         alt={`${project.title} ${i + 1}`}
-                                                        className="w-full h-full object-cover opacity-80 group-hover/img:opacity-100 transition"
+                                                        className="w-full h-full object-cover grayscale group-hover/img:grayscale-0 transition duration-300"
                                                     />
-                                                    <div className="absolute inset-0 border border-white/10 rounded pointer-events-none" />
+                                                    <div className="absolute inset-0 border-2 border-[#1C1B19] pointer-events-none" />
+                                                    <span className="absolute top-2 left-2 bg-[#1C1B19] text-[#E9E4DA] font-mono2 text-[9px] px-1.5 py-0.5">{project.title.slice(0, 12).toUpperCase()} {String(i + 1).padStart(2, '0')}</span>
                                                 </div>
                                             ))}
                                         </div>
                                         )}
 
                                         {/* Description */}
-                                        <p className="text-sm sm:text-base text-neutral-400 leading-relaxed">{project.description}</p>
+                                        <p className="text-sm sm:text-base text-[#1C1B19]/80 leading-relaxed max-w-3xl">{project.description}</p>
 
                                         {/* Highlights */}
-                                        <div className="space-y-3">
+                                        <div className="space-y-2.5">
                                             {project.highlights.map((highlight, i) => (
                                                 <div key={i} className="flex gap-3 sm:gap-4">
-                                                    <div className="w-1 h-1 bg-red-500 rounded-full mt-2 flex-shrink-0" />
-                                                    <p className="text-sm text-neutral-400 leading-relaxed">{highlight}</p>
+                                                    <span className="font-mono2 text-[10px] text-[#A8442A] mt-1 flex-shrink-0">{String(i + 1).padStart(2, '0')}</span>
+                                                    <p className="text-sm text-[#1C1B19]/80 leading-relaxed max-w-3xl">{highlight}</p>
                                                 </div>
                                             ))}
                                         </div>
@@ -465,7 +470,7 @@ export default function Portfolio() {
                                             {project.tech.map((tech, i) => (
                                                 <span
                                                     key={i}
-                                                    className="px-3 py-1 text-xs text-neutral-400 border border-white/10 rounded"
+                                                    className="px-3 py-1 font-mono2 text-[10px] tracking-wider text-[#1C1B19] border border-[#1C1B19] uppercase"
                                                 >
                                                     {tech}
                                                 </span>
@@ -480,16 +485,21 @@ export default function Portfolio() {
             </section>
 
             {/* Achievements */}
-            <section className="py-32 px-6 border-t border-white/5">
+            <section className="py-28 px-6 border-t-2 border-[#1C1B19]">
                 <div className="max-w-5xl mx-auto">
-                    <h2 className="text-sm font-medium tracking-wider text-neutral-500 mb-12">ACHIEVEMENTS & LEADERSHIP</h2>
+                    <div className="flex items-baseline gap-4 mb-12">
+                        <span className="font-mono2 text-xs text-[#A8442A]">03</span>
+                        <h2 className="font-mono2 text-sm tracking-[0.2em]">&ldquo;ACHIEVEMENTS&nbsp;&amp;&nbsp;LEADERSHIP&rdquo;</h2>
+                        <div className="flex-1 h-px bg-[#1C1B19]/20" />
+                    </div>
 
-                    <div className="grid md:grid-cols-2 gap-6">
+                    <div className="grid md:grid-cols-2 gap-px bg-[#1C1B19] border-2 border-[#1C1B19]">
                         {achievements.map((achievement, i) => (
-                            <div key={i} className="p-6 border border-white/5 rounded hover:border-white/20 transition">
+                            <div key={i} className="invert-hover bg-[#E9E4DA] p-6 group">
+                                <p className="font-mono2 text-[10px] text-[#A8442A] mb-2">{String(i + 1).padStart(2, '0')}</p>
                                 <h3 className="font-medium mb-1">{achievement.title}</h3>
-                                <p className="text-sm text-red-500 mb-3">{achievement.subtitle}</p>
-                                <p className="text-sm text-neutral-400 leading-relaxed">{achievement.description}</p>
+                                <p className="font-mono2 text-xs text-[#1C1B19]/60 group-hover:text-[#A8442A] mb-3 uppercase tracking-wider transition">{achievement.subtitle}</p>
+                                <p className="text-sm text-[#1C1B19]/70 group-hover:text-[#E9E4DA]/70 leading-relaxed transition">{achievement.description}</p>
                             </div>
                         ))}
                     </div>
@@ -497,70 +507,76 @@ export default function Portfolio() {
             </section>
 
             {/* Education */}
-            <section className="py-32 px-6 border-t border-white/5">
+            <section className="py-28 px-6 border-t-2 border-[#1C1B19]">
                 <div className="max-w-5xl mx-auto">
-                    <h2 className="text-sm font-medium tracking-wider text-neutral-500 mb-12">EDUCATION</h2>
+                    <div className="flex items-baseline gap-4 mb-12">
+                        <span className="font-mono2 text-xs text-[#A8442A]">04</span>
+                        <h2 className="font-mono2 text-sm tracking-[0.2em]">&ldquo;EDUCATION&rdquo;</h2>
+                        <div className="flex-1 h-px bg-[#1C1B19]/20" />
+                    </div>
 
                     <div className="space-y-8">
-                        <div>
-                            <h3 className="font-medium mb-1">MEng – Computer Vision and Artificial Intelligence</h3>
-                            <p className="text-sm text-neutral-500 mb-2">University of Limerick · September 2024 - September 2025</p>
-                            <p className="text-sm text-neutral-400">First Class Honours · QCA: 3.37</p>
+                        <div className="border-l-2 border-[#A8442A] pl-5">
+                            <h3 className="text-xl font-medium mb-1">MEng, Computer Vision and Artificial Intelligence</h3>
+                            <p className="font-mono2 text-xs text-[#1C1B19]/60 mb-2 uppercase tracking-wider">University of Limerick &middot; Sep 2024 &ndash; Sep 2025</p>
+                            <p className="font-mono2 text-xs text-[#1C1B19]">First Class Honours &middot; QCA: 3.37</p>
                         </div>
 
-                        <div>
-                            <h3 className="font-medium mb-1">Bachelor of Technology – Computer Science</h3>
-                            <p className="text-sm text-neutral-500 mb-2">Adi Shankara Institute of Engineering and Technology · 2018 - February 2023</p>
-                            <p className="text-sm text-neutral-400">GPA: 2.76</p>
+                        <div className="border-l-2 border-[#1C1B19]/30 pl-5">
+                            <h3 className="text-xl font-medium mb-1">B.Tech, Computer Science</h3>
+                            <p className="font-mono2 text-xs text-[#1C1B19]/60 mb-2 uppercase tracking-wider">Adi Shankara Institute of Engineering and Technology &middot; 2018 &ndash; Feb 2023</p>
+                            <p className="font-mono2 text-xs text-[#1C1B19]">GPA: 2.76</p>
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* Contact */}
-            <section className="py-32 px-6 border-t border-white/5" id="contact">
+            <section className="relative py-28 px-6 border-t-2 border-[#1C1B19] overflow-hidden" id="contact">
+                <div className="h-4 stripes-o opacity-80 mb-16" />
                 <div className="max-w-5xl mx-auto text-center space-y-8">
-                    <h2 className="text-4xl font-light">Let's work together</h2>
-                    <p className="text-neutral-400">Open to new opportunities and collaborations</p>
+                    <p className="font-mono2 text-xs text-[#A8442A] tracking-[0.2em]">05 / &ldquo;CONTACT&rdquo;</p>
+                    <h2 className="font-display text-6xl sm:text-8xl uppercase leading-[0.9]">Let&rsquo;s&nbsp;make<br />something<span className="text-[#A8442A]">.</span></h2>
+                    <p className="font-mono2 text-xs text-[#1C1B19]/55 tracking-[0.15em] uppercase">Open to new opportunities &amp; collaborations</p>
 
-                    <div className="flex justify-center gap-8 pt-4">
+                    <div className="flex flex-wrap justify-center gap-3 pt-4 font-mono2 text-xs">
                         <a
                             href="https://github.com/paulaji"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition group"
+                            className="invert-hover inline-flex items-center gap-2 px-4 py-2 border-2 border-[#1C1B19]"
                         >
                             <Github className="w-4 h-4" />
-                            GitHub
-                            <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition" />
+                            GITHUB
+                            <ArrowUpRight className="w-3.5 h-3.5" />
                         </a>
                         <a
                             href="https://linkedin.com/in/paulaji/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition group"
+                            className="invert-hover inline-flex items-center gap-2 px-4 py-2 border-2 border-[#1C1B19]"
                         >
                             <Linkedin className="w-4 h-4" />
-                            LinkedIn
-                            <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition" />
+                            LINKEDIN
+                            <ArrowUpRight className="w-3.5 h-3.5" />
                         </a>
                         <a
                             href="mailto:paulajiparayil123@gmail.com"
-                            className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition group"
+                            className="invert-hover inline-flex items-center gap-2 px-4 py-2 border-2 border-[#1C1B19]"
                         >
                             <Mail className="w-4 h-4" />
-                            Email
-                            <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition" />
+                            EMAIL
+                            <ArrowUpRight className="w-3.5 h-3.5" />
                         </a>
                     </div>
                 </div>
             </section>
 
             {/* Footer */}
-            <footer className="py-12 px-6 border-t border-white/5">
-                <div className="max-w-5xl mx-auto flex justify-between items-center text-sm text-neutral-500">
-                    <p>© 2026 Paul Aji</p>
-                    <p>Built with React & TailwindCSS</p>
+            <footer className="py-10 px-6 border-t-2 border-[#1C1B19] bg-[#1C1B19] text-[#E9E4DA]">
+                <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 font-mono2 text-[10px] tracking-wider uppercase">
+                    <p>&copy; 2026 &nbsp;/&nbsp; Paul Aji<sup className="text-[#A8442A]">®</sup> &nbsp;/&nbsp; All Rights Reserved</p>
+                    <p className="text-[#E9E4DA]/50">&ldquo;Built&nbsp;with&nbsp;React&nbsp;&amp;&nbsp;TailwindCSS&rdquo; c/o Dublin, IE</p>
                 </div>
             </footer>
 
@@ -570,15 +586,15 @@ export default function Portfolio() {
                     className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 backdrop-blur-sm"
                     onClick={closeModal}
                 >
-                    <div className="relative max-w-7xl max-h-[90vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
+                    <div className="relative max-w-7xl max-h-[90vh] overflow-auto border-2 border-[#E9E4DA]" onClick={(e) => e.stopPropagation()}>
                         <img
                             src={selectedImage}
                             alt="Expanded view"
-                            className="w-full h-auto rounded"
+                            className="w-full h-auto"
                         />
                         <button
                             onClick={closeModal}
-                            className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 backdrop-blur text-white rounded transition"
+                            className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-[#A8442A] hover:bg-[#E9E4DA] hover:text-[#1C1B19] text-[#1C1B19] font-mono2 transition"
                         >
                             ✕
                         </button>
