@@ -49,6 +49,29 @@ export default function Portfolio() {
 
     const projects = [
         {
+            id: 0,
+            title: "Merchant Payments Platform",
+            subtitle: "Settlement, Reconciliation & Billing",
+            company: "Infinite Payment Technology",
+            role: "Full Stack Developer · Settle Team",
+            description: "Full stack developer on the Settle core team of a merchant onboarding and payments platform — building money movement, reconciliation, merchant billing/statements, and retry systems integrating with acquirers and processors (Worldline, ACI, Banking Circle, B4B).",
+            highlights: [
+                "Work in an Nx monorepo spanning multiple deployable modules — payment/settlement services run as AWS Lambda, other modules as standalone apps; Vitest and Jest across the codebase",
+                "PostgreSQL via AWS RDS with Prisma ORM (Prisma Studio, DBeaver for inspection); config and secrets managed via AWS Parameter Store",
+                "Built event-driven Lambda pipelines triggered by S3 uploads: parsing CSV/XML merchant files, matching records against a merchant DB, persisting unmatched records, and emailing unmatched-record reports as CSV",
+                "Refactored three separate settlement report features (daily, daily rejected, incomplete) onto one shared query/CSV/orchestration layer, removing duplicated logic",
+                "Built the VAT Summary of the merchant billing statement using safe decimal (BigNumber) arithmetic and country-based VAT rate lookups",
+                "Fixed a product-pricing bug routing fixed monthly/annual charges to the wrong pricing table; added coverage across all charge-type paths with manual regression testing",
+                "Migrated an overkill standalone LegitScript compliance Lambda into the shared NestJS gateway; diagnosed a recurring first-of-month fee bug and proposed a new handler design",
+                "Advocated separating transaction-driven vs product-driven settle-calc (cron over transaction SQS) to fix reliability issues",
+                "Integration tests in Gherkin/Cucumber (Jest, Vitest) run against Dockerized DBs; migrated AWS mocking from LocalStack to Flocci (open source)",
+                "Structured JSON logging (CloudWatch) + PostHog error tracking; extended audit-log redaction to cover missed sensitive fields (tokens, salts); fixed GitHub Actions CI failures from transitive dependency issues",
+                "Code goes through SonarQube static analysis, Trivy scans, and Copilot-assisted reviews; cross-team changes require code-captain sign-off. Day-to-day with Claude Code CLI, Copilot, JIRA/GitHub MCP; collaborate with design, BA, and devs",
+            ],
+            tech: ["NestJS", "TypeScript", "PostgreSQL", "Prisma", "AWS Lambda", "AWS RDS", "S3", "SQS", "Nx", "Vitest", "Jest", "Cucumber/Gherkin", "Docker", "CloudWatch", "GitHub Actions"],
+            images: [],
+        },
+        {
             id: 1,
             title: "FindASide",
             subtitle: "Sports Facility Booking Marketplace",
@@ -307,7 +330,7 @@ export default function Portfolio() {
                                 </div>
                             </div>
                             <p className="text-xl text-neutral-400 font-light max-w-3xl leading-relaxed">
-                                I build full-stack applications and cloud systems. From modern frontends to distributed backends, I focus on creating reliable, scalable solutions that handle real users and real problems.
+                                Full Stack Software Engineer with 3+ years building production systems across Python and JavaScript/TypeScript. Currently on the Settle team at Infinite Payment Technology, building settlement, reconciliation, and billing systems for a merchant payments platform. MEng in Computer Vision and AI (First Class Honours, University of Limerick).
                             </p>
                         </div>
 
@@ -354,14 +377,16 @@ export default function Portfolio() {
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
                         {[
-                            { label: "Languages", items: ["Python", "JavaScript", "TypeScript", "Go"] },
-                            { label: "Backend", items: ["Django", "Flask", "Node.js", "Express"] },
-                            { label: "Frontend", items: ["React", "Next.js", "Redux", "TailwindCSS"] },
-                            { label: "Cloud", items: ["AWS", "GCP", "Azure", "Firebase"] },
-                            { label: "Databases", items: ["PostgreSQL", "MongoDB", "Firestore", "MSSQL", "MySQL"] },
-                            { label: "DevOps", items: ["Docker", "Kubernetes", "CI/CD", "GitHub Actions"] },
-                            { label: "AI/ML", items: ["LLMs", "Prompt Engineering", "Agentic AI"] },
-                            { label: "Real-time", items: ["WebSockets", "Socket.io", "Event-driven"] },
+                            { label: "Languages", items: ["Python", "JavaScript", "TypeScript", "Java", "SQL"] },
+                            { label: "Backend", items: ["NestJS", "Django", "DRF", "Flask", "FastAPI", "Node.js", "Express"] },
+                            { label: "Frontend", items: ["React", "Next.js", "Redux", "TailwindCSS", "Material-UI"] },
+                            { label: "Cloud", items: ["AWS", "GCP", "Lambda", "RDS", "S3", "Firebase"] },
+                            { label: "Databases", items: ["PostgreSQL", "MySQL", "MSSQL", "MongoDB", "Firestore", "Prisma"] },
+                            { label: "DevOps", items: ["Docker", "Nx", "CI/CD", "GitHub Actions", "SonarQube", "Trivy"] },
+                            { label: "Testing", items: ["Jest", "Vitest", "Pytest", "Cucumber/Gherkin", "LocalStack", "TDD"] },
+                            { label: "APIs & Events", items: ["REST", "OpenAPI", "WebSockets", "Socket.IO", "Event-driven"] },
+                            { label: "Integrations", items: ["Stripe Connect", "Twilio", "OAuth 2.0", "JWT", "MetaTrader 5"] },
+                            { label: "AI-Assisted", items: ["Claude Code CLI", "GitHub Copilot", "LLMs", "Prompt Engineering"] },
                         ].map((category, i) => (
                             <div key={i} className="space-y-3">
                                 <h3 className="text-xs font-medium text-neutral-500 tracking-wider">{category.label}</h3>
@@ -403,6 +428,7 @@ export default function Portfolio() {
                                 {expandedProject === project.id && (
                                     <div className="py-6 sm:py-8 space-y-6 sm:space-y-8 border-t border-white/5">
                                         {/* Images */}
+                                        {project.images.length > 0 && (
                                         <div className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide pb-4">
                                             {project.images.map((image, i) => (
                                                 <div
@@ -419,6 +445,7 @@ export default function Portfolio() {
                                                 </div>
                                             ))}
                                         </div>
+                                        )}
 
                                         {/* Description */}
                                         <p className="text-sm sm:text-base text-neutral-400 leading-relaxed">{project.description}</p>
@@ -532,7 +559,7 @@ export default function Portfolio() {
             {/* Footer */}
             <footer className="py-12 px-6 border-t border-white/5">
                 <div className="max-w-5xl mx-auto flex justify-between items-center text-sm text-neutral-500">
-                    <p>© 2025 Paul Aji</p>
+                    <p>© 2026 Paul Aji</p>
                     <p>Built with React & TailwindCSS</p>
                 </div>
             </footer>
