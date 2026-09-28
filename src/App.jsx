@@ -1,19 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { Github, Linkedin, Mail, ChevronRight, ArrowUpRight } from 'lucide-react';
+import { Github, Linkedin, Mail, ArrowUpRight, ArrowRight, X, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 
 import TechBanner from './components/TechBanner';
 
-export default function Portfolio() {
-    const [expandedProject, setExpandedProject] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedImage, setSelectedImage] = useState(null);
-    const [scrollY, setScrollY] = useState(0);
+const skills = [
+    { label: "Languages", items: ["Python", "JavaScript", "TypeScript", "Java", "SQL"] },
+    { label: "Backend", items: ["NestJS", "Django", "DRF", "Flask", "FastAPI", "Node.js", "Express"] },
+    { label: "Frontend", items: ["React", "Next.js", "Redux", "TailwindCSS", "Material-UI"] },
+    { label: "Cloud", items: ["AWS", "GCP", "Lambda", "RDS", "S3", "Firebase"] },
+    { label: "Databases", items: ["PostgreSQL", "MySQL", "MSSQL", "MongoDB", "Firestore", "Prisma"] },
+    { label: "DevOps", items: ["Docker", "Nx", "CI/CD", "GitHub Actions", "SonarQube", "Trivy"] },
+    { label: "Testing", items: ["Jest", "Vitest", "Pytest", "Cucumber/Gherkin", "LocalStack", "TDD"] },
+    { label: "APIs & Events", items: ["REST", "OpenAPI", "WebSockets", "Socket.IO", "Event-driven"] },
+    { label: "Integrations", items: ["Stripe Connect", "Twilio", "OAuth 2.0", "JWT", "MetaTrader 5"] },
+    { label: "AI-Assisted", items: ["Claude Code CLI", "GitHub Copilot", "LLMs", "Prompt Engineering"] },
+];
 
-    useEffect(() => {
-        const handleScroll = () => setScrollY(window.scrollY);
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+const links = [
+    { href: "https://github.com/paulaji", label: "GitHub", icon: <Github className="w-4 h-4" /> },
+    { href: "https://linkedin.com/in/paulaji/", label: "LinkedIn", icon: <Linkedin className="w-4 h-4" /> },
+];
+
+function SectionHeading({ eyebrow, title, id }) {
+    return (
+        <div id={id} className="scroll-mt-24 mb-10 sm:mb-12">
+            <p className="text-xs font-medium tracking-[0.18em] uppercase text-[var(--accent)] mb-3">{eyebrow}</p>
+            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">{title}</h2>
+        </div>
+    );
+}
+
+export default function Portfolio() {
+    const [activeProject, setActiveProject] = useState(null);
+    const [imageIndex, setImageIndex] = useState(0);
 
     const projects = [
         {
@@ -218,179 +237,190 @@ export default function Portfolio() {
         }
     ];
 
-    const openModal = (image) => {
-        setSelectedImage(image);
-        setIsModalOpen(true);
-    };
+    const project = activeProject === null ? null : projects.find((p) => p.id === activeProject);
+    const [featured, ...rest] = projects;
 
-    const closeModal = () => {
-        setIsModalOpen(false);
-        setSelectedImage(null);
+    const openProject = (id) => {
+        setActiveProject(id);
+        setImageIndex(0);
     };
+    const closeProject = () => setActiveProject(null);
+
+    useEffect(() => {
+        if (!project) return;
+        const onKey = (e) => {
+            if (e.key === 'Escape') setActiveProject(null);
+            if (e.key === 'ArrowRight') setImageIndex((i) => Math.min(i + 1, project.images.length - 1));
+            if (e.key === 'ArrowLeft') setImageIndex((i) => Math.max(i - 1, 0));
+        };
+        document.body.style.overflow = 'hidden';
+        window.addEventListener('keydown', onKey);
+        return () => {
+            document.body.style.overflow = '';
+            window.removeEventListener('keydown', onKey);
+        };
+    }, [project]);
 
     return (
-        <div className="grain min-h-screen bg-[#E9E4DA] text-[#1C1B19] font-sans selection:bg-[#A8442A] selection:text-[#E9E4DA]">
+        <div className="min-h-screen bg-[var(--bg)] text-zinc-300 antialiased selection:bg-[var(--accent)] selection:text-black">
             <style>{`
-        * {
-          font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        }
-
-        .font-display { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 700; letter-spacing: -0.03em; }
-        .font-mono2 { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
-
+        :root { --bg: #0B0B0D; --surface: #131316; --accent: #F2A65A; }
+        html { scroll-behavior: smooth; }
+        body { background: var(--bg); }
+        * { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Off-White style caution stripes */
-        .stripes {
-          background-image: repeating-linear-gradient(-45deg, #1C1B19 0 10px, transparent 10px 20px);
-        }
-        .stripes-o {
-          background-image: repeating-linear-gradient(-45deg, #A8442A 0 10px, transparent 10px 20px);
-        }
-
-        /* subtle paper grain */
-        .grain::after {
-          content: '';
-          position: fixed;
-          inset: 0;
-          pointer-events: none;
-          opacity: 0.35;
-          mix-blend-mode: multiply;
-          background-image: radial-gradient(#1C1B19 0.5px, transparent 0.5px);
-          background-size: 4px 4px;
-          z-index: 1;
-        }
-
-        /* equalizer — the quiet music nod */
-        @keyframes eq { 0%,100% { transform: scaleY(0.25); } 50% { transform: scaleY(1); } }
-        .eq-bar { transform-origin: bottom; animation: eq 0.9s ease-in-out infinite; }
-
-        .invert-hover { transition: background .25s, color .25s; }
-        .invert-hover:hover { background: #1C1B19; color: #E9E4DA; }
+        .card { background: var(--surface); border: 1px solid rgb(255 255 255 / 0.07); border-radius: 1rem; transition: border-color .2s, transform .2s, background .2s; }
+        .card-hover:hover { border-color: rgb(242 166 90 / 0.45); transform: translateY(-2px); }
+        .glow { background: radial-gradient(600px circle at 20% 0%, rgb(242 166 90 / 0.12), transparent 60%); }
       `}</style>
 
-            {/* Minimal Navigation */}
-            <nav className="fixed top-0 left-0 right-0 z-50 bg-[#E9E4DA]/85 backdrop-blur-xl border-b-2 border-[#1C1B19]">
-                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <a href="#" className="font-mono2 text-sm font-bold tracking-wider">PAUL&nbsp;AJI<sup className="text-[#A8442A]">®</sup></a>
-                    <div className="flex items-center gap-6 sm:gap-8 font-mono2 text-xs tracking-wider">
-                        <a href="#work" className="text-[#1C1B19]/60 hover:text-[#A8442A] transition">&ldquo;WORK&rdquo;</a>
-                        <a href="#about" className="text-[#1C1B19]/60 hover:text-[#A8442A] transition">&ldquo;ABOUT&rdquo;</a>
-                        <a href="#contact" className="text-[#1C1B19]/60 hover:text-[#A8442A] transition">&ldquo;CONTACT&rdquo;</a>
+            {/* Navigation */}
+            <nav className="fixed top-0 inset-x-0 z-50 bg-[var(--bg)]/75 backdrop-blur-xl border-b border-white/5">
+                <div className="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
+                    <a href="#" className="text-white font-semibold tracking-tight">Paul Aji</a>
+                    <div className="flex items-center gap-5 sm:gap-8 text-sm">
+                        <a href="#work" className="text-zinc-400 hover:text-white transition">Work</a>
+                        <a href="#skills" className="text-zinc-400 hover:text-white transition">Skills</a>
+                        <a href="#contact" className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-white text-black px-4 py-1.5 font-medium hover:bg-[var(--accent)] transition">
+                            Contact
+                        </a>
+                        <a href="#contact" className="sm:hidden text-zinc-400 hover:text-white transition">Contact</a>
                     </div>
                 </div>
             </nav>
 
-            {/* Hero Section */}
-            <section className="relative min-h-screen flex items-center justify-center px-6 pt-16 overflow-hidden">
-                {/* rotated edge meta */}
-                <div className="hidden lg:block absolute left-4 top-1/2 -translate-y-1/2 -rotate-90 origin-center font-mono2 text-[10px] tracking-[0.3em] text-[#1C1B19]/50 whitespace-nowrap">
-                    PORTFOLIO &nbsp;/&nbsp; EST. 2022 &nbsp;/&nbsp; DUBLIN, IE
-                </div>
-                {/* corner register marks */}
-                <div className="absolute top-24 right-8 font-mono2 text-xs text-[#A8442A]">+</div>
-                <div className="absolute bottom-8 left-8 font-mono2 text-xs text-[#A8442A]">+</div>
-
-                <div className="max-w-5xl w-full relative z-10">
-                    <div className="space-y-8">
-                        {/* top meta line */}
-                        <div className="flex items-center justify-between gap-4">
-                            <span className="font-mono2 text-[10px] sm:text-xs tracking-[0.2em] text-[#1C1B19]/50">[ DUBLIN,&nbsp;IE &nbsp;/&nbsp; 53.35&deg;N ]</span>
-                            <span className="inline-flex items-center gap-2 border-2 border-[#1C1B19] px-3 py-1">
-                                <span className="relative flex h-2 w-2">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#A8442A] opacity-75" />
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#A8442A]" />
-                                </span>
-                                <span className="font-mono2 text-[10px] tracking-[0.2em]">AVAILABLE&nbsp;FOR&nbsp;WORK</span>
+            {/* Hero */}
+            <header className="relative glow pt-32 sm:pt-40 pb-20 sm:pb-28 px-5 sm:px-8">
+                <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_auto] gap-12 lg:gap-16 items-center">
+                    <div>
+                        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-zinc-400 mb-8">
+                            <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
                             </span>
+                            Available for work
+                            <span className="text-zinc-600">·</span>
+                            <MapPin className="w-3 h-3" /> Dublin, Ireland
                         </div>
 
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-5">
-                                <div className="relative flex-shrink-0">
-                                    <img
-                                        src="./otherimages/profilephoto.jpg"
-                                        alt="Paul Aji"
-                                        className="w-24 h-24 object-cover border-2 border-[#1C1B19] grayscale"
-                                    />
-                                    <span className="absolute -bottom-2 -right-2 bg-[#1C1B19] text-[#E9E4DA] font-mono2 text-[9px] px-1.5 py-0.5">FIG.01</span>
-                                </div>
-                                <div>
-                                    <h1 className="font-display text-6xl sm:text-8xl uppercase leading-[0.9]">Paul&nbsp;Aji<span className="text-[#A8442A]">.</span></h1>
-                                    <p className="font-mono2 text-[11px] sm:text-sm tracking-[0.15em] text-[#1C1B19]/55 mt-3 uppercase">Full&nbsp;Stack&nbsp;Engineer <span className="text-[#A8442A]">//</span> Payments&nbsp;&amp;&nbsp;Cloud</p>
-                                </div>
-                            </div>
-                            <p className="text-base sm:text-lg text-[#1C1B19]/70 font-normal max-w-2xl leading-[1.7]">
-                                Full-stack engineer, 3+ years shipping production systems in Python and JavaScript/TypeScript that real people somehow depend on. Currently on the Settle team at <span className="text-[#1C1B19] font-medium">Infinite Payment Technology</span>, making sure money actually moves, reconciles, and bills correctly, because &lsquo;close enough&rsquo; isn&rsquo;t a feature in payments. Also holding an MEng in Computer Vision &amp; AI (<span className="text-[#1C1B19] font-medium">First Class Honours</span>, University of Limerick), which mostly qualifies me to explain, with great confidence, exactly why the model is wrong.
-                            </p>
-                        </div>
+                        <h1 className="text-5xl sm:text-7xl font-semibold tracking-[-0.04em] text-white leading-[1.02]">
+                            Paul Aji
+                        </h1>
+                        <p className="mt-4 text-xl sm:text-2xl text-zinc-400 tracking-tight">
+                            Full-stack engineer building <span className="text-[var(--accent)]">payments</span> &amp; cloud systems.
+                        </p>
+                        <p className="mt-8 max-w-2xl text-base sm:text-lg leading-relaxed text-zinc-400">
+                            3+ years shipping production systems in Python and TypeScript. Currently on the Settle team at <span className="text-zinc-200">Infinite Payment Technology</span>, making sure money moves, reconciles and bills correctly, because &lsquo;close enough&rsquo; isn&rsquo;t a feature in payments. MEng in Computer Vision &amp; AI, <span className="text-zinc-200">First Class Honours</span>, University of Limerick.
+                        </p>
 
-                        <div className="flex flex-wrap items-center gap-3 font-mono2 text-xs">
-                            <a
-                                href="https://github.com/paulaji"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="invert-hover inline-flex items-center gap-2 px-4 py-2 border-2 border-[#1C1B19] group"
-                            >
-                                <Github className="w-4 h-4" />
-                                GITHUB
-                                <ArrowUpRight className="w-3.5 h-3.5" />
+                        <div className="mt-10 flex flex-wrap items-center gap-3">
+                            <a href="#work" className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] text-black px-5 py-2.5 text-sm font-medium hover:bg-white transition">
+                                See my work <ArrowRight className="w-4 h-4" />
                             </a>
-                            <a
-                                href="https://linkedin.com/in/paulaji/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="invert-hover inline-flex items-center gap-2 px-4 py-2 border-2 border-[#1C1B19]"
-                            >
-                                <Linkedin className="w-4 h-4" />
-                                LINKEDIN
-                                <ArrowUpRight className="w-3.5 h-3.5" />
+                            <a href="mailto:paulajiparayil123@gmail.com" className="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-sm text-white hover:bg-white/5 transition">
+                                <Mail className="w-4 h-4" /> Email me
                             </a>
-                            <a
-                                href="mailto:paulajiparayil123@gmail.com"
-                                className="invert-hover inline-flex items-center gap-2 px-4 py-2 border-2 border-[#1C1B19]"
-                            >
-                                <Mail className="w-4 h-4" />
-                                EMAIL
-                                <ArrowUpRight className="w-3.5 h-3.5" />
-                            </a>
+                            {links.map(({ href, label, icon }) => (
+                                <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
+                                    className="inline-flex items-center justify-center w-10 h-10 rounded-full border border-white/15 text-zinc-300 hover:text-white hover:bg-white/5 transition">
+                                    {icon}
+                                </a>
+                            ))}
                         </div>
                     </div>
+
+                    <div className="hidden lg:block">
+                        <img
+                            src="./otherimages/profilephoto.jpg"
+                            alt="Paul Aji"
+                            className="w-72 h-80 object-cover rounded-3xl border border-white/10 shadow-2xl shadow-black/50"
+                        />
+                    </div>
                 </div>
-                {/* bottom caution stripe */}
-                <div className="absolute bottom-0 left-0 right-0 h-4 stripes opacity-80" />
+
+                {/* Quick facts */}
+                <div className="max-w-6xl mx-auto mt-16 sm:mt-20 grid grid-cols-2 md:grid-cols-4 gap-px rounded-2xl overflow-hidden border border-white/[0.07] bg-white/[0.07]">
+                    {[
+                        ["3+ yrs", "Production engineering"],
+                        ["4,000+", "Traders served on CRM"],
+                        ["First Class", "MEng, CV & AI"],
+                        ["Payments", "Settlement · Billing · Recon"],
+                    ].map(([value, label]) => (
+                        <div key={label} className="bg-[var(--bg)] px-5 py-6">
+                            <p className="text-xl sm:text-2xl font-semibold text-white tracking-tight">{value}</p>
+                            <p className="mt-1 text-xs sm:text-sm text-zinc-500">{label}</p>
+                        </div>
+                    ))}
+                </div>
+            </header>
+
+            {/* Work */}
+            <section className="py-20 sm:py-28 px-5 sm:px-8 border-t border-white/5">
+                <div className="max-w-6xl mx-auto">
+                    <SectionHeading id="work" eyebrow="Selected work" title="Things I've built" />
+
+                    {/* Featured / current */}
+                    <button onClick={() => openProject(featured.id)} className="card card-hover w-full text-left p-6 sm:p-10 mb-5 group">
+                        <div className="flex flex-wrap items-center gap-3 mb-5">
+                            <span className="rounded-full bg-[var(--accent)]/15 text-[var(--accent)] text-xs font-medium px-3 py-1">Current role</span>
+                            <span className="text-sm text-zinc-500">{featured.company} · {featured.role}</span>
+                        </div>
+                        <h3 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">{featured.title}</h3>
+                        <p className="mt-1 text-zinc-400">{featured.subtitle}</p>
+                        <p className="mt-5 max-w-3xl text-sm sm:text-base leading-relaxed text-zinc-400">{featured.description}</p>
+                        <div className="mt-6 flex flex-wrap gap-2">
+                            {featured.tech.slice(0, 8).map((t) => (
+                                <span key={t} className="rounded-md bg-white/5 px-2.5 py-1 text-xs text-zinc-300">{t}</span>
+                            ))}
+                            {featured.tech.length > 8 && <span className="px-1 py-1 text-xs text-zinc-500">+{featured.tech.length - 8} more</span>}
+                        </div>
+                        <span className="mt-8 inline-flex items-center gap-1.5 text-sm text-white group-hover:text-[var(--accent)] transition">
+                            Read the details <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition" />
+                        </span>
+                    </button>
+
+                    {/* Grid */}
+                    <div className="grid sm:grid-cols-2 gap-5">
+                        {rest.map((p) => (
+                            <button key={p.id} onClick={() => openProject(p.id)} className="card card-hover text-left overflow-hidden flex flex-col group">
+                                {p.images.length > 0 && (
+                                    <div className="aspect-[16/9] overflow-hidden bg-black/40 border-b border-white/5">
+                                        <img src={p.images[0]} alt={p.title} loading="lazy"
+                                            className="w-full h-full object-cover object-top opacity-90 group-hover:opacity-100 group-hover:scale-[1.02] transition duration-500" />
+                                    </div>
+                                )}
+                                <div className="p-6 flex flex-col flex-1">
+                                    <p className="text-xs text-zinc-500">{p.company}</p>
+                                    <div className="mt-2 flex items-start justify-between gap-3">
+                                        <h3 className="text-lg font-semibold tracking-tight text-white">{p.title}</h3>
+                                        <ArrowUpRight className="w-4 h-4 mt-1 flex-shrink-0 text-zinc-500 group-hover:text-[var(--accent)] transition" />
+                                    </div>
+                                    <p className="mt-2 text-sm leading-relaxed text-zinc-400 flex-1">{p.description}</p>
+                                    <div className="mt-5 flex flex-wrap gap-1.5">
+                                        {p.tech.slice(0, 4).map((t) => (
+                                            <span key={t} className="rounded-md bg-white/5 px-2 py-0.5 text-[11px] text-zinc-400">{t}</span>
+                                        ))}
+                                    </div>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                </div>
             </section>
 
-
-            {/* Tech Stack */}
-            <section className="relative py-28 px-6 border-t-2 border-[#1C1B19]" id="about">
-                <TechBanner />
-                <div className="max-w-5xl mx-auto">
-                    <div className="flex items-baseline gap-4 mb-12">
-                        <span className="font-mono2 text-xs text-[#A8442A]">01</span>
-                        <h2 className="font-mono2 text-sm tracking-[0.2em]">&ldquo;TECHNICAL&nbsp;EXPERTISE&rdquo;</h2>
-                        <div className="flex-1 h-px bg-[#1C1B19]/20" />
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-10">
-                        {[
-                            { label: "Languages", items: ["Python", "JavaScript", "TypeScript", "Java", "SQL"] },
-                            { label: "Backend", items: ["NestJS", "Django", "DRF", "Flask", "FastAPI", "Node.js", "Express"] },
-                            { label: "Frontend", items: ["React", "Next.js", "Redux", "TailwindCSS", "Material-UI"] },
-                            { label: "Cloud", items: ["AWS", "GCP", "Lambda", "RDS", "S3", "Firebase"] },
-                            { label: "Databases", items: ["PostgreSQL", "MySQL", "MSSQL", "MongoDB", "Firestore", "Prisma"] },
-                            { label: "DevOps", items: ["Docker", "Nx", "CI/CD", "GitHub Actions", "SonarQube", "Trivy"] },
-                            { label: "Testing", items: ["Jest", "Vitest", "Pytest", "Cucumber/Gherkin", "LocalStack", "TDD"] },
-                            { label: "APIs & Events", items: ["REST", "OpenAPI", "WebSockets", "Socket.IO", "Event-driven"] },
-                            { label: "Integrations", items: ["Stripe Connect", "Twilio", "OAuth 2.0", "JWT", "MetaTrader 5"] },
-                            { label: "AI-Assisted", items: ["Claude Code CLI", "GitHub Copilot", "LLMs", "Prompt Engineering"] },
-                        ].map((category, i) => (
-                            <div key={i} className="space-y-3 border-t border-[#1C1B19] pt-3">
-                                <h3 className="font-mono2 text-[10px] font-bold text-[#A8442A] tracking-widest uppercase">{String(i + 1).padStart(2, '0')} / {category.label}</h3>
-                                <div className="space-y-1.5">
-                                    {category.items.map((item, j) => (
-                                        <div key={j} className="text-sm text-[#1C1B19]/75">{item}</div>
+            {/* Skills */}
+            <section className="py-20 sm:py-28 px-5 sm:px-8 border-t border-white/5">
+                <div className="max-w-6xl mx-auto">
+                    <SectionHeading id="skills" eyebrow="Toolkit" title="What I work with" />
+                    <TechBanner />
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {skills.map((category) => (
+                            <div key={category.label} className="card p-5">
+                                <h3 className="text-sm font-medium text-white mb-3">{category.label}</h3>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {category.items.map((item) => (
+                                        <span key={item} className="rounded-md bg-white/5 px-2.5 py-1 text-xs text-zinc-400">{item}</span>
                                     ))}
                                 </div>
                             </div>
@@ -399,205 +429,136 @@ export default function Portfolio() {
                 </div>
             </section>
 
-            {/* Projects */}
-            <section className="py-28 px-6 border-t-2 border-[#1C1B19]" id="work">
-                <div className="max-w-5xl mx-auto">
-                    <div className="flex items-baseline gap-4 mb-4">
-                        <span className="font-mono2 text-xs text-[#A8442A]">02</span>
-                        <h2 className="font-mono2 text-sm tracking-[0.2em]">&ldquo;SELECTED&nbsp;WORK&rdquo;</h2>
-                        <div className="flex-1 h-px bg-[#1C1B19]/20" />
-                    </div>
-                    <p className="font-mono2 text-[10px] tracking-[0.2em] text-[#1C1B19]/50 mb-10 pl-8">TRACKLIST &nbsp;/&nbsp; SIDE&nbsp;A: CURRENT &middot; SIDE&nbsp;B: BACK CATALOGUE &nbsp;▸ PLAY TO EXPAND</p>
-
-                    <div className="space-y-0">
-                        {projects.map((project, idx) => (
-                            <div key={project.id} className="group">
-                                <button
-                                    onClick={() => setExpandedProject(expandedProject === project.id ? null : project.id)}
-                                    className="w-full py-5 sm:py-6 flex items-center justify-between border-t-2 border-[#1C1B19] hover:bg-[#1C1B19]/[0.03] transition text-left px-2"
-                                >
-                                    <span className="font-mono2 font-bold text-lg sm:text-xl text-[#A8442A] w-12 sm:w-14 flex-shrink-0">{(idx < 4 ? 'A' : 'B') + (idx < 4 ? idx + 1 : idx - 3)}</span>
-                                    <div className="flex-1">
-                                        <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
-                                            <h3 className="text-lg sm:text-2xl font-medium">{project.title}</h3>
-                                            <span className="font-mono2 text-xs text-[#1C1B19]/50">{project.subtitle}</span>
-                                        </div>
-                                        <p className="font-mono2 text-[11px] text-[#1C1B19]/50 mt-1 uppercase tracking-wider">{project.company} &middot; {project.role}</p>
-                                    </div>
-                                    <ChevronRight
-                                        className={`w-5 h-5 text-[#1C1B19] transition-transform flex-shrink-0 ml-2 sm:ml-4 ${expandedProject === project.id ? 'rotate-90' : ''}`}
-                                    />
-                                </button>
-
-                                {expandedProject === project.id && (
-                                    <div className="py-6 sm:py-8 px-2 space-y-6 sm:space-y-8 bg-[#1C1B19]/[0.03]">
-                                        {/* Images */}
-                                        {project.images.length > 0 && (
-                                        <div className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide pb-4">
-                                            {project.images.map((image, i) => (
-                                                <div
-                                                    key={i}
-                                                    onClick={() => openModal(image)}
-                                                    className="relative flex-shrink-0 w-64 sm:w-80 h-40 sm:h-52 bg-[#DED9CD] cursor-pointer overflow-hidden group/img"
-                                                >
-                                                    <img
-                                                        src={image}
-                                                        alt={`${project.title} ${i + 1}`}
-                                                        className="w-full h-full object-cover grayscale group-hover/img:grayscale-0 transition duration-300"
-                                                    />
-                                                    <div className="absolute inset-0 border-2 border-[#1C1B19] pointer-events-none" />
-                                                    <span className="absolute top-2 left-2 bg-[#1C1B19] text-[#E9E4DA] font-mono2 text-[9px] px-1.5 py-0.5">{project.title.slice(0, 12).toUpperCase()} {String(i + 1).padStart(2, '0')}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                        )}
-
-                                        {/* Description */}
-                                        <p className="text-sm sm:text-base text-[#1C1B19]/80 leading-relaxed max-w-3xl">{project.description}</p>
-
-                                        {/* Highlights */}
-                                        <div className="space-y-2.5">
-                                            {project.highlights.map((highlight, i) => (
-                                                <div key={i} className="flex gap-3 sm:gap-4">
-                                                    <span className="font-mono2 text-[10px] text-[#A8442A] mt-1 flex-shrink-0">{String(i + 1).padStart(2, '0')}</span>
-                                                    <p className="text-sm text-[#1C1B19]/80 leading-relaxed max-w-3xl">{highlight}</p>
-                                                </div>
-                                            ))}
-                                        </div>
-
-                                        {/* Tech */}
-                                        <div className="flex flex-wrap gap-2">
-                                            {project.tech.map((tech, i) => (
-                                                <span
-                                                    key={i}
-                                                    className="px-3 py-1 font-mono2 text-[10px] tracking-wider text-[#1C1B19] border border-[#1C1B19] uppercase"
-                                                >
-                                                    {tech}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
+            {/* Education + Beyond */}
+            <section className="py-20 sm:py-28 px-5 sm:px-8 border-t border-white/5">
+                <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_1.4fr] gap-16">
+                    <div>
+                        <SectionHeading eyebrow="Education" title="Background" />
+                        <div className="space-y-4">
+                            <div className="card p-6">
+                                <p className="text-xs text-zinc-500">Sep 2024 – Sep 2025</p>
+                                <h3 className="mt-2 font-semibold text-white">MEng, Computer Vision &amp; Artificial Intelligence</h3>
+                                <p className="mt-1 text-sm text-zinc-400">University of Limerick</p>
+                                <p className="mt-4 inline-block rounded-full bg-[var(--accent)]/15 text-[var(--accent)] text-xs font-medium px-3 py-1">First Class Honours · QCA 3.37</p>
                             </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Achievements */}
-            <section className="py-28 px-6 border-t-2 border-[#1C1B19]">
-                <div className="max-w-5xl mx-auto">
-                    <div className="flex items-baseline gap-4 mb-12">
-                        <span className="font-mono2 text-xs text-[#A8442A]">03</span>
-                        <h2 className="font-mono2 text-sm tracking-[0.2em]">&ldquo;ACHIEVEMENTS&nbsp;&amp;&nbsp;LEADERSHIP&rdquo;</h2>
-                        <div className="flex-1 h-px bg-[#1C1B19]/20" />
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-px bg-[#1C1B19] border-2 border-[#1C1B19]">
-                        {achievements.map((achievement, i) => (
-                            <div key={i} className="invert-hover bg-[#E9E4DA] p-6 group">
-                                <p className="font-mono2 text-[10px] text-[#A8442A] mb-2">{String(i + 1).padStart(2, '0')}</p>
-                                <h3 className="font-medium mb-1">{achievement.title}</h3>
-                                <p className="font-mono2 text-xs text-[#1C1B19]/60 group-hover:text-[#A8442A] mb-3 uppercase tracking-wider transition">{achievement.subtitle}</p>
-                                <p className="text-sm text-[#1C1B19]/70 group-hover:text-[#E9E4DA]/70 leading-relaxed transition">{achievement.description}</p>
+                            <div className="card p-6">
+                                <p className="text-xs text-zinc-500">2018 – Feb 2023</p>
+                                <h3 className="mt-2 font-semibold text-white">B.Tech, Computer Science</h3>
+                                <p className="mt-1 text-sm text-zinc-400">Adi Shankara Institute of Engineering and Technology</p>
+                                <p className="mt-4 text-xs text-zinc-500">GPA 2.76</p>
                             </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Education */}
-            <section className="py-28 px-6 border-t-2 border-[#1C1B19]">
-                <div className="max-w-5xl mx-auto">
-                    <div className="flex items-baseline gap-4 mb-12">
-                        <span className="font-mono2 text-xs text-[#A8442A]">04</span>
-                        <h2 className="font-mono2 text-sm tracking-[0.2em]">&ldquo;EDUCATION&rdquo;</h2>
-                        <div className="flex-1 h-px bg-[#1C1B19]/20" />
+                        </div>
                     </div>
 
-                    <div className="space-y-8">
-                        <div className="border-l-2 border-[#A8442A] pl-5">
-                            <h3 className="text-xl font-medium mb-1">MEng, Computer Vision and Artificial Intelligence</h3>
-                            <p className="font-mono2 text-xs text-[#1C1B19]/60 mb-2 uppercase tracking-wider">University of Limerick &middot; Sep 2024 &ndash; Sep 2025</p>
-                            <p className="font-mono2 text-xs text-[#1C1B19]">First Class Honours &middot; QCA: 3.37</p>
-                        </div>
-
-                        <div className="border-l-2 border-[#1C1B19]/30 pl-5">
-                            <h3 className="text-xl font-medium mb-1">B.Tech, Computer Science</h3>
-                            <p className="font-mono2 text-xs text-[#1C1B19]/60 mb-2 uppercase tracking-wider">Adi Shankara Institute of Engineering and Technology &middot; 2018 &ndash; Feb 2023</p>
-                            <p className="font-mono2 text-xs text-[#1C1B19]">GPA: 2.76</p>
-                        </div>
+                    <div>
+                        <SectionHeading eyebrow="Beyond the code" title="Leadership & more" />
+                        <ul className="divide-y divide-white/5 border-y border-white/5">
+                            {achievements.map((a) => (
+                                <li key={a.title} className="py-4 grid sm:grid-cols-[1fr_1.2fr] gap-1 sm:gap-6">
+                                    <div>
+                                        <p className="text-sm font-medium text-white">{a.title}</p>
+                                        <p className="text-xs text-zinc-500 mt-0.5">{a.subtitle}</p>
+                                    </div>
+                                    <p className="text-sm text-zinc-400 leading-relaxed">{a.description}</p>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 </div>
             </section>
 
             {/* Contact */}
-            <section className="relative py-28 px-6 border-t-2 border-[#1C1B19] overflow-hidden" id="contact">
-                <div className="h-4 stripes-o opacity-80 mb-16" />
-                <div className="max-w-5xl mx-auto text-center space-y-8">
-                    <p className="font-mono2 text-xs text-[#A8442A] tracking-[0.2em]">05 / &ldquo;CONTACT&rdquo;</p>
-                    <h2 className="font-display text-6xl sm:text-8xl uppercase leading-[0.9]">Let&rsquo;s&nbsp;make<br />something<span className="text-[#A8442A]">.</span></h2>
-                    <p className="font-mono2 text-xs text-[#1C1B19]/55 tracking-[0.15em] uppercase">Open to new opportunities &amp; collaborations</p>
-
-                    <div className="flex flex-wrap justify-center gap-3 pt-4 font-mono2 text-xs">
-                        <a
-                            href="https://github.com/paulaji"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="invert-hover inline-flex items-center gap-2 px-4 py-2 border-2 border-[#1C1B19]"
-                        >
-                            <Github className="w-4 h-4" />
-                            GITHUB
-                            <ArrowUpRight className="w-3.5 h-3.5" />
-                        </a>
-                        <a
-                            href="https://linkedin.com/in/paulaji/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="invert-hover inline-flex items-center gap-2 px-4 py-2 border-2 border-[#1C1B19]"
-                        >
-                            <Linkedin className="w-4 h-4" />
-                            LINKEDIN
-                            <ArrowUpRight className="w-3.5 h-3.5" />
-                        </a>
-                        <a
-                            href="mailto:paulajiparayil123@gmail.com"
-                            className="invert-hover inline-flex items-center gap-2 px-4 py-2 border-2 border-[#1C1B19]"
-                        >
-                            <Mail className="w-4 h-4" />
-                            EMAIL
-                            <ArrowUpRight className="w-3.5 h-3.5" />
-                        </a>
+            <section className="py-20 sm:py-28 px-5 sm:px-8 border-t border-white/5" id="contact">
+                <div className="max-w-6xl mx-auto">
+                    <div className="card glow p-8 sm:p-16 text-center">
+                        <p className="text-xs font-medium tracking-[0.18em] uppercase text-[var(--accent)]">Contact</p>
+                        <h2 className="mt-4 text-4xl sm:text-6xl font-semibold tracking-[-0.03em] text-white">Let&rsquo;s build something.</h2>
+                        <p className="mt-5 text-zinc-400 max-w-xl mx-auto">Open to new roles and collaborations, especially in payments, backend and cloud. My inbox is always open.</p>
+                        <div className="mt-10 flex flex-wrap justify-center gap-3">
+                            <a href="mailto:paulajiparayil123@gmail.com" className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] text-black px-6 py-3 text-sm font-medium hover:bg-white transition">
+                                <Mail className="w-4 h-4" /> paulajiparayil123@gmail.com
+                            </a>
+                            {links.map(({ href, label, icon }) => (
+                                <a key={label} href={href} target="_blank" rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-3 text-sm text-white hover:bg-white/5 transition">
+                                    {icon} {label}
+                                </a>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </section>
 
             {/* Footer */}
-            <footer className="py-10 px-6 border-t-2 border-[#1C1B19] bg-[#1C1B19] text-[#E9E4DA]">
-                <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 font-mono2 text-[10px] tracking-wider uppercase">
-                    <p>&copy; 2026 &nbsp;/&nbsp; Paul Aji<sup className="text-[#A8442A]">®</sup> &nbsp;/&nbsp; All Rights Reserved</p>
-                    <p className="text-[#E9E4DA]/50">&ldquo;Built&nbsp;with&nbsp;React&nbsp;&amp;&nbsp;TailwindCSS&rdquo; c/o Dublin, IE</p>
+            <footer className="py-10 px-5 sm:px-8 border-t border-white/5">
+                <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between gap-2 text-xs text-zinc-600">
+                    <p>&copy; {new Date().getFullYear()} Paul Aji</p>
+                    <p>Built with React &amp; Tailwind · Dublin, Ireland</p>
                 </div>
             </footer>
 
-            {/* Modal */}
-            {isModalOpen && (
-                <div
-                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 backdrop-blur-sm"
-                    onClick={closeModal}
-                >
-                    <div className="relative max-w-7xl max-h-[90vh] overflow-auto border-2 border-[#E9E4DA]" onClick={(e) => e.stopPropagation()}>
-                        <img
-                            src={selectedImage}
-                            alt="Expanded view"
-                            className="w-full h-auto"
-                        />
-                        <button
-                            onClick={closeModal}
-                            className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-[#A8442A] hover:bg-[#E9E4DA] hover:text-[#1C1B19] text-[#1C1B19] font-mono2 transition"
-                        >
-                            ✕
-                        </button>
+            {/* Project modal */}
+            {project && (
+                <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-6 bg-black/80 backdrop-blur-sm" onClick={closeProject}>
+                    <div
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label={project.title}
+                        className="relative w-full max-w-3xl max-h-[92vh] overflow-y-auto scrollbar-hide bg-[var(--surface)] border border-white/10 rounded-t-2xl sm:rounded-2xl"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="sticky top-0 z-10 h-0 flex justify-end">
+                            <button onClick={closeProject} aria-label="Close"
+                                className="mt-3 mr-3 w-9 h-9 flex items-center justify-center rounded-full bg-black/60 text-white hover:bg-[var(--accent)] hover:text-black transition">
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+
+                        {project.images.length > 0 && (
+                            <div className="relative bg-black">
+                                <img src={project.images[imageIndex]} alt={`${project.title} ${imageIndex + 1}`} className="w-full max-h-[55vh] object-contain" />
+                                {project.images.length > 1 && (
+                                    <>
+                                        <button aria-label="Previous image" disabled={imageIndex === 0} onClick={() => setImageIndex(imageIndex - 1)}
+                                            className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-black/60 text-white disabled:opacity-0 hover:bg-black/80 transition">
+                                            <ChevronLeft className="w-4 h-4" />
+                                        </button>
+                                        <button aria-label="Next image" disabled={imageIndex === project.images.length - 1} onClick={() => setImageIndex(imageIndex + 1)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-black/60 text-white disabled:opacity-0 hover:bg-black/80 transition">
+                                            <ChevronRight className="w-4 h-4" />
+                                        </button>
+                                        <div className="absolute bottom-3 inset-x-0 flex justify-center gap-1.5">
+                                            {project.images.map((_, i) => (
+                                                <button key={i} aria-label={`Image ${i + 1}`} onClick={() => setImageIndex(i)}
+                                                    className={`h-1.5 rounded-full transition-all ${i === imageIndex ? 'w-5 bg-white' : 'w-1.5 bg-white/40'}`} />
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="p-6 sm:p-10">
+                            <p className="text-xs text-zinc-500">{project.company} · {project.role}</p>
+                            <h3 className="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight text-white">{project.title}</h3>
+                            <p className="mt-1 text-zinc-400">{project.subtitle}</p>
+                            <p className="mt-6 text-sm sm:text-base leading-relaxed text-zinc-300">{project.description}</p>
+
+                            <ul className="mt-8 space-y-3">
+                                {project.highlights.map((h, i) => (
+                                    <li key={i} className="flex gap-3 text-sm leading-relaxed text-zinc-400">
+                                        <span className="mt-2 h-1 w-1 flex-shrink-0 rounded-full bg-[var(--accent)]" />
+                                        {h}
+                                    </li>
+                                ))}
+                            </ul>
+
+                            <div className="mt-8 flex flex-wrap gap-2">
+                                {project.tech.map((t) => (
+                                    <span key={t} className="rounded-md bg-white/5 px-2.5 py-1 text-xs text-zinc-300">{t}</span>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
