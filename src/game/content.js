@@ -167,3 +167,83 @@ export const isCorner = (s) => ['go', 'jail', 'parking', 'gotojail'].includes(s.
 export const priceOf = (s) => (s.t === 'prop' ? s.price : s.t === 'rail' ? RAIL_PRICE : s.t === 'util' ? UTIL_PRICE : null);
 export const labelOf = (s) => s.n || { treasury: 'Treasury', wildcard: 'Wildcard' }[s.t] || s.big;
 export const fmt = (n) => '€' + (Math.round(n * 100) / 100).toLocaleString('en-IE', { minimumFractionDigits: n % 1 ? 2 : 0 });
+
+/* ---------------- stats: what each unlocked deed builds ---------------- */
+
+export const STATS = [
+    { key: 'money', label: 'Money Moved', title: 'The Settler' },
+    { key: 'reliability', label: 'Reliability', title: 'The Auditor' },
+    { key: 'scale', label: 'Scale', title: 'The Architect' },
+    { key: 'craft', label: 'Craft', title: 'The Artisan' },
+    { key: 'lead', label: 'Leadership', title: 'The Captain' },
+    { key: 'curiosity', label: 'Curiosity', title: 'The Scholar' },
+];
+
+const STAT_TABLE = {
+    'B.Tech Computer Science': { curiosity: 8, lead: 6 },
+    'MEng CV & AI': { curiosity: 18, craft: 4 },
+    'Card Rail': { money: 6 },
+    'Languages': { craft: 8, curiosity: 4 },
+    'Frontend': { craft: 12 },
+    'Backend': { reliability: 6, scale: 6 },
+    'Cloud': { scale: 12 },
+    'The Court': { lead: 4 },
+    'Databases': { reliability: 6, scale: 6 },
+    'DevOps': { reliability: 10, scale: 4 },
+    'SEPA Rail': { money: 6 },
+    'Testing': { reliability: 14 },
+    'APIs & Events': { scale: 6, reliability: 4 },
+    'Integrations': { money: 8, craft: 2 },
+    'Discord Bots': { curiosity: 6, craft: 4 },
+    'Biowel Website': { craft: 8 },
+    'Carvetpro': { lead: 12, scale: 4 },
+    'SWIFT Rail': { money: 6 },
+    'Learning to Program': { curiosity: 14, craft: 6 },
+    'MahaMeru': { lead: 14, craft: 8 },
+    'Sound System': { craft: 4 },
+    'AI-Assisted': { curiosity: 8 },
+    'TrustPMS': { scale: 6, craft: 6 },
+    'Trust Capital CRM': { money: 10, scale: 10 },
+    'FindASide': { money: 16, reliability: 6 },
+    'Faster Payments': { money: 6 },
+    'Customer Billing Engine': { money: 20, reliability: 14 },
+    'Merchant Payments Platform': { money: 24, reliability: 12, scale: 8 },
+};
+SQUARES.forEach((s) => { if (STAT_TABLE[s.n]) s.st = STAT_TABLE[s.n]; });
+
+const STAT_MAX = Object.fromEntries(STATS.map(({ key }) => [key, SQUARES.reduce((sum, s) => sum + (s.st?.[key] || 0), 0)]));
+const indexOf = (name) => SQUARES.findIndex((s) => s.n === name);
+
+export const HONOURS = [
+    { name: 'Settlement Specialist', note: 'Both navy deeds', need: ['Customer Billing Engine', 'Merchant Payments Platform'] },
+    { name: 'Full Stack', note: 'Frontend, Backend and Databases', need: ['Frontend', 'Backend', 'Databases'] },
+    { name: 'Ships Safely', note: 'Testing and DevOps', need: ['Testing', 'DevOps'] },
+    { name: 'Rail Baron', note: 'All four payment rails', need: ['Card Rail', 'SEPA Rail', 'SWIFT Rail', 'Faster Payments'] },
+    { name: 'The Academy', note: 'Both degrees', need: ['B.Tech Computer Science', 'MEng CV & AI'] },
+    { name: 'Off the Clock', note: 'The Court and Sound System', need: ['The Court', 'Sound System'] },
+].map((h) => ({ ...h, idx: h.need.map(indexOf) }));
+
+// A 0-99 rating per stat, an overall rating, a title and the honours held.
+export function profileOf(owned) {
+    const raw = Object.fromEntries(STATS.map(({ key }) => [key, 0]));
+    owned.forEach((i) => Object.entries(SQUARES[i].st || {}).forEach(([k, v]) => { raw[k] += v; }));
+    const rating = Object.fromEntries(STATS.map(({ key }) => [key, Math.round((99 * raw[key]) / STAT_MAX[key])]));
+    const values = Object.values(rating);
+    const overall = Math.round(values.reduce((a, b) => a + b, 0) / values.length);
+    const top = STATS.reduce((best, s) => (rating[s.key] > rating[best.key] ? s : best), STATS[0]);
+    const title = rating[top.key] > 0 ? top.title : 'The Rookie';
+    const honours = HONOURS.filter((h) => h.idx.every((i) => owned.has(i)));
+    return { rating, overall, title, honours };
+}
+
+// What unlocking square i adds, as ratings points.
+export const gainsOf = (i) => STATS.filter(({ key }) => SQUARES[i].st?.[key])
+    .map(({ key, label }) => ({ key, label, pts: Math.max(1, Math.round((99 * SQUARES[i].st[key]) / STAT_MAX[key])) }));
+
+// Landing on a deed you already hold pays a dividend; double for a full colour set.
+export function dividendOf(i, owned) {
+    const s = SQUARES[i];
+    const base = Math.max(10, Math.round((priceOf(s) * 0.15) / 5) * 5);
+    const fullSet = s.t === 'prop' && SQUARES.every((x, j) => x.t !== 'prop' || x.set !== s.set || owned.has(j));
+    return { amount: fullSet ? base * 2 : base, doubled: fullSet };
+}

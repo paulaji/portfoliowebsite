@@ -3,12 +3,13 @@ import React from 'react';
 const PALETTES = {
     house: { roofF: '#F6E4AE', roofB: '#D9B970', wallL: '#C9A55A', wallR: '#8E6C2C', gable: '#7A5A20', door: '#5a4012', edge: '#FFF2C9' },
     hotel: { roofF: '#E27A6D', roofB: '#B5463B', wallL: '#A33E34', wallR: '#6E231C', gable: '#5a1c16', door: '#3a0f0b', edge: '#F2A99F' },
+    sealed: { roofF: '#2E3A34', roofB: '#26312B', wallL: '#222C27', wallR: '#1A221E', gable: '#161D19', door: '#111713', edge: '#C9A55A' },
 };
 
 // An isometric brass house (or oxblood hotel): two walls, a gable and a pitched roof.
-export default function Building({ kind = 'house', scale = 1.5 }) {
+export default function Building({ kind = 'house', scale = 1.5, sealed = false }) {
     const hotel = kind === 'hotel';
-    const c = PALETTES[kind];
+    const c = PALETTES[sealed ? 'sealed' : kind];
     const W = hotel ? 2.3 : 1, D = 1, H = hotel ? 1.05 : 0.8, R = hotel ? 0.5 : 0.55, s = 15;
     const cos = Math.cos(Math.PI / 6), sin = 0.5;
     const P = (x, y, z) => [(x - y) * cos * s, (x + y) * sin * s - z * s];

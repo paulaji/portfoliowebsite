@@ -1,58 +1,107 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import Banknote from './Banknote';
 import Building from './Building';
-import { SQUARES, SETS, EMAIL, LINKS, priceOf, labelOf, fmt } from './content';
+import { SQUARES, SETS, EMAIL, LINKS, STATS, HONOURS, priceOf, labelOf, fmt, gainsOf } from './content';
 
 const RENT = ['Rent', 'With 1 house', 'With 2 houses', 'With 3 houses', 'With 4 houses', 'With hotel'];
 
-function DeedSheet({ i, preview, owned, money, onResolve }) {
+function DeedSheet({ i, mode, money, dividend, onBuy, onResolve }) {
     const s = SQUARES[i];
     const cost = priceOf(s);
     const color = s.t === 'prop' ? SETS[s.set].color : '#16140F';
     const kicker = s.t === 'prop' ? SETS[s.set].name : s.t === 'rail' ? 'Payment rail' : 'Utility · After hours';
-    const canBuy = !owned && money >= cost;
     const offset = s.t === 'prop' && s.rows.length < 6 ? 1 : 0;
+    const gains = gainsOf(i);
+
+    // glimpse: sealed preview · offer: sealed, can buy · owned: yours · full: browse view
+    const [unlocked, setUnlocked] = useState(mode === 'owned' || mode === 'full');
+    const [justBought, setJustBought] = useState(null);
+    const canBuy = mode === 'offer' && money >= cost;
+
+    const buy = () => {
+        const result = onBuy();
+        setJustBought(result);
+        setUnlocked(true);
+    };
+
+    const rows = s.t === 'prop' ? s.rows.slice(0, 6) : [];
+    const sealedNow = !unlocked;
 
     return (
-        <div className="sheet">
+        <div className={`sheet ${unlocked ? 'is-open' : 'is-sealed'} ${justBought ? 'just-unlocked' : ''}`}>
             <div className="deed" style={{ '--c': color }}>
                 <div className="fr">
                     <div className="hd"><p className="caps">{s.t === 'prop' ? 'Title deed' : s.t === 'rail' ? 'Payment rail' : 'Utility'}</p><h3>{labelOf(s)}</h3></div>
                     {s.t === 'prop' ? (
                         <>
                             <p className="lead">{s.who.split(' · ')[0]}</p>
-                            {s.rows.slice(0, 6).map((r, k) => <div className="r" key={r}><span>{RENT[Math.min(k + offset, 5)]}</span><span>{r}</span></div>)}
+                            {rows.map((r, k) => (
+                                <div className={`r ${sealedNow && k > 0 ? 'blurred' : ''}`} style={{ '--k': k }} key={r} aria-hidden={sealedNow && k > 0 ? true : undefined}>
+                                    <span>{RENT[Math.min(k + offset, 5)]}</span><span>{r}</span>
+                                </div>
+                            ))}
                         </>
-                    ) : <p className="lead lead-long">{s.desc}</p>}
+                    ) : <p className={`lead lead-long ${sealedNow ? 'blurred' : ''}`}>{s.desc}</p>}
                     <div className="ft"><b>{fmt(cost)}</b>Square {i} · {kicker}</div>
                 </div>
-                {owned && <div className="seal"><span>Yours</span></div>}
+                {sealedNow && <div className="wax"><span>Sealed</span></div>}
+                {justBought && <div className="wax broken" aria-hidden="true"><span>Sealed</span></div>}
+                {unlocked && mode !== 'full' && <div className="seal"><span>Yours</span></div>}
             </div>
+
             <div className="side">
                 <p className="caps gold-text">Square {i} · {kicker}</p>
                 <h2>{labelOf(s)}</h2>
                 {s.who && <p className="who">{s.who}</p>}
-                <p className="desc">{s.desc}</p>
+                <p className={`desc ${sealedNow && s.t !== 'prop' ? 'blurred' : ''}`}>{s.t === 'prop' || unlocked ? s.desc : 'Unlock this deed to read it.'}</p>
+
+                {gains.length > 0 && (
+                    <div className="gains">
+                        <p className="caps">{unlocked ? (justBought ? 'Credited to your player card' : 'Adds to your player card') : 'Unlocking adds'}</p>
+                        <div className="gain-row">
+                            {gains.map((g, k) => (
+                                <span className={`gain ${justBought ? 'credited' : ''}`} style={{ '--k': k }} key={g.key}><b>+{g.pts}</b>{g.label}</span>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {s.tech?.length > 0 && (
                     <>
-                        <p className="caps houses-label">Houses built on this square</p>
+                        <p className="caps houses-label">{unlocked ? 'Houses built on this square' : `${s.tech.length} houses behind the seal`}</p>
                         <div className="houses">
                             {s.tech.map((t, k) => (
-                                <div className={`h ${k === 0 ? 'hotel' : ''}`} key={t}><Building kind={k === 0 ? 'hotel' : 'house'} /><span>{t}</span></div>
+                                <div className={`h ${k === 0 ? 'hotel' : ''} ${unlocked ? 'lit' : 'dark'}`} style={{ '--k': k }} key={t}>
+                                    <Building kind={k === 0 ? 'hotel' : 'house'} sealed={!unlocked} />
+                                    <span>{unlocked ? t : '?'}</span>
+                                </div>
                             ))}
                         </div>
                     </>
                 )}
+
+                {justBought?.honours?.length > 0 && (
+                    <div className="honour-won">
+                        {justBought.honours.map((h) => <p key={h.name}><span className="caps">Honour earned</span><b>{h.name}</b><small>{h.note}</small></p>)}
+                    </div>
+                )}
+                {mode === 'owned' && dividend && (
+                    <p className="dividend"><span className="caps">Dividend paid</span><b>+{fmt(dividend.amount)}</b>{dividend.doubled && <small>Doubled: you hold the full set</small>}</p>
+                )}
+                {mode === 'glimpse' && <p className="note">Land here and buy it to break the seal, or switch to Browse to read everything.</p>}
+
                 <div className="acts">
-                    {!preview && !owned && (
-                        <button className="btn-gold btn-solid" disabled={!canBuy} onClick={() => onResolve('buy')} data-primary>
-                            {canBuy ? `Buy for ${fmt(cost)}` : 'Insufficient funds'}
-                        </button>
+                    {mode === 'offer' && !unlocked && (
+                        <>
+                            <button className="btn-gold btn-solid" disabled={!canBuy} onClick={buy} data-primary>
+                                {canBuy ? `Buy & unlock · ${fmt(cost)}` : 'Insufficient funds'}
+                            </button>
+                            <button className="btn-gold" onClick={() => onResolve('pass')} data-primary={canBuy ? undefined : true}>Pass</button>
+                        </>
                     )}
-                    <button className="btn-gold" onClick={() => onResolve('pass')} data-primary={preview || owned || !canBuy ? true : undefined}>
-                        {preview || owned ? 'Back to the board' : 'Pass'}
-                    </button>
+                    {mode === 'offer' && unlocked && <button className="btn-gold btn-solid" onClick={() => onResolve('bought')} data-primary autoFocus>Continue</button>}
+                    {mode !== 'offer' && <button className="btn-gold" onClick={() => onResolve('pass')} data-primary>Back to the board</button>}
                 </div>
             </div>
         </div>
@@ -86,13 +135,20 @@ function Message({ kicker, title, body, action, onResolve, tone }) {
     );
 }
 
-function Settled({ title, line, turns, money, onResolve }) {
+function Settled({ title, line, turns, money, profile, onResolve }) {
+    const best = [...STATS].sort((a, b) => profile.rating[b.key] - profile.rating[a.key]).slice(0, 3);
     return (
         <div className="sheet solo big-end">
             <Banknote className="prize-note" />
             <p className="caps gold-text">{title} · {turns} turns</p>
             <h2><em>Settled.</em></h2>
             <p className="body">{line}, and you finished with {fmt(money)}.<br />The real prize is a conversation with the person who built all of it.</p>
+            <div className="final-card">
+                <div><b>{profile.overall}</b><span className="caps">Overall</span></div>
+                <div><b className="it">{profile.title}</b><span className="caps">Your title</span></div>
+                {best.map((s) => <div key={s.key}><b>{profile.rating[s.key]}</b><span className="caps">{s.label}</span></div>)}
+            </div>
+            {profile.honours.length > 0 && <p className="final-honours">{profile.honours.map((h) => h.name).join(' · ')}</p>}
             <div className="acts center">
                 <a className="btn-gold btn-solid" href={`mailto:${EMAIL}?subject=${encodeURIComponent('I won The Settlement Game')}`} data-primary>Claim your prize</a>
                 <a className="btn-gold" href={LINKS.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
@@ -116,10 +172,31 @@ function Declined({ turns, onResolve }) {
     );
 }
 
+function Honours({ profile, onResolve }) {
+    return (
+        <div className="sheet solo big-end">
+            <p className="caps gold-text">Player card · {profile.title}</p>
+            <h2><em>Honours.</em></h2>
+            <ul className="honour-list">
+                {HONOURS.map((h) => {
+                    const won = profile.honours.some((x) => x.name === h.name);
+                    return (
+                        <li key={h.name} className={won ? 'won' : ''}>
+                            <i aria-hidden="true" />
+                            <span><b>{h.name}</b><small>{won ? 'Earned' : 'Needs'} · {h.note}</small></span>
+                        </li>
+                    );
+                })}
+            </ul>
+            <div className="acts center"><button className="btn-gold" onClick={() => onResolve()} data-primary>Back to the board</button></div>
+        </div>
+    );
+}
+
 // Modal host: focuses the primary action, Escape dismisses where that is safe.
 export default function Sheet({ spec, onResolve }) {
     const ref = useRef(null);
-    const dismissable = spec.kind === 'deed' || spec.kind === 'info';
+    const dismissable = (spec.kind === 'deed' && spec.mode !== 'offer') || spec.kind === 'info' || spec.kind === 'honours';
 
     useEffect(() => {
         ref.current?.querySelector('[data-primary]:not([disabled])')?.focus();
@@ -133,6 +210,7 @@ export default function Sheet({ spec, onResolve }) {
     else if (spec.kind === 'card') body = <CardSheet {...spec} onResolve={onResolve} />;
     else if (spec.kind === 'settled') body = <Settled {...spec} onResolve={onResolve} />;
     else if (spec.kind === 'declined') body = <Declined {...spec} onResolve={onResolve} />;
+    else if (spec.kind === 'honours') body = <Honours {...spec} onResolve={onResolve} />;
     else body = <Message {...spec} onResolve={onResolve} />;
 
     return (

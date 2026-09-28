@@ -1,13 +1,14 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import './game/game.css';
 import Board from './game/Board';
 import Binder from './game/Binder';
 import Banknote from './game/Banknote';
 import Sheet from './game/Sheet';
+import PlayerCard from './game/PlayerCard';
 import {
     SQUARES, SETS, WILDCARDS, TREASURY, POSTMORTEMS, EMAIL,
-    START_MONEY, GO_BONUS, WIN_DEEDS, INCIDENT_FEE, priceOf, labelOf, fmt,
+    START_MONEY, GO_BONUS, WIN_DEEDS, INCIDENT_FEE, priceOf, labelOf, fmt, profileOf, dividendOf,
 } from './game/content';
 
 const PIPS = {
@@ -124,14 +125,25 @@ export default function App() {
             await ask({ kind: 'message', kicker: `Square ${i}`, title: info.title, body: info.body, action: 'Carry on' });
             return;
         }
-        const wasOwned = g.current.owned.has(i);
-        const choice = await ask({ kind: 'deed', i, preview: false, owned: wasOwned, money: g.current.money });
-        if (wasOwned) return;
-        if (choice === 'buy') {
-            g.current.owned.add(i);
-            setOwned(new Set(g.current.owned));
-            pay(-priceOf(s), `BOUGHT ${labelOf(s).toUpperCase()}`);
-        } else addLog({ text: `PASSED ON ${labelOf(s).toUpperCase()}` });
+        if (g.current.owned.has(i)) {
+            const dividend = dividendOf(i, g.current.owned);
+            pay(dividend.amount, `DIVIDEND · ${labelOf(s).toUpperCase()}`);
+            await ask({ kind: 'deed', i, mode: 'owned', dividend });
+            return;
+        }
+        const held = profileOf(g.current.owned).honours.map((h) => h.name);
+        const choice = await ask({
+            kind: 'deed', i, mode: 'offer', money: g.current.money,
+            onBuy: () => {
+                g.current.owned.add(i);
+                setOwned(new Set(g.current.owned));
+                pay(-priceOf(s), `UNLOCKED ${labelOf(s).toUpperCase()}`);
+                const fresh = profileOf(g.current.owned).honours.filter((h) => !held.includes(h.name));
+                fresh.forEach((h) => addLog({ text: `HONOUR · ${h.name.toUpperCase()}` }));
+                return { honours: fresh };
+            },
+        });
+        if (choice === 'pass') addLog({ text: `PASSED ON ${labelOf(s).toUpperCase()}` });
     };
 
     const reset = () => {
@@ -151,7 +163,7 @@ export default function App() {
         if (!spec) return;
         st.over = true;
         addLog({ text: spec.kind === 'settled' ? `SETTLED · ${spec.title.toUpperCase()}` : 'CARD DECLINED' });
-        const choice = await ask({ ...spec, turns: st.turns, money: st.money });
+        const choice = await ask({ ...spec, turns: st.turns, money: st.money, profile: profileOf(st.owned) });
         if (choice === 'again') reset();
     };
 
@@ -178,7 +190,7 @@ export default function App() {
         if (busy || sheetRef.current) return;
         const s = SQUARES[i];
         if (s.t === 'prop' || s.t === 'rail' || s.t === 'util') {
-            await ask({ kind: 'deed', i, preview: true, owned: g.current.owned.has(i), money: g.current.money });
+            await ask({ kind: 'deed', i, mode: g.current.owned.has(i) ? 'owned' : 'glimpse' });
             return;
         }
         const info = CORNER_INFO[s.t] || { title: `${s.n}.`, body: s.msg };
@@ -205,14 +217,14 @@ export default function App() {
         return () => document.removeEventListener('visibilitychange', onVis);
     }, []);
 
+    const profile = useMemo(() => profileOf(owned), [owned]);
     const switcher = <ModeSwitch mode={mode} setMode={setMode} />;
-    const hand = [...owned].sort((a, b) => a - b);
-    const deedCount = hand.filter((i) => SQUARES[i].t === 'prop').length;
+    const deedCount = [...owned].filter((i) => SQUARES[i].t === 'prop').length;
 
     return (
         <div className="felt">
             {mode === 'browse' ? (
-                <Binder onOpen={(i) => ask({ kind: 'deed', i, preview: true, owned: owned.has(i), money })} onPlay={() => setMode('play')} modeSwitch={switcher} />
+                <Binder onOpen={(i) => ask({ kind: 'deed', i, mode: 'full' })} onPlay={() => setMode('play')} modeSwitch={switcher} />
             ) : (
                 <main className="app">
                     <section className="rail-top">
@@ -237,19 +249,7 @@ export default function App() {
                     </section>
 
                     <section className="rail-bottom">
-                        <div className="hand">
-                            <p className="caps"><span>Your deeds</span><span>{deedCount} / 22</span></p>
-                            <div className="cards">
-                                {hand.length === 0 ? <p className="empty">Nothing owned yet.</p> : hand.map((i) => {
-                                    const s = SQUARES[i];
-                                    return (
-                                        <button key={i} className="dc" style={{ '--c': s.t === 'prop' ? SETS[s.set].color : '#16140F' }} onClick={() => openSquare(i)}>
-                                            {labelOf(s)}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
+                        <PlayerCard profile={profile} deeds={deedCount} onOpenHonours={() => { if (!sheetRef.current) ask({ kind: 'honours', profile }); }} />
                         <div className="log" aria-label="Transaction log">
                             <div className="paper">
                                 {[...log].reverse().map((e, k) => (
