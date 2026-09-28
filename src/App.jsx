@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowUpRight, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 import TechBanner from './components/TechBanner';
+
+const EMAIL = "paulajiparayil123@gmail.com";
 
 const skills = [
     { label: "Languages", items: ["Python", "JavaScript", "TypeScript", "Java", "SQL"] },
@@ -16,42 +17,75 @@ const skills = [
     { label: "AI-Assisted", items: ["Claude Code CLI", "GitHub Copilot", "LLMs", "Prompt Engineering"] },
 ];
 
-const channels = [
-    { href: "mailto:paulajiparayil123@gmail.com", label: "Email", value: "paulajiparayil123@gmail.com" },
-    { href: "https://linkedin.com/in/paulaji/", label: "LinkedIn", value: "in/paulaji" },
-    { href: "https://github.com/paulaji", label: "GitHub", value: "github.com/paulaji" },
-];
+const pad = (n, len = 2) => String(n).padStart(len, '0');
 
-const fileNo = (i) => `FILE ${String(i + 1).padStart(3, '0')}`;
-
-function SectionHeading({ number, title, note, id }) {
+// Two-column receipt line with a dotted leader between label and value.
+function Line({ label, value, strong, className = '' }) {
     return (
-        <div id={id} className="scroll-mt-20 mb-14 sm:mb-20">
-            <div className="flex items-center gap-4 font-mono text-[11px] tracking-[0.3em] text-[var(--red)]">
-                <span>{number}</span>
-                <span className="h-px w-16 bg-[var(--red)]" />
-                <span className="text-[var(--dim)]">{note}</span>
-            </div>
-            <h2 className="mt-5 font-display text-5xl sm:text-7xl uppercase tracking-[0.04em] text-[var(--bone)] leading-none">{title}</h2>
+        <div className={`flex items-baseline gap-2 ${strong ? 'font-medium text-[var(--ink)]' : ''} ${className}`}>
+            <span className="min-w-0">{label}</span>
+            <span className="leader" aria-hidden="true" />
+            <span className="text-right shrink-0">{value}</span>
         </div>
     );
 }
 
-function useDublinTime() {
-    const fmt = () => new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Dublin', hour: '2-digit', minute: '2-digit' }).format(new Date());
-    const [time, setTime] = useState(fmt);
+function Rule({ double }) {
+    return <div className={double ? 'rule-double' : 'rule'} aria-hidden="true" />;
+}
+
+function Heading({ children, id }) {
+    return (
+        <h2 id={id} className="scroll-mt-6 text-center font-medium tracking-[0.25em] text-[var(--ink)] my-5">
+            ** {children} **
+        </h2>
+    );
+}
+
+function Stamp({ children, className = '' }) {
+    return <span className={`stamp ${className}`}>{children}</span>;
+}
+
+// Decorative barcode derived from a string (not a scannable symbology).
+function Barcode({ text }) {
+    const bars = [];
+    let x = 0;
+    [...text].forEach((ch, i) => {
+        const c = ch.charCodeAt(0);
+        for (let b = 0; b < 3; b++) {
+            const w = ((c >> b) & 3) + 1;
+            if ((i + b) % 2 === 0) bars.push(<rect key={`${i}-${b}`} x={x} y="0" width={w} height="56" />);
+            x += w + 1;
+        }
+    });
+    return (
+        <svg viewBox={`0 0 ${x} 56`} preserveAspectRatio="none" className="w-full h-14" fill="currentColor" aria-hidden="true">
+            {bars}
+        </svg>
+    );
+}
+
+function useDublinClock() {
+    const read = () => {
+        const d = new Date();
+        const opts = { timeZone: 'Europe/Dublin' };
+        return {
+            date: new Intl.DateTimeFormat('en-GB', { ...opts, day: '2-digit', month: '2-digit', year: 'numeric' }).format(d),
+            time: new Intl.DateTimeFormat('en-GB', { ...opts, hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(d),
+        };
+    };
+    const [now, setNow] = useState(read);
     useEffect(() => {
-        const t = setInterval(() => setTime(fmt()), 15000);
+        const t = setInterval(() => setNow(read()), 1000);
         return () => clearInterval(t);
     }, []);
-    return time;
+    return now;
 }
 
 export default function Portfolio() {
-    const [activeProject, setActiveProject] = useState(null);
-    const [imageIndex, setImageIndex] = useState(0);
-    const [hovered, setHovered] = useState(null);
-    const dublinTime = useDublinTime();
+    const [openItem, setOpenItem] = useState(null);
+    const [lightbox, setLightbox] = useState(null); // { images, index }
+    const clock = useDublinClock();
 
     const projects = [
         {
@@ -256,22 +290,14 @@ export default function Portfolio() {
         }
     ];
 
-    const project = activeProject === null ? null : projects.find((p) => p.id === activeProject);
-    const projectIdx = project ? projects.indexOf(project) : -1;
-    const preview = hovered === null ? null : projects.find((p) => p.id === hovered);
-
-    const openProject = (id) => {
-        setActiveProject(id);
-        setImageIndex(0);
-    };
-    const closeProject = () => setActiveProject(null);
+    const toggle = (id) => setOpenItem(openItem === id ? null : id);
 
     useEffect(() => {
-        if (!project) return;
+        if (!lightbox) return;
         const onKey = (e) => {
-            if (e.key === 'Escape') setActiveProject(null);
-            if (e.key === 'ArrowRight') setImageIndex((i) => Math.min(i + 1, project.images.length - 1));
-            if (e.key === 'ArrowLeft') setImageIndex((i) => Math.max(i - 1, 0));
+            if (e.key === 'Escape') setLightbox(null);
+            if (e.key === 'ArrowRight') setLightbox((l) => ({ ...l, index: Math.min(l.index + 1, l.images.length - 1) }));
+            if (e.key === 'ArrowLeft') setLightbox((l) => ({ ...l, index: Math.max(l.index - 1, 0) }));
         };
         document.body.style.overflow = 'hidden';
         window.addEventListener('keydown', onKey);
@@ -279,329 +305,294 @@ export default function Portfolio() {
             document.body.style.overflow = '';
             window.removeEventListener('keydown', onKey);
         };
-    }, [project]);
+    }, [lightbox]);
 
     return (
-        <div className="noir min-h-screen bg-[var(--ink)] text-[var(--ash)] antialiased selection:bg-[var(--red)] selection:text-black">
+        <div className="counter min-h-screen text-[var(--ink-soft)] antialiased">
             <style>{`
         :root {
-          --ink: #060606;
-          --coal: #0E0D0D;
-          --red: #D0161F;
-          --blood: #6E0A0E;
-          --bone: #E8E2DA;
-          --ash: #A39E98;
-          --dim: #5E5955;
-          --line: rgb(232 226 218 / 0.09);
+          --counter: #1B1A19;
+          --paper: #FAF8F3;
+          --ink: #1D1C1A;
+          --ink-soft: #3A3835;
+          --faded: #8A857D;
+          --stamp: #D2342A;
         }
         html { scroll-behavior: smooth; }
-        body { background: var(--ink); }
-        * { font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif; }
-        .font-display { font-family: 'Big Shoulders Display', 'Oswald', Impact, sans-serif; font-weight: 800; }
-        .font-mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        body { background: var(--counter); }
+        * { font-family: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace; }
+        .dot { font-family: 'Doto', 'IBM Plex Mono', monospace; font-weight: 900; }
+        ::selection { background: var(--ink); color: var(--paper); }
 
-        /* film grain */
-        .noir::before {
-          content: ''; position: fixed; inset: -50%; z-index: 60; pointer-events: none; opacity: .09;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-          animation: grain 1s steps(6) infinite;
-        }
-        @keyframes grain {
-          0%,100% { transform: translate(0,0); } 20% { transform: translate(-3%,2%); } 40% { transform: translate(2%,-3%); }
-          60% { transform: translate(-2%,-1%); } 80% { transform: translate(3%,3%); }
+        .counter {
+          background-color: var(--counter);
+          background-image: radial-gradient(ellipse 70% 50% at 50% 0%, rgb(255 255 255 / .06), transparent 70%);
         }
 
-        /* rain */
-        .rain { position: absolute; inset: 0; pointer-events: none; opacity: .13;
-          background-image: repeating-linear-gradient(104deg, transparent 0 22px, rgb(232 226 218 / .55) 22px 23px, transparent 23px 61px);
-          background-size: 100% 180px; animation: rain .45s linear infinite;
-          -webkit-mask-image: linear-gradient(to bottom, black, transparent 85%); mask-image: linear-gradient(to bottom, black, transparent 85%);
+        /* printer */
+        .printer { background: linear-gradient(#3B3936, #2A2826); box-shadow: 0 14px 30px -10px rgb(0 0 0 / .8), inset 0 1px 0 rgb(255 255 255 / .08); }
+        .slot { background: #0B0A0A; box-shadow: inset 0 3px 6px rgb(0 0 0 / .9); }
+
+        /* paper */
+        .receipt {
+          position: relative;
+          background-color: var(--paper);
+          background-image:
+            linear-gradient(90deg, rgb(0 0 0 / .035), transparent 6%, transparent 94%, rgb(0 0 0 / .035)),
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+          box-shadow: 0 30px 60px -20px rgb(0 0 0 / .7), 0 2px 6px rgb(0 0 0 / .3);
+          animation: print 1.6s steps(16, end) both;
         }
-        @keyframes rain { from { background-position: 0 0; } to { background-position: -40px 180px; } }
+        .receipt::after {
+          content: ''; position: absolute; left: 0; right: 0; bottom: -10px; height: 10px;
+          background:
+            linear-gradient(135deg, var(--paper) 50%, transparent 50%) 0 0 / 14px 10px repeat-x,
+            linear-gradient(225deg, var(--paper) 50%, transparent 50%) 0 0 / 14px 10px repeat-x;
+        }
+        @keyframes print { from { transform: translateY(-55vh); } to { transform: translateY(0); } }
 
-        /* the red wash */
-        .wash { background:
-            radial-gradient(ellipse 60% 70% at 78% 40%, rgb(208 22 31 / .28), transparent 70%),
-            radial-gradient(ellipse 90% 60% at 50% 120%, rgb(110 10 14 / .5), transparent 70%); }
-        .vignette { box-shadow: inset 0 0 200px 60px #000; }
+        .leader { flex: 1; min-width: 1.5rem; border-bottom: 2px dotted rgb(29 28 26 / .35); transform: translateY(-.3em); }
+        .rule { border-top: 2px dashed rgb(29 28 26 / .45); margin: 1.25rem 0; }
+        .rule-double { border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); height: 6px; margin: 1.25rem 0; }
 
-        .title-glow { text-shadow: 0 0 28px rgb(208 22 31 / .55), 0 0 2px rgb(208 22 31 / .9); animation: flicker 5s infinite; }
-        @keyframes flicker { 0%,93%,96%,100% { opacity: 1; } 94% { opacity: .55; } 95% { opacity: .9; } 97% { opacity: .7; } }
+        .thermal { filter: grayscale(1) contrast(1.5) brightness(1.08); mix-blend-mode: multiply; }
+        .thermal-soft { filter: grayscale(1) contrast(1.15); mix-blend-mode: multiply; transition: filter .25s; }
+        .thermal-soft:hover { filter: none; }
 
-        .duotone { position: relative; overflow: hidden; background: var(--blood); }
-        .duotone img { filter: grayscale(1) contrast(1.35) brightness(.85); mix-blend-mode: multiply; }
-        .duotone::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, #000 0%, transparent 55%); pointer-events: none; }
+        .stamp {
+          display: inline-block; color: var(--stamp); border: 2.5px solid currentColor; border-radius: 4px;
+          padding: .15em .55em; font-weight: 500; letter-spacing: .15em; text-transform: uppercase;
+          transform: rotate(-8deg); opacity: .85; mix-blend-mode: multiply;
+          mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 -2.2 1.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
 
-        .case-row:hover .case-title { color: var(--red); }
-        .case-row:hover .case-arrow { transform: translate(4px,-4px); color: var(--red); }
+        .blink { animation: blink 1.1s steps(2, start) infinite; }
+        @keyframes blink { to { visibility: hidden; } }
+
+        .item-btn:hover .item-name, .item-btn:focus-visible .item-name { background: var(--ink); color: var(--paper); }
+        .key { border: 2px solid var(--ink); color: var(--ink); transition: background .15s, color .15s; }
+        .key:hover { background: var(--ink); color: var(--paper); }
 
         @media (prefers-reduced-motion: reduce) {
-          .noir::before, .rain, .title-glow { animation: none; }
+          .receipt, .blink { animation: none; }
           html { scroll-behavior: auto; }
+        }
+        @media print {
+          body, .counter { background: #fff !important; }
+          .printer, .no-print { display: none !important; }
+          .receipt { box-shadow: none; animation: none; }
         }
       `}</style>
 
-            {/* Navigation */}
-            <nav className="fixed top-0 inset-x-0 z-50 bg-[var(--ink)]/80 backdrop-blur-md border-b border-[var(--line)]">
-                <div className="max-w-7xl mx-auto px-5 sm:px-10 h-14 flex items-center justify-between font-mono text-[11px] tracking-[0.25em] uppercase">
-                    <a href="#" className="text-[var(--bone)]">P<span className="text-[var(--red)]">/</span>A</a>
-                    <div className="flex items-center gap-5 sm:gap-10">
-                        <a href="#work" className="text-[var(--ash)] hover:text-[var(--red)] transition">Files</a>
-                        <a href="#arsenal" className="text-[var(--ash)] hover:text-[var(--red)] transition">Arsenal</a>
-                        <a href="#record" className="hidden sm:inline text-[var(--ash)] hover:text-[var(--red)] transition">Record</a>
-                        <a href="#contact" className="text-[var(--bone)] border-b border-[var(--red)] pb-0.5 hover:text-[var(--red)] transition">Contact</a>
+            <main className="relative px-4 pt-6 sm:pt-10 pb-24">
+                {/* Printer */}
+                <div className="printer relative z-20 mx-auto max-w-[680px] rounded-xl px-5 pt-4 pb-5">
+                    <div className="flex items-center justify-between text-[10px] tracking-[0.3em] text-[#9C978F] uppercase">
+                        <span className="flex items-center gap-2">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#5BE07A] shadow-[0_0_6px_#5BE07A]" /> Online
+                        </span>
+                        <span>PA-3000 Thermal</span>
+                        <nav className="no-print hidden sm:flex gap-4">
+                            <a href="#items" className="hover:text-white transition">Items</a>
+                            <a href="#skills" className="hover:text-white transition">Skills</a>
+                            <a href="#total" className="hover:text-white transition">Total</a>
+                        </nav>
                     </div>
+                    <div className="slot mt-4 h-2.5 rounded-full" />
                 </div>
-            </nav>
 
-            {/* Hero */}
-            <header className="relative min-h-[100svh] flex flex-col overflow-hidden wash vignette">
-                <div className="rain" />
+                {/* Receipt */}
+                <div className="relative z-10 -mt-3 mx-auto max-w-[620px] overflow-hidden pb-3">
+                    <article className="receipt px-5 sm:px-10 pt-12 pb-12 text-[13px] sm:text-sm leading-relaxed">
 
-                <div className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-5 sm:px-10 pt-28 sm:pt-32 pb-10 grid lg:grid-cols-[1.3fr_1fr] gap-12 items-end">
-                    <div>
-                        <p className="font-mono text-[11px] tracking-[0.3em] uppercase text-[var(--dim)]">
-                            Dublin <span className="text-[var(--red)]">·</span> {dublinTime} <span className="text-[var(--red)]">·</span> 53.35°N 6.26°W
-                        </p>
+                        {/* Header */}
+                        <header className="text-center">
+                            <img src="./otherimages/profilephoto.jpg" alt="Paul Aji" className="thermal mx-auto w-20 h-20 object-cover rounded-full" />
+                            <h1 className="dot mt-5 text-5xl sm:text-6xl leading-none text-[var(--ink)] tracking-wide">PAUL AJI</h1>
+                            <p className="mt-3 font-medium tracking-[0.2em] text-[var(--ink)]">FULL STACK ENGINEER</p>
+                            <p className="tracking-[0.15em]">PAYMENTS · SETTLEMENT · CLOUD</p>
+                            <p className="mt-2 text-[var(--faded)]">DUBLIN, IRELAND</p>
+                            <a href={`mailto:${EMAIL}`} className="text-[var(--faded)] underline decoration-dotted underline-offset-4 hover:text-[var(--ink)] break-all">{EMAIL}</a>
+                        </header>
 
-                        <h1 className="mt-8 font-display uppercase text-[var(--red)] title-glow leading-[0.82] tracking-[0.06em] text-[22vw] sm:text-[9rem] lg:text-[11rem]">
-                            Paul<br />Aji
-                        </h1>
+                        <Rule />
 
-                        <p className="mt-10 font-display uppercase text-2xl sm:text-3xl tracking-[0.12em] text-[var(--bone)]">
-                            Full-stack engineer.
-                        </p>
-                        <p className="mt-2 font-mono text-xs sm:text-sm tracking-[0.2em] uppercase text-[var(--ash)]">
-                            Payments <span className="text-[var(--red)]">/</span> Settlement <span className="text-[var(--red)]">/</span> Cloud
-                        </p>
-                    </div>
-
-                    <div className="relative hidden lg:block justify-self-end">
-                        <div className="duotone w-80 h-[26rem]">
-                            <img src="./otherimages/profilephoto.jpg" alt="Paul Aji" className="w-full h-full object-cover" />
+                        <div className="grid grid-cols-2 gap-x-4">
+                            <p>DATE: {clock.date}</p>
+                            <p className="text-right">TIME: {clock.time}</p>
+                            <p>TERMINAL: 01</p>
+                            <p className="text-right">CASHIER: PAUL</p>
+                            <p>ORDER: #0003-YRS</p>
+                            <p className="text-right">
+                                STATUS: <span className="text-[var(--ink)] font-medium">AVAILABLE</span>
+                            </p>
                         </div>
-                        <p className="mt-3 font-mono text-[10px] tracking-[0.3em] uppercase text-[var(--dim)]">Subject — P. Aji</p>
-                    </div>
-                </div>
 
-                <div className="relative z-10 border-t border-[var(--line)]">
-                    <div className="max-w-7xl mx-auto px-5 sm:px-10 py-8 grid md:grid-cols-[1fr_auto] gap-8 items-end">
-                        <p className="max-w-2xl text-sm sm:text-base leading-relaxed text-[var(--ash)]">
-                            3+ years shipping production systems in Python and TypeScript. Now on the Settle team at <span className="text-[var(--bone)]">Infinite Payment Technology</span>, making sure money moves, reconciles and bills correctly, because &lsquo;close enough&rsquo; isn&rsquo;t a feature in payments. MEng, Computer Vision &amp; AI, <span className="text-[var(--bone)]">First Class Honours</span>.
+                        <Rule double />
+
+                        <p className="text-center tracking-[0.3em] text-[var(--ink)] font-medium">*** CUSTOMER COPY ***</p>
+                        <p className="mt-4">
+                            NOTE: Full-stack engineer, 3+ years shipping production systems in Python and TypeScript. Currently on the Settle team at <b className="font-medium text-[var(--ink)]">Infinite Payment Technology</b>, making sure money moves, reconciles and bills correctly, because &lsquo;close enough&rsquo; isn&rsquo;t a feature in payments. MEng in Computer Vision &amp; AI, First Class Honours, University of Limerick.
                         </p>
-                        <a href="#work" className="group inline-flex items-center gap-3 font-mono text-xs tracking-[0.3em] uppercase text-[var(--bone)] hover:text-[var(--red)] transition">
-                            Open the files
-                            <span className="block h-px w-12 bg-[var(--red)] group-hover:w-20 transition-all" />
-                        </a>
-                    </div>
-                </div>
-            </header>
 
-            {/* Case files */}
-            <section className="relative py-24 sm:py-36 px-5 sm:px-10">
-                <div className="max-w-7xl mx-auto">
-                    <SectionHeading id="work" number="01" note={`${projects.length} ON RECORD`} title="Case Files" />
+                        <Rule />
 
-                    <div className="xl:grid xl:grid-cols-[1fr_22rem] xl:gap-12">
-                        <ol className="border-t border-[var(--line)]">
-                            {projects.map((p, i) => (
-                                <li key={p.id}>
-                                    <button
-                                        onClick={() => openProject(p.id)}
-                                        onMouseEnter={() => setHovered(p.id)}
-                                        onMouseLeave={() => setHovered(null)}
-                                        className="case-row w-full text-left grid grid-cols-[auto_1fr_auto] items-baseline gap-x-5 sm:gap-x-10 py-7 sm:py-9 border-b border-[var(--line)] hover:bg-[var(--blood)]/15 transition-colors px-1"
-                                    >
-                                        <span className="font-mono text-[10px] sm:text-[11px] tracking-[0.2em] text-[var(--dim)]">{fileNo(i)}</span>
-                                        <span className="min-w-0">
-                                            <span className="case-title block font-display uppercase text-3xl sm:text-5xl tracking-[0.03em] text-[var(--bone)] leading-[0.95] transition-colors">{p.title}</span>
-                                            <span className="mt-3 block font-mono text-[10px] sm:text-[11px] tracking-[0.18em] uppercase text-[var(--dim)]">{p.company} — {p.role}</span>
-                                        </span>
-                                        <span className="flex items-center gap-3 sm:gap-5">
-                                            <span className={`hidden sm:inline font-mono text-[10px] tracking-[0.3em] ${i === 0 ? 'text-[var(--red)]' : 'text-[var(--dim)]'}`}>
-                                                {i === 0 ? '● ACTIVE' : 'CLOSED'}
-                                            </span>
-                                            <ArrowUpRight className="case-arrow w-5 h-5 text-[var(--dim)] transition" />
-                                        </span>
-                                    </button>
+                        {/* Items */}
+                        <Heading id="items">ITEMS PURCHASED</Heading>
+                        <div className="flex justify-between text-[var(--faded)] text-xs tracking-[0.15em] mb-2">
+                            <span>QTY&nbsp; ITEM</span>
+                            <span>STATUS</span>
+                        </div>
+
+                        <ul>
+                            {projects.map((p, i) => {
+                                const open = openItem === p.id;
+                                return (
+                                    <li key={p.id} className="py-2">
+                                        <button onClick={() => toggle(p.id)} aria-expanded={open} className="item-btn w-full text-left">
+                                            <Line
+                                                label={<><span className="text-[var(--faded)]">{pad(i + 1)}&nbsp;&nbsp;</span><span className="item-name font-medium text-[var(--ink)] uppercase px-0.5 -mx-0.5 transition-colors">{p.title}</span></>}
+                                                value={i === 0
+                                                    ? <span className="font-medium text-[var(--stamp)]">PROCESSING<span className="blink">_</span></span>
+                                                    : <span className="text-[var(--ink)]">SETTLED</span>}
+                                            />
+                                            <p className="pl-[2.6em] text-xs text-[var(--faded)]">
+                                                {p.company} · {p.role} <span className="no-print text-[var(--ink-soft)]">[{open ? '-' : '+'}]</span>
+                                            </p>
+                                        </button>
+
+                                        {open && (
+                                            <div className="pl-[2.6em] mt-3 mb-2 space-y-3">
+                                                <p className="text-[var(--ink)]">{p.description}</p>
+                                                <ul className="space-y-1.5">
+                                                    {p.highlights.map((h, j) => (
+                                                        <li key={j} className="grid grid-cols-[1.4em_1fr]"><span>+</span><span>{h}</span></li>
+                                                    ))}
+                                                </ul>
+                                                <p className="text-xs"><span className="text-[var(--faded)]">STACK:</span> {p.tech.join(' / ')}</p>
+                                                {p.images.length > 0 && (
+                                                    <div className="no-print flex gap-2 overflow-x-auto pb-1">
+                                                        {p.images.map((img, k) => (
+                                                            <button key={img} onClick={() => setLightbox({ images: p.images, index: k, title: p.title })}
+                                                                className="shrink-0 w-32 h-20 sm:w-40 sm:h-24 border border-[var(--ink)]/30 overflow-hidden bg-white" aria-label={`View ${p.title} screenshot ${k + 1}`}>
+                                                                <img src={img} alt="" loading="lazy" className="thermal-soft w-full h-full object-cover object-top" />
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </li>
+                                );
+                            })}
+                        </ul>
+
+                        <Rule />
+                        <Line label="SUBTOTAL" value={`${projects.length} ITEMS`} strong />
+                        <Line label="ITEMS IN PROGRESS" value="1" />
+                        <Line label="ITEMS SETTLED" value={projects.length - 1} />
+
+                        <Rule />
+
+                        {/* Skills */}
+                        <Heading id="skills">ITEMISED SKILLS</Heading>
+                        <div className="space-y-3">
+                            {skills.map((c) => (
+                                <div key={c.label}>
+                                    <Line label={<span className="font-medium text-[var(--ink)] uppercase">{c.label}</span>} value={`x${c.items.length}`} />
+                                    <p className="pl-4 text-xs text-[var(--faded)]">{c.items.join(', ')}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <Rule />
+
+                        <p className="text-center text-xs tracking-[0.3em] text-[var(--faded)] mb-4">WE ACCEPT</p>
+                        <div className="text-[var(--ink)]">
+                            <TechBanner />
+                        </div>
+
+                        <Rule />
+
+                        {/* Education */}
+                        <Heading>EDUCATION</Heading>
+                        <div className="space-y-4">
+                            <div className="relative">
+                                <Line label={<span className="font-medium text-[var(--ink)]">MENG, COMPUTER VISION &amp; AI</span>} value="QCA 3.37" />
+                                <p className="text-xs text-[var(--faded)]">University of Limerick · Sep 2024 – Sep 2025</p>
+                                <Stamp className="absolute right-2 -bottom-4 text-[11px]">First Class</Stamp>
+                            </div>
+                            <div className="pt-3">
+                                <Line label={<span className="font-medium text-[var(--ink)]">B.TECH, COMPUTER SCIENCE</span>} value="GPA 2.76" />
+                                <p className="text-xs text-[var(--faded)]">Adi Shankara Institute of Engineering and Technology · 2018 – Feb 2023</p>
+                            </div>
+                        </div>
+
+                        <Rule />
+
+                        {/* Achievements */}
+                        <Heading>COMPLIMENTARY EXTRAS</Heading>
+                        <ul className="space-y-3">
+                            {achievements.map((a) => (
+                                <li key={a.title}>
+                                    <Line label={<span className="text-[var(--ink)]">{a.title.toUpperCase()}</span>} value="FREE" />
+                                    <p className="text-xs text-[var(--faded)]">{a.subtitle} — {a.description}</p>
                                 </li>
                             ))}
-                        </ol>
+                        </ul>
 
-                        {/* hover evidence photo */}
-                        <aside className="hidden xl:block" aria-hidden="true">
-                            <div className="sticky top-32 transition-opacity duration-300" style={{ opacity: preview && preview.images.length ? 1 : 0 }}>
-                                {preview && preview.images.length > 0 && (
-                                    <>
-                                        <div className="duotone aspect-[4/5] border border-[var(--red)]/40">
-                                            <img src={preview.images[0]} alt="" className="w-full h-full object-cover object-top" />
-                                        </div>
-                                        <p className="mt-3 font-mono text-[10px] tracking-[0.3em] uppercase text-[var(--dim)]">Exhibit A — {preview.title}</p>
-                                    </>
-                                )}
-                            </div>
-                        </aside>
-                    </div>
-                </div>
-            </section>
+                        <Rule double />
 
-            {/* Arsenal */}
-            <section className="relative py-24 sm:py-36 px-5 sm:px-10 bg-[var(--coal)] border-y border-[var(--line)]">
-                <div className="max-w-7xl mx-auto">
-                    <SectionHeading id="arsenal" number="02" note="TOOLS OF THE TRADE" title="Arsenal" />
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-8 gap-y-12">
-                        {skills.map((category, i) => (
-                            <div key={category.label}>
-                                <p className="font-mono text-[10px] tracking-[0.3em] text-[var(--red)]">{String(i + 1).padStart(2, '0')}</p>
-                                <h3 className="mt-2 pb-3 mb-4 font-display uppercase text-xl tracking-[0.08em] text-[var(--bone)] border-b border-[var(--line)]">{category.label}</h3>
-                                <ul className="space-y-1.5">
-                                    {category.items.map((item) => (
-                                        <li key={item} className="text-sm text-[var(--ash)]">{item}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        ))}
-                    </div>
-                    <TechBanner />
-                </div>
-            </section>
-
-            {/* Record */}
-            <section className="relative py-24 sm:py-36 px-5 sm:px-10">
-                <div className="max-w-7xl mx-auto">
-                    <SectionHeading id="record" number="03" note="BACKGROUND CHECK" title="The Record" />
-
-                    <div className="grid md:grid-cols-2 gap-px bg-[var(--line)] border border-[var(--line)] mb-24">
-                        <div className="bg-[var(--ink)] p-8 sm:p-10">
-                            <p className="font-mono text-[10px] tracking-[0.3em] text-[var(--red)]">SEP 2024 — SEP 2025</p>
-                            <h3 className="mt-4 font-display uppercase text-3xl tracking-[0.03em] text-[var(--bone)] leading-none">MEng, Computer Vision &amp; AI</h3>
-                            <p className="mt-3 text-sm text-[var(--ash)]">University of Limerick</p>
-                            <p className="mt-6 font-mono text-xs tracking-[0.2em] uppercase text-[var(--bone)]">First Class Honours <span className="text-[var(--red)]">/</span> QCA 3.37</p>
+                        {/* Totals */}
+                        <div id="total" className="scroll-mt-6 space-y-1.5 text-[15px] sm:text-base">
+                            <Line label="TOTAL" value="3+ YRS EXPERIENCE" strong className="text-lg sm:text-xl" />
+                            <Line label="PAYMENT METHOD" value="FIRST CLASS HONOURS" />
+                            <Line label="TAX (BUGS)" value="0.00" />
+                            <Line label="CHANGE DUE" value="YOUR NEXT HIRE" strong />
                         </div>
-                        <div className="bg-[var(--ink)] p-8 sm:p-10">
-                            <p className="font-mono text-[10px] tracking-[0.3em] text-[var(--dim)]">2018 — FEB 2023</p>
-                            <h3 className="mt-4 font-display uppercase text-3xl tracking-[0.03em] text-[var(--bone)] leading-none">B.Tech, Computer Science</h3>
-                            <p className="mt-3 text-sm text-[var(--ash)]">Adi Shankara Institute of Engineering and Technology</p>
-                            <p className="mt-6 font-mono text-xs tracking-[0.2em] uppercase text-[var(--ash)]">GPA 2.76</p>
+                        <div className="text-center pt-6 pb-2">
+                            <Stamp className="text-xl sm:text-2xl">Open to work</Stamp>
                         </div>
-                    </div>
 
-                    <p className="font-mono text-[11px] tracking-[0.3em] uppercase text-[var(--dim)] mb-6">Known activity</p>
-                    <ul className="border-t border-[var(--line)]">
-                        {achievements.map((a, i) => (
-                            <li key={a.title} className="grid md:grid-cols-[4rem_1fr_1.2fr] gap-x-8 gap-y-1 py-5 border-b border-[var(--line)]">
-                                <span className="font-mono text-[10px] tracking-[0.2em] text-[var(--red)] pt-1">{String(i + 1).padStart(2, '0')}</span>
-                                <div>
-                                    <p className="text-[var(--bone)] font-medium">{a.title}</p>
-                                    <p className="font-mono text-[10px] tracking-[0.18em] uppercase text-[var(--dim)] mt-1">{a.subtitle}</p>
-                                </div>
-                                <p className="text-sm text-[var(--ash)] leading-relaxed">{a.description}</p>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </section>
+                        <Rule double />
 
-            {/* Contact */}
-            <section id="contact" className="relative overflow-hidden py-28 sm:py-40 px-5 sm:px-10 border-t border-[var(--line)] wash vignette">
-                <div className="rain" />
-                <div className="relative z-10 max-w-7xl mx-auto">
-                    <p className="font-mono text-[11px] tracking-[0.3em] uppercase text-[var(--red)]">04 — Contact</p>
-                    <h2 className="mt-6 font-display uppercase text-[var(--bone)] leading-[0.85] tracking-[0.04em] text-6xl sm:text-8xl lg:text-[9rem]">
-                        When you<br />need <span className="text-[var(--red)] title-glow">me</span>.
-                    </h2>
-                    <p className="mt-8 max-w-md text-[var(--ash)]">Open to new roles and collaborations in payments, backend and cloud.</p>
+                        {/* Footer */}
+                        <footer id="contact" className="text-center space-y-1">
+                            <p className="font-medium text-[var(--ink)] tracking-[0.2em]">THANK YOU FOR SCROLLING</p>
+                            <p>NO REFUNDS ON GOOD CODE</p>
+                            <p className="text-[var(--faded)] text-xs">KEEP THIS RECEIPT FOR YOUR RECORDS</p>
 
-                    <div className="mt-16 border-t border-[var(--line)]">
-                        {channels.map((c) => (
-                            <a key={c.label} href={c.href} target={c.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer"
-                                className="case-row group grid grid-cols-[5rem_1fr_auto] sm:grid-cols-[8rem_1fr_auto] items-baseline gap-4 py-6 border-b border-[var(--line)]">
-                                <span className="font-mono text-[10px] tracking-[0.3em] uppercase text-[var(--dim)]">{c.label}</span>
-                                <span className="case-title font-display uppercase text-xl sm:text-4xl tracking-[0.03em] text-[var(--bone)] transition-colors break-all">{c.value}</span>
-                                <ArrowUpRight className="case-arrow w-5 h-5 text-[var(--dim)] transition" />
+                            <a href={`mailto:${EMAIL}`} className="block mt-6 text-[var(--ink)] hover:opacity-70 transition" aria-label={`Email ${EMAIL}`}>
+                                <Barcode text={EMAIL} />
+                                <p className="mt-1 text-xs tracking-[0.35em]">SCAN TO HIRE</p>
                             </a>
-                        ))}
-                    </div>
-                </div>
-            </section>
 
-            {/* Footer */}
-            <footer className="px-5 sm:px-10 py-8 border-t border-[var(--line)]">
-                <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between gap-2 font-mono text-[10px] tracking-[0.25em] uppercase text-[var(--dim)]">
-                    <p>&copy; {new Date().getFullYear()} Paul Aji</p>
-                    <p>Dublin <span className="text-[var(--red)]">/</span> after dark</p>
-                </div>
-            </footer>
-
-            {/* Dossier */}
-            {project && (
-                <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-stretch sm:items-center justify-center sm:p-8" onClick={closeProject}>
-                    <div
-                        role="dialog"
-                        aria-modal="true"
-                        aria-label={project.title}
-                        className="relative w-full max-w-4xl max-h-[100svh] sm:max-h-[92vh] overflow-y-auto scrollbar-hide bg-[var(--coal)] border-t-2 border-[var(--red)] sm:border sm:border-t-2 sm:border-x-[var(--line)] sm:border-b-[var(--line)]"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className="sticky top-0 z-10 flex items-center justify-between px-6 sm:px-10 h-14 bg-[var(--coal)]/95 backdrop-blur border-b border-[var(--line)] font-mono text-[10px] tracking-[0.3em] uppercase">
-                            <span className="text-[var(--dim)]">{fileNo(projectIdx)} <span className="text-[var(--red)]">//</span> {projectIdx === 0 ? 'Active' : 'Closed'}</span>
-                            <button onClick={closeProject} aria-label="Close" className="flex items-center gap-2 text-[var(--ash)] hover:text-[var(--red)] transition">
-                                Close <X className="w-4 h-4" />
+                            <div className="no-print mt-8 grid grid-cols-3 gap-2 text-xs font-medium tracking-[0.15em]">
+                                <a href="https://github.com/paulaji" target="_blank" rel="noopener noreferrer" className="key py-2.5">[ GITHUB ]</a>
+                                <a href="https://linkedin.com/in/paulaji/" target="_blank" rel="noopener noreferrer" className="key py-2.5">[ LINKEDIN ]</a>
+                                <a href={`mailto:${EMAIL}`} className="key py-2.5">[ EMAIL ]</a>
+                            </div>
+                            <button onClick={() => window.print()} className="no-print mt-3 w-full text-xs text-[var(--faded)] hover:text-[var(--ink)] underline decoration-dotted underline-offset-4">
+                                print a copy
                             </button>
-                        </div>
 
-                        <div className="px-6 sm:px-10 pt-10">
-                            <p className="font-mono text-[10px] sm:text-[11px] tracking-[0.2em] uppercase text-[var(--dim)]">{project.company} — {project.role}</p>
-                            <h3 className="mt-4 font-display uppercase text-5xl sm:text-7xl tracking-[0.03em] text-[var(--bone)] leading-[0.9]">{project.title}</h3>
-                            <p className="mt-3 font-mono text-xs tracking-[0.2em] uppercase text-[var(--red)]">{project.subtitle}</p>
-                        </div>
+                            <p className="pt-6 text-[var(--faded)] text-[11px]">&copy; {new Date().getFullYear()} PAUL AJI · DUBLIN</p>
+                        </footer>
+                    </article>
+                </div>
+            </main>
 
-                        {project.images.length > 0 && (
-                            <div className="mt-10 mx-6 sm:mx-10 relative bg-black border border-[var(--line)]">
-                                <img src={project.images[imageIndex]} alt={`${project.title} evidence ${imageIndex + 1}`} className="w-full max-h-[55vh] object-contain" />
-                                <div className="absolute top-3 left-3 bg-black/80 px-2 py-1 font-mono text-[9px] tracking-[0.3em] text-[var(--ash)]">
-                                    EXHIBIT {String.fromCharCode(65 + imageIndex)}
-                                </div>
-                                {project.images.length > 1 && (
-                                    <div className="absolute bottom-0 inset-x-0 flex items-center justify-between p-3 bg-gradient-to-t from-black/90 to-transparent">
-                                        <button aria-label="Previous image" disabled={imageIndex === 0} onClick={() => setImageIndex(imageIndex - 1)}
-                                            className="w-9 h-9 flex items-center justify-center border border-[var(--line)] bg-black/70 text-[var(--bone)] hover:border-[var(--red)] hover:text-[var(--red)] disabled:opacity-20 transition">
-                                            <ChevronLeft className="w-4 h-4" />
-                                        </button>
-                                        <span className="font-mono text-[10px] tracking-[0.3em] text-[var(--ash)]">{imageIndex + 1} / {project.images.length}</span>
-                                        <button aria-label="Next image" disabled={imageIndex === project.images.length - 1} onClick={() => setImageIndex(imageIndex + 1)}
-                                            className="w-9 h-9 flex items-center justify-center border border-[var(--line)] bg-black/70 text-[var(--bone)] hover:border-[var(--red)] hover:text-[var(--red)] disabled:opacity-20 transition">
-                                            <ChevronRight className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        <div className="px-6 sm:px-10 py-10 grid md:grid-cols-[1fr_14rem] gap-10">
-                            <div>
-                                <p className="text-base leading-relaxed text-[var(--bone)]">{project.description}</p>
-                                <p className="mt-10 mb-5 font-mono text-[10px] tracking-[0.3em] uppercase text-[var(--dim)]">Findings</p>
-                                <ol className="space-y-4">
-                                    {project.highlights.map((h, i) => (
-                                        <li key={i} className="grid grid-cols-[2rem_1fr] text-sm leading-relaxed text-[var(--ash)]">
-                                            <span className="font-mono text-[10px] text-[var(--red)] pt-1">{String(i + 1).padStart(2, '0')}</span>
-                                            {h}
-                                        </li>
-                                    ))}
-                                </ol>
-                            </div>
-                            <div>
-                                <p className="mb-5 font-mono text-[10px] tracking-[0.3em] uppercase text-[var(--dim)]">Tools used</p>
-                                <ul className="space-y-2 border-l border-[var(--red)] pl-4">
-                                    {project.tech.map((t) => (
-                                        <li key={t} className="font-mono text-xs text-[var(--ash)]">{t}</li>
-                                    ))}
-                                </ul>
-                            </div>
+            {/* Lightbox */}
+            {lightbox && (
+                <div className="fixed inset-0 z-[100] bg-black/90 flex flex-col items-center justify-center p-4" onClick={() => setLightbox(null)}>
+                    <div className="relative max-w-5xl w-full" onClick={(e) => e.stopPropagation()}>
+                        <img src={lightbox.images[lightbox.index]} alt={`${lightbox.title} screenshot ${lightbox.index + 1}`} className="w-full max-h-[80vh] object-contain" />
+                        <div className="mt-4 flex items-center justify-between text-xs tracking-[0.2em] text-[#C9C4BB]">
+                            <button disabled={lightbox.index === 0} onClick={() => setLightbox({ ...lightbox, index: lightbox.index - 1 })} className="px-3 py-2 border border-current disabled:opacity-20 hover:bg-white hover:text-black transition">&lt; PREV</button>
+                            <span>{lightbox.title.toUpperCase()} · {lightbox.index + 1}/{lightbox.images.length}</span>
+                            <button disabled={lightbox.index === lightbox.images.length - 1} onClick={() => setLightbox({ ...lightbox, index: lightbox.index + 1 })} className="px-3 py-2 border border-current disabled:opacity-20 hover:bg-white hover:text-black transition">NEXT &gt;</button>
                         </div>
+                        <button onClick={() => setLightbox(null)} className="absolute -top-2 right-0 -translate-y-full text-xs tracking-[0.2em] text-[#C9C4BB] hover:text-white">[ CLOSE X ]</button>
                     </div>
                 </div>
             )}
