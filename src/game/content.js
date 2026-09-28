@@ -50,7 +50,7 @@ export const SQUARES = [
     skill('Backend', 'steel', 120, ['NestJS', 'Django', 'DRF', 'Flask', 'FastAPI', 'Node.js', 'Express']),
     { t: 'jail', big: 'Incident', small: 'Just visiting' },
     skill('Cloud', 'rose', 140, ['AWS', 'GCP', 'Lambda', 'RDS', 'S3', 'Firebase']),
-    { t: 'util', n: 'The Studio', ic: '✎', desc: 'Paul paints and makes digital art, usually with one record on repeat. The gallery opens after hours.' },
+    { t: 'util', n: 'The Studio', ic: '✎', desc: 'Paul makes art after hours. The gallery is being hung: pieces coming soon.' },
     skill('Databases', 'rose', 140, ['PostgreSQL', 'MySQL', 'MSSQL', 'MongoDB', 'Firestore', 'Prisma']),
     skill('DevOps', 'rose', 160, ['Docker', 'Nx', 'CI/CD', 'GitHub Actions', 'SonarQube', 'Trivy']),
     { t: 'rail', n: 'SEPA Rail', ic: '◆', desc: 'SEPA moves euro bank transfers between 36 European countries on shared rules, including SEPA Instant for payments that land in seconds.' },
@@ -91,7 +91,7 @@ export const SQUARES = [
         rows: ['Led the Next.js + MySQL build', 'Custom CMS for all content', 'Lottie animation, Cloudflare edge caching'],
         tech: ['Next.js', 'MySQL', 'Tailwind', 'Cloudflare'],
     }),
-    { t: 'util', n: 'Sound System', ic: '♪', desc: 'Techno and EDM, mostly at 128 to 140 BPM. Every piece in the studio was made to a specific record.' },
+    { t: 'util', n: 'Sound System', ic: '♪', desc: 'Techno and EDM: the soundtrack to most of the work on this board.' },
     skill('AI-Assisted', 'ochre', 280, ['Claude Code CLI', 'GitHub Copilot', 'LLMs', 'Prompt Engineering']),
     { t: 'gotojail', big: 'Go to', small: 'Incident' },
     prop('TrustPMS', 'forest', 300, {
