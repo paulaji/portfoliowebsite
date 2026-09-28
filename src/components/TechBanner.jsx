@@ -56,15 +56,15 @@ const TechBanner = () => {
     ];
 
     return (
-        <div className="mb-12 rounded-2xl border border-white/[0.07] px-6 py-8">
-            <div className="flex flex-wrap justify-center gap-x-6 gap-y-5 sm:gap-x-7">
+        <div className="mt-20 pt-10 border-t border-[var(--line)]">
+            <div className="flex flex-wrap justify-between gap-x-6 gap-y-6">
                 {techIcons.map((tech, index) => (
                     <tech.Icon
                         key={index}
                         className="w-6 h-6 sm:w-7 sm:h-7 transition-colors duration-200"
-                        style={{ color: '#52525B' }}
-                        onMouseEnter={(e) => e.currentTarget.style.color = tech.color}
-                        onMouseLeave={(e) => e.currentTarget.style.color = '#52525B'}
+                        style={{ color: '#3F3B38' }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = '#D0161F'}
+                        onMouseLeave={(e) => e.currentTarget.style.color = '#3F3B38'}
                     />
                 ))}
             </div>
