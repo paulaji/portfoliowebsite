@@ -351,9 +351,44 @@ export default function Portfolio() {
           background-image: radial-gradient(ellipse 70% 50% at 50% 0%, rgb(255 255 255 / .06), transparent 70%);
         }
 
-        /* printer */
-        .printer { background: linear-gradient(#3B3936, #2A2826); box-shadow: 0 14px 30px -10px rgb(0 0 0 / .8), inset 0 1px 0 rgb(255 255 255 / .08); }
+        /* the machine: worn enamel register */
+        .printer {
+          background-color: #C8BDA5;
+          background-image:
+            radial-gradient(ellipse 18% 30% at 8% 85%, rgb(70 55 35 / .22), transparent 70%),
+            radial-gradient(ellipse 12% 25% at 93% 20%, rgb(70 55 35 / .18), transparent 70%),
+            radial-gradient(ellipse 40% 12% at 60% 100%, rgb(60 45 30 / .25), transparent 70%),
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .25 0 0 0 0 .2 0 0 0 0 .12 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+            linear-gradient(#D6CCB5, #BDB199 70%, #A89C83);
+          box-shadow: 0 18px 30px -12px rgb(0 0 0 / .85), inset 0 2px 0 rgb(255 255 255 / .45), inset 0 -4px 0 rgb(0 0 0 / .18);
+          border: 1px solid #8F846C;
+        }
+        .plate {
+          background: linear-gradient(135deg, #D9B866, #A8812F 45%, #C9A24F 60%, #8A6823);
+          box-shadow: inset 0 1px 0 rgb(255 240 200 / .6), inset 0 -1px 0 rgb(0 0 0 / .35), 0 1px 2px rgb(0 0 0 / .45);
+          color: #3A2A0C; text-shadow: 0 1px 0 rgb(255 235 180 / .55);
+          font-family: Georgia, 'Times New Roman', serif;
+        }
+        .screw { width: 7px; height: 7px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #EADBB0, #7A6230); box-shadow: 0 0 0 1px rgb(0 0 0 / .35); position: relative; }
+        .screw::after { content: ''; position: absolute; left: 1px; right: 1px; top: 3px; height: 1px; background: rgb(40 28 8 / .8); transform: rotate(35deg); }
+        .grille { background: repeating-linear-gradient(to bottom, #2C261C 0 3px, transparent 3px 7px); border-radius: 2px; opacity: .75; }
+        .lamp { background: radial-gradient(circle at 40% 35%, #FFE3A3, #F29A1F 45%, #8A4A0A); box-shadow: 0 0 10px 2px rgb(242 154 31 / .55), 0 0 0 2px #6B5E47, 0 0 0 3px #D6CCB5; }
+        .keycap {
+          background: linear-gradient(#3A3530, #26221E); color: #E9DFC7; border-radius: 4px;
+          box-shadow: 0 3px 0 #12100E, 0 4px 6px rgb(0 0 0 / .4), inset 0 1px 0 rgb(255 255 255 / .12);
+          transition: transform .08s, box-shadow .08s;
+        }
+        .keycap:hover { background: linear-gradient(#4A433C, #2E2924); }
+        .keycap:active { transform: translateY(3px); box-shadow: 0 0 0 #12100E, 0 1px 2px rgb(0 0 0 / .4), inset 0 1px 0 rgb(255 255 255 / .12); }
         .slot { background: #0B0A0A; box-shadow: inset 0 3px 6px rgb(0 0 0 / .9); }
+        .tearbar {
+          height: 9px;
+          background:
+            linear-gradient(135deg, transparent 50%, #6E675C 50%) 0 100% / 8px 5px repeat-x,
+            linear-gradient(225deg, transparent 50%, #6E675C 50%) 0 100% / 8px 5px repeat-x,
+            linear-gradient(#B9B2A6, #7C766B) 0 0 / 100% 4px no-repeat;
+          filter: drop-shadow(0 2px 1px rgb(0 0 0 / .35));
+        }
 
         /* paper */
         .receipt {
@@ -408,23 +443,34 @@ export default function Portfolio() {
 
             <main className="relative px-4 pt-6 sm:pt-10 pb-24">
                 {/* Printer */}
-                <div className="printer relative z-20 mx-auto max-w-[680px] rounded-xl px-5 pt-4 pb-5">
-                    <div className="flex items-center justify-between text-[10px] tracking-[0.3em] text-[#9C978F] uppercase">
-                        <span className="flex items-center gap-2">
-                            <span className="h-1.5 w-1.5 rounded-full bg-[#5BE07A] shadow-[0_0_6px_#5BE07A]" /> Online
-                        </span>
-                        <span>PA-3000 Thermal</span>
-                        <nav className="no-print hidden sm:flex gap-4">
-                            <a href="#items" className="hover:text-white transition">Items</a>
-                            <a href="#skills" className="hover:text-white transition">Skills</a>
-                            <a href="#total" className="hover:text-white transition">Total</a>
+                <div className="printer relative z-20 mx-auto max-w-[680px] rounded-t-[22px] rounded-b-md px-3 sm:px-6 pt-4 pb-4">
+                    <div className="flex items-center gap-3 sm:gap-5">
+                        {/* nameplate */}
+                        <div className="plate shrink-0 flex items-center gap-1.5 sm:gap-2 rounded-sm px-1.5 sm:px-2 py-1.5">
+                            <span className="screw" />
+                            <div className="text-center leading-none">
+                                <p className="text-[13px] sm:text-[15px] font-bold tracking-[0.18em]">PA-3000</p>
+                                <p className="mt-1 text-[7px] sm:text-[8px] tracking-[0.25em] uppercase">Dublin · Est. 2022</p>
+                            </div>
+                            <span className="screw" />
+                        </div>
+
+                        <div className="grille hidden sm:block flex-1 h-7" aria-hidden="true" />
+
+                        <span className="lamp hidden sm:block shrink-0 h-3 w-3 rounded-full" title="Power" aria-hidden="true" />
+
+                        <nav className="no-print ml-auto sm:ml-0 flex gap-1.5 sm:gap-2" aria-label="Sections">
+                            {[['#items', 'Items'], ['#skills', 'Skills'], ['#total', 'Total']].map(([href, label]) => (
+                                <a key={href} href={href} className="keycap px-1.5 sm:px-3 py-1.5 text-[10px] sm:text-[11px] font-medium tracking-[0.06em] sm:tracking-[0.12em] uppercase">{label}</a>
+                            ))}
                         </nav>
                     </div>
-                    <div className="slot mt-4 h-2.5 rounded-full" />
+                    <div className="slot mt-4 h-2.5 rounded-sm" />
                 </div>
+                <div className="tearbar relative z-30 mx-auto max-w-[640px] -mt-px" aria-hidden="true" />
 
                 {/* Receipt */}
-                <div className="relative z-10 -mt-3 mx-auto max-w-[620px] overflow-hidden pb-3">
+                <div className="relative z-10 -mt-4 mx-auto max-w-[620px] overflow-hidden pb-3">
                     <article className="receipt px-5 sm:px-10 pt-12 pb-12 text-[13px] sm:text-sm leading-relaxed">
 
                         {/* Header */}
@@ -446,7 +492,7 @@ export default function Portfolio() {
                             <p className="text-right">CASHIER: PAUL</p>
                             <p>ORDER: #0003-YRS</p>
                             <p className="text-right">
-                                STATUS: <span className="text-[var(--ink)] font-medium">AVAILABLE</span>
+                                TXN: <span className="text-[var(--ink)] font-medium">APPROVED</span>
                             </p>
                         </div>
 
@@ -476,7 +522,7 @@ export default function Portfolio() {
                                                 label={<><span className="text-[var(--faded)]">{pad(i + 1)}&nbsp;&nbsp;</span><span className="item-name font-medium text-[var(--ink)] uppercase px-0.5 -mx-0.5 transition-colors">{p.title}</span></>}
                                                 value={p.status === 'PROCESSING'
                                                     ? <span className="font-medium text-[var(--stamp)]">PROCESSING<span className="blink">_</span></span>
-                                                    : <span className="text-[var(--ink)]">SETTLED</span>}
+                                                    : <span className="text-[var(--ink)]">SHIPPED ✓</span>}
                                             />
                                             <p className="pl-[2.6em] text-xs text-[var(--faded)]">
                                                 {p.company} · {p.role} <span className="no-print text-[var(--ink-soft)]">[{open ? '-' : '+'}]</span>
@@ -512,7 +558,7 @@ export default function Portfolio() {
                         <Rule />
                         <Line label="SUBTOTAL" value={`${projects.length} ITEMS`} strong />
                         <Line label="ITEMS IN PROGRESS" value={projects.filter((p) => p.status === 'PROCESSING').length} />
-                        <Line label="ITEMS SETTLED" value={projects.filter((p) => p.status !== 'PROCESSING').length} />
+                        <Line label="ITEMS SHIPPED" value={projects.filter((p) => p.status !== 'PROCESSING').length} />
 
                         <Rule />
 
@@ -573,7 +619,7 @@ export default function Portfolio() {
                             <Line label="CHANGE DUE" value="YOUR NEXT HIRE" strong />
                         </div>
                         <div className="text-center pt-6 pb-2">
-                            <Stamp className="text-xl sm:text-2xl">Open to work</Stamp>
+                            <Stamp className="text-xl sm:text-2xl">Paid in full</Stamp>
                         </div>
 
                         <Rule double />
