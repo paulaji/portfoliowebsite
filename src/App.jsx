@@ -1,28 +1,67 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 import TechBanner from './components/TechBanner';
-
-const EMAIL = "paulajiparayil123@gmail.com";
-
-const skills = [
-    { label: "Languages", items: ["Python", "JavaScript", "TypeScript", "Java", "SQL"] },
-    { label: "Backend", items: ["NestJS", "Django", "DRF", "Flask", "FastAPI", "Node.js", "Express"] },
-    { label: "Frontend", items: ["React", "Next.js", "Redux", "TailwindCSS", "Material-UI"] },
-    { label: "Cloud", items: ["AWS", "GCP", "Lambda", "RDS", "S3", "Firebase"] },
-    { label: "Databases", items: ["PostgreSQL", "MySQL", "MSSQL", "MongoDB", "Firestore", "Prisma"] },
-    { label: "DevOps", items: ["Docker", "Nx", "CI/CD", "GitHub Actions", "SonarQube", "Trivy"] },
-    { label: "Testing", items: ["Jest", "Vitest", "Pytest", "Cucumber/Gherkin", "LocalStack", "TDD"] },
-    { label: "APIs & Events", items: ["REST", "OpenAPI", "WebSockets", "Socket.IO", "Event-driven"] },
-    { label: "Integrations", items: ["Stripe Connect", "Twilio", "OAuth 2.0", "JWT", "MetaTrader 5"] },
-    { label: "AI-Assisted", items: ["Claude Code CLI", "GitHub Copilot", "LLMs", "Prompt Engineering"] },
-];
+import { EMAIL, links, projects, skills, education, extras } from './data';
 
 const pad = (n, len = 2) => String(n).padStart(len, '0');
 
-// Two-column receipt line with a dotted leader between label and value.
+/* ------------------------------------------------------------------ */
+/* Sound: a thermal-printer buzz and a register bell, via Web Audio.   */
+/* ------------------------------------------------------------------ */
+
+function makeAudio() {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return null;
+    const ctx = new Ctx();
+
+    const buzz = (duration = 0.045, level = 0.07) => {
+        const len = Math.floor(ctx.sampleRate * duration);
+        const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < len; i++) {
+            // chopped noise reads as a print head stepping
+            d[i] = (Math.random() * 2 - 1) * (i % 90 < 55 ? 1 : 0.25) * (1 - i / len);
+        }
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 2600;
+        filter.Q.value = 0.9;
+        const gain = ctx.createGain();
+        gain.gain.value = level;
+        src.connect(filter).connect(gain).connect(ctx.destination);
+        src.start();
+    };
+
+    const bell = () => {
+        const t = ctx.currentTime;
+        [1568, 2093, 3136].forEach((f, i) => {
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = f;
+            g.gain.setValueAtTime(0.0001, t);
+            g.gain.exponentialRampToValueAtTime(0.09 / (i + 1), t + 0.01);
+            g.gain.exponentialRampToValueAtTime(0.0001, t + 1.4);
+            osc.connect(g).connect(ctx.destination);
+            osc.start(t);
+            osc.stop(t + 1.5);
+        });
+    };
+
+    const rip = () => buzz(0.32, 0.12);
+
+    return { ctx, buzz, bell, rip };
+}
+
+/* ------------------------------------------------------------------ */
+/* Receipt primitives. Anything with .ln is a printable line.         */
+/* ------------------------------------------------------------------ */
+
 function Line({ label, value, strong, className = '' }) {
     return (
-        <div className={`flex items-baseline gap-2 ${strong ? 'font-medium text-[var(--ink)]' : ''} ${className}`}>
+        <div className={`ln flex items-baseline gap-2 ${strong ? 'font-medium text-[var(--ink)]' : ''} ${className}`}>
             <span className="min-w-0">{label}</span>
             <span className="leader" aria-hidden="true" />
             <span className="text-right shrink-0">{value}</span>
@@ -30,21 +69,17 @@ function Line({ label, value, strong, className = '' }) {
     );
 }
 
-function Rule({ double }) {
-    return <div className={double ? 'rule-double' : 'rule'} aria-hidden="true" />;
-}
+const Rule = ({ double }) => <div className={`ln ${double ? 'rule-double' : 'rule'}`} aria-hidden="true" />;
 
 function Heading({ children, id }) {
     return (
-        <h2 id={id} className="scroll-mt-6 text-center font-medium tracking-[0.25em] text-[var(--ink)] my-5">
+        <h2 id={id} className="ln scroll-mt-8 text-center font-medium tracking-[0.25em] text-[var(--ink)] my-5">
             ** {children} **
         </h2>
     );
 }
 
-function Stamp({ children, className = '' }) {
-    return <span className={`stamp ${className}`}>{children}</span>;
-}
+const Stamp = ({ children, className = '' }) => <span className={`stamp ${className}`}>{children}</span>;
 
 // Decorative barcode derived from a string (not a scannable symbology).
 function Barcode({ text }) {
@@ -54,12 +89,12 @@ function Barcode({ text }) {
         const c = ch.charCodeAt(0);
         for (let b = 0; b < 3; b++) {
             const w = ((c >> b) & 3) + 1;
-            if ((i + b) % 2 === 0) bars.push(<rect key={`${i}-${b}`} x={x} y="0" width={w} height="56" />);
+            if ((i + b) % 2 === 0) bars.push(<rect key={`${i}-${b}`} x={x} y="0" width={w} height="48" />);
             x += w + 1;
         }
     });
     return (
-        <svg viewBox={`0 0 ${x} 56`} preserveAspectRatio="none" className="w-full h-14" fill="currentColor" aria-hidden="true">
+        <svg viewBox={`0 0 ${x} 48`} preserveAspectRatio="none" className="w-full h-12" fill="currentColor" aria-hidden="true">
             {bars}
         </svg>
     );
@@ -68,10 +103,10 @@ function Barcode({ text }) {
 function useDublinClock() {
     const read = () => {
         const d = new Date();
-        const opts = { timeZone: 'Europe/Dublin' };
+        const tz = { timeZone: 'Europe/Dublin' };
         return {
-            date: new Intl.DateTimeFormat('en-GB', { ...opts, day: '2-digit', month: '2-digit', year: 'numeric' }).format(d),
-            time: new Intl.DateTimeFormat('en-GB', { ...opts, hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(d),
+            date: new Intl.DateTimeFormat('en-GB', { ...tz, day: '2-digit', month: '2-digit', year: 'numeric' }).format(d),
+            time: new Intl.DateTimeFormat('en-GB', { ...tz, hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(d),
         };
     };
     const [now, setNow] = useState(read);
@@ -82,237 +117,91 @@ function useDublinClock() {
     return now;
 }
 
+const prefersReducedMotion = () =>
+    typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
+const MAILTO = `mailto:${EMAIL}?subject=${encodeURIComponent('Coupon redeemed: one coffee chat')}`;
+
+/* ------------------------------------------------------------------ */
+
 export default function Portfolio() {
-    const [openItem, setOpenItem] = useState(null);
-    const [lightbox, setLightbox] = useState(null); // { images, index }
     const clock = useDublinClock();
+    const [openItem, setOpenItem] = useState(null);
+    const [lightbox, setLightbox] = useState(null);
+    const [torn, setTorn] = useState(false);
+    const [sound, setSound] = useState(false);
+    const [linesPrinted, setLinesPrinted] = useState(0);
+    const [animate] = useState(() => !prefersReducedMotion() && typeof IntersectionObserver !== 'undefined');
 
-    const projects = [
-        {
-            id: 0,
-            status: "PROCESSING",
-            title: "Merchant Payments Platform",
-            subtitle: "Settlement, Reconciliation & Billing",
-            company: "Infinite Payment Technology",
-            role: "Full Stack Developer · Settle Team",
-            description: "Full stack developer on the Settle core team of a merchant onboarding and payments platform, building money movement, reconciliation, merchant billing/statements, and retry systems integrating with acquirers and processors (Worldline, ACI, Banking Circle, B4B).",
-            highlights: [
-                "Work in an Nx monorepo spanning multiple deployable modules: payment/settlement services run as AWS Lambda, other modules as standalone apps; Vitest and Jest across the codebase",
-                "PostgreSQL via AWS RDS with Prisma ORM (Prisma Studio, DBeaver for inspection); config and secrets managed via AWS Parameter Store",
-                "Built event-driven Lambda pipelines triggered by S3 uploads: parsing CSV/XML merchant files, matching records against a merchant DB, persisting unmatched records, and emailing unmatched-record reports as CSV",
-                "Refactored three separate settlement report features (daily, daily rejected, incomplete) onto one shared query/CSV/orchestration layer, removing duplicated logic",
-                "Built the VAT Summary of the merchant billing statement using safe decimal (BigNumber) arithmetic and country-based VAT rate lookups",
-                "Fixed a product-pricing bug routing fixed monthly/annual charges to the wrong pricing table; added coverage across all charge-type paths with manual regression testing",
-                "Migrated an overkill standalone LegitScript compliance Lambda into the shared NestJS gateway; diagnosed a recurring first-of-month fee bug and proposed a new handler design",
-                "Advocated separating transaction-driven vs product-driven settle-calc (cron over transaction SQS) to fix reliability issues",
-                "Integration tests in Gherkin/Cucumber (Jest, Vitest) run against Dockerized DBs; migrated AWS mocking from LocalStack to Flocci (open source)",
-                "Structured JSON logging (CloudWatch) + PostHog error tracking; extended audit-log redaction to cover missed sensitive fields (tokens, salts); fixed GitHub Actions CI failures from transitive dependency issues",
-                "Code goes through SonarQube static analysis, Trivy scans, and Copilot-assisted reviews; cross-team changes require code-captain sign-off. Day-to-day with Claude Code CLI, Copilot, JIRA/GitHub MCP; collaborate with design, BA, and devs",
-            ],
-            tech: ["NestJS", "TypeScript", "PostgreSQL", "Prisma", "AWS Lambda", "AWS RDS", "S3", "SQS", "Nx", "Vitest", "Jest", "Cucumber/Gherkin", "Docker", "CloudWatch", "GitHub Actions"],
-            images: [],
-        },
-        {
-            id: 9,
-            title: "Customer Billing Engine",
-            subtitle: "Monthly Fee Billing for a Payments Platform",
-            company: "Infinite Payment Technology",
-            role: "Full Stack Developer · Settle Team",
-            description: "Designed and built monthly customer billing for a merchant payments platform, end to end: the data model, a config-driven fee engine, and the scheduled Lambda that runs it. Two of six fee types are live, and the other four are designed to drop in as config rather than code.",
-            highlights: [
-                "Designed the billing data model in Prisma/PostgreSQL: one record per customer, fee type and billing month, with a unique key as the idempotency guarantee, so re-runs are safe and no status column or run-state table is needed",
-                "Stored the charge rate and VAT rate alongside every amount, so a bill stays explainable after Finance edits the product catalogue or the VAT tables",
-                "Built a config-driven fee engine: each fee is one config entry (eligibility, product prefix, boarding window), so the second fee type shipped with no new code",
-                "Money-safe arithmetic with BigNumber, matching the existing settlement engine: round the net to 2dp half-up first, take VAT from the rounded net, gross as the sum; proven at the half-cent boundaries",
-                "Resolved each customer's country to pick the product, currency and VAT rate, normalising UK to ISO GB",
-                "Isolated failures per customer and per fee with named, logged skip reasons, so one bad record never aborts the run, while the run still reports failure to the scheduler",
-                "Scheduled through EventBridge into the existing Lambda via a job router instead of a second function, keeping CI and deployment unchanged; added a replay-date parameter and a kill switch so it could deploy dark",
-                "Ran a five-day monthly retry window, free because already-billed fees skip, and delivered a verification pack mapping every Definition of Done item to the query that proves it",
-                "Renamed the host app ahead of the work in a standalone, no-behaviour-change PR, deliberately keeping deployed artefact names stable so infrastructure stayed out of scope",
-            ],
-            tech: ["TypeScript", "Prisma", "PostgreSQL", "AWS Lambda", "EventBridge", "SSM Parameter Store", "BigNumber.js", "Nx"],
-            images: [],
-        },
-        {
-            id: 1,
-            title: "FindASide",
-            subtitle: "Sports Facility Booking Marketplace",
-            company: "Pixel Forge Design Limited",
-            role: "Backend Engineer",
-            description: "A sports facility booking and payment marketplace with real-time payment processing.",
-            highlights: [
-                "Architected scalable payment marketplace using Stripe Connect handling real-time payment intents, secure payouts, automated refunds, and recurring transactions",
-                "Developed distributed Node.js backend with Firestore NoSQL database, optimized for performance and horizontal scalability",
-                "Designed RESTful APIs for booking management and payment processing with Firebase Authentication",
-                "Established CI/CD pipeline using GitHub Actions enabling automated testing and zero-downtime deployments",
-                "Implemented comprehensive error handling, distributed logging, and real-time monitoring"
-            ],
-            tech: ["Node.js", "Firestore", "Stripe Connect", "Firebase", "GitHub Actions", "RESTful APIs"],
-            images: ['./projectsnippets/FindASide.png', './projectsnippets/FindASideLogin.png', './projectsnippets/FindASidePayment.png'],
-        },
-        {
-            id: 2,
-            title: "MahaMeru Innovations",
-            subtitle: "Full Stack Web Application",
-            company: "Ineffable Design Solutions",
-            role: "Lead Full Stack Engineer",
-            description: "Dynamic, multilingual full-stack application with advanced animations and CDN optimization.",
-            highlights: [
-                "Led team to build dynamic, multilingual full-stack app using Next.js with server-side rendering",
-                "Designed and implemented data structures, managed MySQL database, and developed custom APIs for production traffic",
-                "Integrated TailwindCSS, GSAP-like animations and Lottie animations for interactive user experience",
-                "Built custom CMS dashboard to manage all site content and images",
-                "Architected network infrastructure using Cloudflare CDN with intelligent routing and edge caching"
-            ],
-            tech: ["Next.js", "React", "MySQL", "TailwindCSS", "Cloudflare CDN", "Lottie"],
-            images: ['./projectsnippets/MahaMeru.png', './projectsnippets/MahaMeruAnimation.png', './projectsnippets/MahaMeruLogo.png'],
-        },
-        {
-            id: 3,
-            title: "TrustPMS",
-            subtitle: "Internal Project Management System",
-            company: "Trusttech Solutions LLP",
-            role: "Fullstack Python Developer",
-            description: "Enterprise project management system handling payroll, attendance, and bug tracking for 50+ employees.",
-            highlights: [
-                "Built TrustPMS handling payroll, attendance, and bug tracking for 50+ employees",
-                "Implemented using React.js, Redux, Socket.io, Django/DRF, MSSQL, and Docker",
-                "Container orchestration on AWS ECS for high availability, auto-scaling, and health checks",
-                "Real-time notifications and data synchronization across distributed teams"
-            ],
-            tech: ["React.js", "Redux", "Django", "DRF", "MSSQL", "Docker", "AWS ECS", "Socket.io"],
-            images: ['./projectsnippets/TrustPMS.png'],
-        },
-        {
-            id: 4,
-            title: "Trust Capital CRM",
-            subtitle: "Cryptocurrency Trading Platform",
-            company: "Trusttech Solutions LLP",
-            role: "Fullstack Python Developer",
-            description: "High-performance CRM serving 4000+ active traders with real-time market data and WebSocket notifications.",
-            highlights: [
-                "Maintained and extended cryptocurrency trading platform CRM built with Django and Django REST Framework",
-                "Served 4000+ active traders with real-time market data integration",
-                "Developed new APIs for trade execution and integrated MetaTrader 5 DLL for account data",
-                "Implemented WebSocket-based notifications for instant alerts to concurrent traders",
-                "Optimized MSSQL queries for high-frequency trading data retrieval"
-            ],
-            tech: ["Django", "Django REST Framework", "WebSockets", "MetaTrader 5", "MSSQL", "Real-time Systems"],
-            images: ['./projectsnippets/TrustCapitalCRM.png'],
-        },
-        {
-            id: 5,
-            title: "Learning to Program",
-            subtitle: "AI-Powered Educational Platform",
-            company: "University of Limerick",
-            role: "MEng Thesis Project",
-            description: "AI-powered Python learning platform using LLMs to generate personalized feedback and programming questions.",
-            highlights: [
-                "Built full-stack web app to teach Python using React.js (frontend) and Flask (backend)",
-                "Leveraged Groq API, Prompt Engineering, NLP techniques and Llama 3.3 70B AI model",
-                "Generated programming questions, feedback, and tips across six topics",
-                "Implemented Pyodide for in-browser Python code execution with real-time feedback",
-                "Grade: A1 | Demonstrates expertise in GenAI and agentic AI workflows"
-            ],
-            tech: ["React.js", "Flask", "Groq API", "Llama 3.3", "Pyodide", "NLP", "Prompt Engineering"],
-            images: ['./projectsnippets/FinalProject.jpeg'],
-        },
-        {
-            id: 6,
-            title: "Carvetpro",
-            subtitle: "Full-Stack Platform",
-            company: "Ineffable Design Solutions",
-            role: "Development Coordinator",
-            description: "Full-stack platform with advanced AWS network architecture and automated PDF generation.",
-            highlights: [
-                "Coordinated 3-person engineering team using agile methodologies and conducted code reviews",
-                "Designed AWS network architecture with CloudFront CDN, S3 origin configuration, and CloudWatch monitoring",
-                "Built React.js frontend and Node.js backend with Google OAuth authentication",
-                "Automated PDF generation via Twilio WhatsApp integration"
-            ],
-            tech: ["React.js", "Node.js", "AWS", "CloudFront", "Google OAuth", "Twilio", "WhatsApp API"],
-            images: ['./projectsnippets/CarvetPro.png'],
-        },
-        {
-            id: 7,
-            title: "Discord Bots",
-            subtitle: "Community Engagement Tools",
-            company: "Wrecked Tech Private Limited",
-            role: "Solutions Developer",
-            description: "Development of multiple Discord bots for user engagement.",
-            highlights: [
-                "OpenAI API powered community chatbot",
-                "cr(AI)yon API powered image generator",
-                "Poll bot",
-                "Feedback bot - Routed to Admin channels",
-            ],
-            tech: ["Discord.js", "Discord.py"],
-            images: ['./projectsnippets/gator1.png', './projectsnippets/gator2.png', './projectsnippets/gator3.png', './projectsnippets/gptbot1.png', './projectsnippets/gptbot2.png', './projectsnippets/nortpoll1.png', './projectsnippets/nortpoll2.png'],
-        },
-        {
-            id: 8,
-            title: "Biowel Website",
-            subtitle: "Corporate Web Presence",
-            company: "Biowel Industries",
-            role: "Web Developer",
-            description: "Design, Development, Hosting and Maintenance of the company website.",
-            highlights: [
-                "Company Website",
-            ],
-            tech: ["Figma", "Node.js", "React.js", "AWS", "VPS"],
-            images: ['./projectsnippets/biowelweb1.png', './projectsnippets/biowelweb2.png', './projectsnippets/biowelweb3.png'],
+    const machineRef = useRef(null);
+    const queue = useRef([]);
+    const audio = useRef(null);
+    const soundOn = useRef(false);
+
+    const play = useCallback((what) => {
+        if (soundOn.current && audio.current) audio.current[what]();
+    }, []);
+
+    const toggleSound = () => {
+        const next = !sound;
+        if (next && !audio.current) audio.current = makeAudio();
+        if (audio.current?.ctx.state === 'suspended') audio.current.ctx.resume();
+        soundOn.current = next;
+        setSound(next);
+        if (next) audio.current?.bell();
+    };
+
+    // Lines ink in as they feed out of the slot at the bottom of the screen.
+    useEffect(() => {
+        const all = document.querySelectorAll('.receipt .ln:not(.printed)');
+        if (!animate) {
+            all.forEach((el) => el.classList.add('printed'));
+            setLinesPrinted((n) => n + all.length);
+            return;
         }
-    ];
+        const slotInset = Math.max((machineRef.current?.offsetHeight ?? 90) - 16, 0);
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach((e) => {
+                if (e.isIntersecting) {
+                    io.unobserve(e.target);
+                    queue.current.push(e.target);
+                }
+            });
+        }, { rootMargin: `0px 0px -${slotInset}px 0px` });
+        all.forEach((el) => io.observe(el));
+        return () => io.disconnect();
+    }, [openItem, animate]);
 
-    const achievements = [
-        {
-            title: "AI & Agentic Systems Consultant",
-            subtitle: "Medical Company Mentorship",
-            description: "Consulting on building agentic AI systems to improve sales, sales insights, and business automation"
-        },
-        {
-            title: "Frontend Developer",
-            subtitle: "Edith - EdTech Startup",
-            description: "Built user-facing features for an educational technology platform"
-        },
-        {
-            title: "AI & Prompt Engineering Educator",
-            subtitle: "Sevana Electricals & Biowel Inc",
-            description: "Conducted multiple Prompt Engineering and AI classes for businesses (30-50 attendees each)"
-        },
-        {
-            title: "Java Teaching Assistant",
-            subtitle: "University of Limerick",
-            description: "Mentored undergrad software engineering students for a brief time"
-        },
-        {
-            title: "Lead Vocal Singer",
-            subtitle: "College Band - ASIET",
-            description: "Performed at college events and cultural activities"
-        },
-        {
-            title: "Event Organizer & Coordinator",
-            subtitle: "Adi Shankara Institute",
-            description: "Organized and coordinated Industrial Visits, Cultural Fests (Christmas, Halloween), and college events"
-        },
-        {
-            title: "Academic Awards",
-            subtitle: "Proficiency Award & Student of the Year",
-            description: "Recognized for academic excellence and leadership throughout schooling"
-        },
-        {
-            title: "Community Mentor",
-            subtitle: "Peer Programming Educator",
-            description: "Helped friends and peers learn programming concepts and best practices"
-        },
-        {
-            title: "Sports & Cultural Activities",
-            subtitle: "Multi-Sport Participant",
-            description: "Active participation in multiple sports and cultural events at ASIET"
+    // The print head: one line per tick, catching up quickly on fast scrolls.
+    useEffect(() => {
+        if (!animate) return;
+        const t = setInterval(() => {
+            const q = queue.current;
+            if (!q.length) return;
+            q.sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
+            const batch = q.splice(0, q.length > 10 ? Math.ceil(q.length / 3) : 1);
+            batch.forEach((el) => el.classList.add('printed'));
+            setLinesPrinted((n) => n + batch.length);
+            play('buzz');
+        }, 50);
+        return () => clearInterval(t);
+    }, [animate, play]);
+
+    const toggleItem = (id) => {
+        const opening = openItem !== id;
+        setOpenItem(opening ? id : null);
+        if (opening) play('bell');
+    };
+
+    const redeem = () => {
+        if (torn) {
+            window.location.href = MAILTO;
+            return;
         }
-    ];
-
-    const toggle = (id) => setOpenItem(openItem === id ? null : id);
+        setTorn(true);
+        play('rip');
+        setTimeout(() => { window.location.href = MAILTO; }, 900);
+    };
 
     useEffect(() => {
         if (!lightbox) return;
@@ -328,6 +217,8 @@ export default function Portfolio() {
             window.removeEventListener('keydown', onKey);
         };
     }, [lightbox]);
+
+    const inProgress = projects.filter((p) => p.status === 'PROCESSING').length;
 
     return (
         <div className="counter min-h-screen text-[var(--ink-soft)] antialiased">
@@ -348,73 +239,33 @@ export default function Portfolio() {
 
         .counter {
           background-color: var(--counter);
-          background-image: radial-gradient(ellipse 70% 50% at 50% 0%, rgb(255 255 255 / .06), transparent 70%);
+          background-image: radial-gradient(ellipse 70% 40% at 50% 100%, rgb(255 255 255 / .06), transparent 70%);
         }
 
-        /* the machine: worn enamel register */
-        .printer {
-          background-color: #C8BDA5;
-          background-image:
-            radial-gradient(ellipse 18% 30% at 8% 85%, rgb(70 55 35 / .22), transparent 70%),
-            radial-gradient(ellipse 12% 25% at 93% 20%, rgb(70 55 35 / .18), transparent 70%),
-            radial-gradient(ellipse 40% 12% at 60% 100%, rgb(60 45 30 / .25), transparent 70%),
-            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .25 0 0 0 0 .2 0 0 0 0 .12 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
-            linear-gradient(#D6CCB5, #BDB199 70%, #A89C83);
-          box-shadow: 0 18px 30px -12px rgb(0 0 0 / .85), inset 0 2px 0 rgb(255 255 255 / .45), inset 0 -4px 0 rgb(0 0 0 / .18);
-          border: 1px solid #8F846C;
-        }
-        .plate {
-          background: linear-gradient(135deg, #D9B866, #A8812F 45%, #C9A24F 60%, #8A6823);
-          box-shadow: inset 0 1px 0 rgb(255 240 200 / .6), inset 0 -1px 0 rgb(0 0 0 / .35), 0 1px 2px rgb(0 0 0 / .45);
-          color: #3A2A0C; text-shadow: 0 1px 0 rgb(255 235 180 / .55);
-          font-family: Georgia, 'Times New Roman', serif;
-        }
-        .screw { width: 7px; height: 7px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #EADBB0, #7A6230); box-shadow: 0 0 0 1px rgb(0 0 0 / .35); position: relative; }
-        .screw::after { content: ''; position: absolute; left: 1px; right: 1px; top: 3px; height: 1px; background: rgb(40 28 8 / .8); transform: rotate(35deg); }
-        .grille { background: repeating-linear-gradient(to bottom, #2C261C 0 3px, transparent 3px 7px); border-radius: 2px; opacity: .75; }
-        .lamp { background: radial-gradient(circle at 40% 35%, #FFE3A3, #F29A1F 45%, #8A4A0A); box-shadow: 0 0 10px 2px rgb(242 154 31 / .55), 0 0 0 2px #6B5E47, 0 0 0 3px #D6CCB5; }
-        .keycap {
-          background: linear-gradient(#3A3530, #26221E); color: #E9DFC7; border-radius: 4px;
-          box-shadow: 0 3px 0 #12100E, 0 4px 6px rgb(0 0 0 / .4), inset 0 1px 0 rgb(255 255 255 / .12);
-          transition: transform .08s, box-shadow .08s;
-        }
-        .keycap:hover { background: linear-gradient(#4A433C, #2E2924); }
-        .keycap:active { transform: translateY(3px); box-shadow: 0 0 0 #12100E, 0 1px 2px rgb(0 0 0 / .4), inset 0 1px 0 rgb(255 255 255 / .12); }
-        .slot { background: #0B0A0A; box-shadow: inset 0 3px 6px rgb(0 0 0 / .9); }
-        .tearbar {
-          height: 9px;
-          background:
-            linear-gradient(135deg, transparent 50%, #6E675C 50%) 0 100% / 8px 5px repeat-x,
-            linear-gradient(225deg, transparent 50%, #6E675C 50%) 0 100% / 8px 5px repeat-x,
-            linear-gradient(#B9B2A6, #7C766B) 0 0 / 100% 4px no-repeat;
-          filter: drop-shadow(0 2px 1px rgb(0 0 0 / .35));
-        }
-
-        /* paper */
+        /* ---- paper ---- */
         .receipt {
           position: relative;
           background-color: var(--paper);
           background-image:
             linear-gradient(90deg, rgb(0 0 0 / .035), transparent 6%, transparent 94%, rgb(0 0 0 / .035)),
             url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-          box-shadow: 0 30px 60px -20px rgb(0 0 0 / .7), 0 2px 6px rgb(0 0 0 / .3);
-          animation: print 1.6s steps(16, end) both;
+          box-shadow: 0 0 60px -10px rgb(0 0 0 / .7), 0 2px 6px rgb(0 0 0 / .3);
         }
-        .receipt::after {
-          content: ''; position: absolute; left: 0; right: 0; bottom: -10px; height: 10px;
+        /* torn top edge, from the last customer */
+        .receipt::before {
+          content: ''; position: absolute; left: 0; right: 0; top: -10px; height: 10px;
           background:
-            linear-gradient(135deg, var(--paper) 50%, transparent 50%) 0 0 / 14px 10px repeat-x,
-            linear-gradient(225deg, var(--paper) 50%, transparent 50%) 0 0 / 14px 10px repeat-x;
+            linear-gradient(45deg, var(--paper) 50%, transparent 50%) 0 100% / 14px 10px repeat-x,
+            linear-gradient(-45deg, var(--paper) 50%, transparent 50%) 0 100% / 14px 10px repeat-x;
         }
-        @keyframes print { from { transform: translateY(-55vh); } to { transform: translateY(0); } }
 
         .leader { flex: 1; min-width: 1.5rem; border-bottom: 2px dotted rgb(29 28 26 / .35); transform: translateY(-.3em); }
         .rule { border-top: 2px dashed rgb(29 28 26 / .45); margin: 1.25rem 0; }
         .rule-double { border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); height: 6px; margin: 1.25rem 0; }
 
         .thermal { filter: grayscale(1) contrast(1.5) brightness(1.08); mix-blend-mode: multiply; }
-        .thermal-soft { filter: grayscale(1) contrast(1.15); mix-blend-mode: multiply; transition: filter .25s; }
-        .thermal-soft:hover { filter: none; }
+        .thermal-soft { filter: grayscale(1) contrast(1.2); mix-blend-mode: multiply; transition: filter .25s; }
+        .thermal-soft:hover { filter: none; mix-blend-mode: normal; }
 
         .stamp {
           display: inline-block; color: var(--stamp); border: 2.5px solid currentColor; border-radius: 4px;
@@ -423,6 +274,14 @@ export default function Portfolio() {
           mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 -2.2 1.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
         }
 
+        /* ---- printing ---- */
+        .animate .ln:not(.printed) { opacity: 0; }
+        .animate .ln.printed { animation: ink .32s steps(4, end) both; }
+        @keyframes ink {
+          0%   { opacity: .15; filter: blur(.6px); transform: translateY(2px); }
+          60%  { opacity: .7;  filter: blur(.2px); }
+          100% { opacity: 1;   filter: none; transform: none; }
+        }
         .blink { animation: blink 1.1s steps(2, start) infinite; }
         @keyframes blink { to { visibility: hidden; } }
 
@@ -430,223 +289,306 @@ export default function Portfolio() {
         .key { border: 2px solid var(--ink); color: var(--ink); transition: background .15s, color .15s; }
         .key:hover { background: var(--ink); color: var(--paper); }
 
+        /* ---- coupon ---- */
+        .tear { display: flex; align-items: center; gap: .6rem; color: var(--faded); font-size: 11px; letter-spacing: .3em; }
+        .tear::before, .tear::after { content: ''; flex: 1; border-top: 2px dashed rgb(29 28 26 / .35); }
+        .coupon { position: relative; transition: transform .9s cubic-bezier(.2,.8,.2,1), box-shadow .9s, margin .9s cubic-bezier(.2,.8,.2,1); background: var(--paper); }
+        .coupon.torn {
+          transform: translate(16px, 28px) rotate(-4deg);
+          margin-bottom: 4.5rem;
+          box-shadow: 0 24px 40px -12px rgb(0 0 0 / .55);
+        }
+        .coupon.torn::before {
+          content: ''; position: absolute; left: 0; right: 0; top: -8px; height: 8px;
+          background:
+            linear-gradient(45deg, var(--paper) 50%, transparent 50%) 0 100% / 10px 8px repeat-x,
+            linear-gradient(-45deg, var(--paper) 50%, transparent 50%) 0 100% / 10px 8px repeat-x;
+        }
+
+        /* ---- the machine ---- */
+        .machine {
+          background-color: #C8BDA5;
+          background-image:
+            radial-gradient(ellipse 18% 40% at 6% 90%, rgb(70 55 35 / .25), transparent 70%),
+            radial-gradient(ellipse 12% 30% at 94% 25%, rgb(70 55 35 / .2), transparent 70%),
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .25 0 0 0 0 .2 0 0 0 0 .12 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+            linear-gradient(#D6CCB5, #BDB199 70%, #A89C83);
+          box-shadow: 0 -14px 30px -10px rgb(0 0 0 / .7), inset 0 2px 0 rgb(255 255 255 / .45), inset 0 -4px 0 rgb(0 0 0 / .2);
+          border: 1px solid #8F846C; border-bottom: 0;
+        }
+        .slot { background: #0B0A0A; box-shadow: inset 0 3px 6px rgb(0 0 0 / .95), 0 1px 0 rgb(255 255 255 / .35); }
+        .tearbar {
+          height: 7px;
+          background:
+            linear-gradient(45deg, transparent 50%, #6E675C 50%) 0 0 / 8px 5px repeat-x,
+            linear-gradient(-45deg, transparent 50%, #6E675C 50%) 0 0 / 8px 5px repeat-x;
+        }
+        .plate {
+          background: linear-gradient(135deg, #D9B866, #A8812F 45%, #C9A24F 60%, #8A6823);
+          box-shadow: inset 0 1px 0 rgb(255 240 200 / .6), inset 0 -1px 0 rgb(0 0 0 / .35), 0 1px 2px rgb(0 0 0 / .45);
+          color: #3A2A0C; text-shadow: 0 1px 0 rgb(255 235 180 / .55);
+          font-family: Georgia, 'Times New Roman', serif;
+        }
+        .screw { width: 7px; height: 7px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #EADBB0, #7A6230); box-shadow: 0 0 0 1px rgb(0 0 0 / .35); position: relative; flex-shrink: 0; }
+        .screw::after { content: ''; position: absolute; left: 1px; right: 1px; top: 3px; height: 1px; background: rgb(40 28 8 / .8); transform: rotate(35deg); }
+        .grille { background: repeating-linear-gradient(to bottom, #2C261C 0 3px, transparent 3px 7px); border-radius: 2px; opacity: .7; }
+        .odo { background: #16130F; box-shadow: inset 0 2px 4px #000, 0 1px 0 rgb(255 255 255 / .4); }
+        .odo span { background: linear-gradient(#2A241C, #0F0D0A 50%, #2A241C); color: #EFE4C8; }
+        .lamp { background: radial-gradient(circle at 40% 35%, #FFE3A3, #F29A1F 45%, #8A4A0A); box-shadow: 0 0 8px 2px rgb(242 154 31 / .6); }
+        .lamp.off { background: radial-gradient(circle at 40% 35%, #8C7B5E, #4A3E2C); box-shadow: none; }
+        .keycap {
+          background: linear-gradient(#3A3530, #26221E); color: #E9DFC7; border-radius: 4px;
+          box-shadow: 0 3px 0 #12100E, 0 4px 6px rgb(0 0 0 / .4), inset 0 1px 0 rgb(255 255 255 / .12);
+          transition: transform .08s, box-shadow .08s;
+        }
+        .keycap:hover { background: linear-gradient(#4A433C, #2E2924); }
+        .keycap:active, .keycap[aria-pressed="true"] { transform: translateY(2px); box-shadow: 0 1px 0 #12100E, 0 1px 2px rgb(0 0 0 / .4), inset 0 1px 0 rgb(255 255 255 / .12); }
+
         @media (prefers-reduced-motion: reduce) {
-          .receipt, .blink { animation: none; }
           html { scroll-behavior: auto; }
+          .blink { animation: none; }
+          .coupon { transition: none; }
         }
         @media print {
           body, .counter { background: #fff !important; }
-          .printer, .no-print { display: none !important; }
-          .receipt { box-shadow: none; animation: none; }
+          .machine, .no-print { display: none !important; }
+          .receipt { box-shadow: none; }
+          .ln { opacity: 1 !important; animation: none !important; }
         }
       `}</style>
 
-            <main className="relative px-4 pt-6 sm:pt-10 pb-24">
-                {/* Printer */}
-                <div className="printer relative z-20 mx-auto max-w-[680px] rounded-t-[22px] rounded-b-md px-3 sm:px-6 pt-4 pb-4">
-                    <div className="flex items-center gap-3 sm:gap-5">
-                        {/* nameplate */}
-                        <div className="plate shrink-0 flex items-center gap-1.5 sm:gap-2 rounded-sm px-1.5 sm:px-2 py-1.5">
-                            <span className="screw" />
-                            <div className="text-center leading-none">
-                                <p className="text-[13px] sm:text-[15px] font-bold tracking-[0.18em]">PA-3000</p>
-                                <p className="mt-1 text-[7px] sm:text-[8px] tracking-[0.25em] uppercase">Dublin · Est. 2022</p>
-                            </div>
-                            <span className="screw" />
-                        </div>
-
-                        <div className="grille hidden sm:block flex-1 h-7" aria-hidden="true" />
-
-                        <span className="lamp hidden sm:block shrink-0 h-3 w-3 rounded-full" title="Power" aria-hidden="true" />
-
-                        <nav className="no-print ml-auto sm:ml-0 flex gap-1.5 sm:gap-2" aria-label="Sections">
-                            {[['#items', 'Items'], ['#skills', 'Skills'], ['#total', 'Total']].map(([href, label]) => (
-                                <a key={href} href={href} className="keycap px-1.5 sm:px-3 py-1.5 text-[10px] sm:text-[11px] font-medium tracking-[0.06em] sm:tracking-[0.12em] uppercase">{label}</a>
-                            ))}
-                        </nav>
-                    </div>
-                    <div className="slot mt-4 h-2.5 rounded-sm" />
-                </div>
-                <div className="tearbar relative z-30 mx-auto max-w-[640px] -mt-px" aria-hidden="true" />
-
+            <main className="relative px-4 pt-10 sm:pt-14">
                 {/* Receipt */}
-                <div className="relative z-10 -mt-4 mx-auto max-w-[620px] overflow-hidden pb-3">
-                    <article className="receipt px-5 sm:px-10 pt-12 pb-12 text-[13px] sm:text-sm leading-relaxed">
+                <article className={`receipt ${animate ? 'animate' : ''} relative z-10 mx-auto max-w-[620px] px-5 sm:px-10 pt-10 pb-16 text-[13px] sm:text-sm leading-relaxed`}>
 
-                        {/* Header */}
-                        <header className="text-center">
-                            <img src="./otherimages/profilephoto.jpg" alt="Paul Aji" className="thermal mx-auto w-20 h-20 object-cover rounded-full" />
-                            <h1 className="dot mt-5 text-5xl sm:text-6xl leading-none text-[var(--ink)] tracking-wide">PAUL AJI</h1>
-                            <p className="mt-3 font-medium tracking-[0.2em] text-[var(--ink)]">FULL STACK ENGINEER</p>
-                            <p className="tracking-[0.15em]">PAYMENTS · SETTLEMENT · CLOUD</p>
-                            <p className="mt-2 text-[var(--faded)]">DUBLIN, IRELAND</p>
+                    <header className="text-center">
+                        <img src="./otherimages/profilephoto.jpg" alt="Paul Aji" className="ln thermal mx-auto w-20 h-20 object-cover rounded-full" />
+                        <h1 className="ln dot mt-5 text-5xl sm:text-6xl leading-none text-[var(--ink)] tracking-wide">PAUL AJI</h1>
+                        <p className="ln mt-3 font-medium tracking-[0.2em] text-[var(--ink)]">FULL STACK ENGINEER</p>
+                        <p className="ln tracking-[0.15em]">PAYMENTS · SETTLEMENT · CLOUD</p>
+                        <p className="ln mt-2 text-[var(--faded)]">DUBLIN, IRELAND</p>
+                        <p className="ln">
                             <a href={`mailto:${EMAIL}`} className="text-[var(--faded)] underline decoration-dotted underline-offset-4 hover:text-[var(--ink)] break-all">{EMAIL}</a>
-                        </header>
-
-                        <Rule />
-
-                        <div className="grid grid-cols-2 gap-x-4">
-                            <p>DATE: {clock.date}</p>
-                            <p className="text-right">TIME: {clock.time}</p>
-                            <p>TERMINAL: 01</p>
-                            <p className="text-right">CASHIER: PAUL</p>
-                            <p>ORDER: #0003-YRS</p>
-                            <p className="text-right">
-                                TXN: <span className="text-[var(--ink)] font-medium">APPROVED</span>
-                            </p>
-                        </div>
-
-                        <Rule double />
-
-                        <p className="text-center tracking-[0.3em] text-[var(--ink)] font-medium">*** CUSTOMER COPY ***</p>
-                        <p className="mt-4">
-                            NOTE: Full-stack engineer, 3+ years shipping production systems in Python and TypeScript. Currently on the Settle team at <b className="font-medium text-[var(--ink)]">Infinite Payment Technology</b>, making sure money moves, reconciles and bills correctly, because &lsquo;close enough&rsquo; isn&rsquo;t a feature in payments. MEng in Computer Vision &amp; AI, First Class Honours, University of Limerick.
                         </p>
+                    </header>
 
-                        <Rule />
+                    <Rule />
 
-                        {/* Items */}
-                        <Heading id="items">ITEMS PURCHASED</Heading>
-                        <div className="flex justify-between text-[var(--faded)] text-xs tracking-[0.15em] mb-2">
-                            <span>QTY&nbsp; ITEM</span>
-                            <span>STATUS</span>
-                        </div>
+                    <div className="grid grid-cols-2 gap-x-4">
+                        <p className="ln">DATE: {clock.date}</p>
+                        <p className="ln text-right">TIME: {clock.time}</p>
+                        <p className="ln">TERMINAL: 01</p>
+                        <p className="ln text-right">CASHIER: PAUL</p>
+                        <p className="ln">ORDER: #0003-YRS</p>
+                        <p className="ln text-right">TXN: <span className="text-[var(--ink)] font-medium">APPROVED</span></p>
+                    </div>
 
-                        <ul>
-                            {projects.map((p, i) => {
-                                const open = openItem === p.id;
-                                return (
-                                    <li key={p.id} className="py-2">
-                                        <button onClick={() => toggle(p.id)} aria-expanded={open} className="item-btn w-full text-left">
-                                            <Line
-                                                label={<><span className="text-[var(--faded)]">{pad(i + 1)}&nbsp;&nbsp;</span><span className="item-name font-medium text-[var(--ink)] uppercase px-0.5 -mx-0.5 transition-colors">{p.title}</span></>}
-                                                value={p.status === 'PROCESSING'
-                                                    ? <span className="font-medium text-[var(--stamp)]">PROCESSING<span className="blink">_</span></span>
-                                                    : <span className="text-[var(--ink)]">SHIPPED ✓</span>}
-                                            />
-                                            <p className="pl-[2.6em] text-xs text-[var(--faded)]">
-                                                {p.company} · {p.role} <span className="no-print text-[var(--ink-soft)]">[{open ? '-' : '+'}]</span>
-                                            </p>
-                                        </button>
+                    <Rule double />
 
-                                        {open && (
-                                            <div className="pl-[2.6em] mt-3 mb-2 space-y-3">
-                                                <p className="text-[var(--ink)]">{p.description}</p>
-                                                <ul className="space-y-1.5">
-                                                    {p.highlights.map((h, j) => (
-                                                        <li key={j} className="grid grid-cols-[1.4em_1fr]"><span>+</span><span>{h}</span></li>
-                                                    ))}
-                                                </ul>
-                                                <p className="text-xs"><span className="text-[var(--faded)]">STACK:</span> {p.tech.join(' / ')}</p>
-                                                {p.images.length > 0 && (
-                                                    <div className="no-print flex gap-2 overflow-x-auto pb-1">
-                                                        {p.images.map((img, k) => (
-                                                            <button key={img} onClick={() => setLightbox({ images: p.images, index: k, title: p.title })}
-                                                                className="shrink-0 w-32 h-20 sm:w-40 sm:h-24 border border-[var(--ink)]/30 overflow-hidden bg-white" aria-label={`View ${p.title} screenshot ${k + 1}`}>
-                                                                <img src={img} alt="" loading="lazy" className="thermal-soft w-full h-full object-cover object-top" />
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )}
-                                    </li>
-                                );
-                            })}
-                        </ul>
+                    <p className="ln text-center tracking-[0.3em] text-[var(--ink)] font-medium">*** CUSTOMER COPY ***</p>
+                    <p className="ln mt-4">
+                        NOTE: Full-stack engineer, 3+ years shipping production systems in Python and TypeScript. Currently on the Settle team at <b className="font-medium text-[var(--ink)]">Infinite Payment Technology</b>, making sure money moves, reconciles and bills correctly, because &lsquo;close enough&rsquo; isn&rsquo;t a feature in payments.
+                    </p>
 
-                        <Rule />
-                        <Line label="SUBTOTAL" value={`${projects.length} ITEMS`} strong />
-                        <Line label="ITEMS IN PROGRESS" value={projects.filter((p) => p.status === 'PROCESSING').length} />
-                        <Line label="ITEMS SHIPPED" value={projects.filter((p) => p.status !== 'PROCESSING').length} />
+                    <Rule />
 
-                        <Rule />
+                    {/* Items */}
+                    <Heading id="items">ITEMS PURCHASED</Heading>
+                    <div className="ln flex justify-between text-[var(--faded)] text-xs tracking-[0.15em] mb-2">
+                        <span>NO. ITEM</span>
+                        <span>STATUS</span>
+                    </div>
 
-                        {/* Skills */}
-                        <Heading id="skills">ITEMISED SKILLS</Heading>
-                        <div className="space-y-3">
-                            {skills.map((c) => (
-                                <div key={c.label}>
-                                    <Line label={<span className="font-medium text-[var(--ink)] uppercase">{c.label}</span>} value={`x${c.items.length}`} />
-                                    <p className="pl-4 text-xs text-[var(--faded)]">{c.items.join(', ')}</p>
-                                </div>
-                            ))}
-                        </div>
+                    <ul>
+                        {projects.map((p, i) => {
+                            const open = openItem === p.id;
+                            return (
+                                <li key={p.id} className="py-2">
+                                    <button onClick={() => toggleItem(p.id)} aria-expanded={open} className="item-btn w-full text-left">
+                                        <Line
+                                            label={<><span className="text-[var(--faded)]">{pad(i + 1)}&nbsp;&nbsp;</span><span className="item-name font-medium text-[var(--ink)] uppercase px-0.5 -mx-0.5 transition-colors">{p.title}</span></>}
+                                            value={p.status === 'PROCESSING'
+                                                ? <span className="font-medium text-[var(--stamp)]">PROCESSING<span className="blink">_</span></span>
+                                                : <span className="text-[var(--ink)]">SHIPPED</span>}
+                                        />
+                                        <p className="ln pl-[2.6em] text-xs text-[var(--faded)]">
+                                            {p.company} · {p.role} <span className="no-print text-[var(--ink-soft)]">[{open ? '-' : '+'}]</span>
+                                        </p>
+                                    </button>
 
-                        <Rule />
-
-                        <p className="text-center text-xs tracking-[0.3em] text-[var(--faded)] mb-4">WE ACCEPT</p>
-                        <div className="text-[var(--ink)]">
-                            <TechBanner />
-                        </div>
-
-                        <Rule />
-
-                        {/* Education */}
-                        <Heading>EDUCATION</Heading>
-                        <div className="space-y-4">
-                            <div className="relative">
-                                <Line label={<span className="font-medium text-[var(--ink)]">MENG, COMPUTER VISION &amp; AI</span>} value="QCA 3.37" />
-                                <p className="text-xs text-[var(--faded)]">University of Limerick · Sep 2024 – Sep 2025</p>
-                                <Stamp className="absolute right-2 -bottom-4 text-[11px]">First Class</Stamp>
-                            </div>
-                            <div className="pt-3">
-                                <Line label={<span className="font-medium text-[var(--ink)]">B.TECH, COMPUTER SCIENCE</span>} value="GPA 2.76" />
-                                <p className="text-xs text-[var(--faded)]">Adi Shankara Institute of Engineering and Technology · 2018 – Feb 2023</p>
-                            </div>
-                        </div>
-
-                        <Rule />
-
-                        {/* Achievements */}
-                        <Heading>COMPLIMENTARY EXTRAS</Heading>
-                        <ul className="space-y-3">
-                            {achievements.map((a) => (
-                                <li key={a.title}>
-                                    <Line label={<span className="text-[var(--ink)]">{a.title.toUpperCase()}</span>} value="FREE" />
-                                    <p className="text-xs text-[var(--faded)]">{a.subtitle} — {a.description}</p>
+                                    {open && (
+                                        <div className="pl-[2.6em] mt-3 mb-3 space-y-3">
+                                            <p className="ln text-[var(--ink)]">{p.description}</p>
+                                            {p.images.length > 0 && (
+                                                <div className="ln no-print">
+                                                    <button onClick={() => setLightbox({ images: p.images, index: 0, title: p.title })}
+                                                        className="block w-full aspect-[16/9] overflow-hidden border border-[var(--ink)]/25 bg-white" aria-label={`View ${p.title} screenshots`}>
+                                                        <img src={p.images[0]} alt={`${p.title} screenshot`} loading="lazy" className="thermal-soft w-full h-full object-cover object-top" />
+                                                    </button>
+                                                    <p className="mt-1 text-[11px] text-[var(--faded)]">FIG. {pad(i + 1)} · {p.images.length > 1 ? `TAP FOR ${p.images.length} IMAGES` : 'TAP TO ENLARGE'}</p>
+                                                </div>
+                                            )}
+                                            <ul className="space-y-1.5">
+                                                {p.highlights.map((h) => (
+                                                    <li key={h} className="ln grid grid-cols-[1.4em_1fr]"><span>+</span><span>{h}</span></li>
+                                                ))}
+                                            </ul>
+                                            <p className="ln text-xs"><span className="text-[var(--faded)]">STACK:</span> {p.tech.join(' / ')}</p>
+                                        </div>
+                                    )}
                                 </li>
-                            ))}
-                        </ul>
+                            );
+                        })}
+                    </ul>
 
-                        <Rule double />
+                    <Rule />
+                    <Line label="SUBTOTAL" value={`${projects.length} ITEMS`} strong />
+                    <Line label="IN PROGRESS" value={inProgress} />
+                    <Line label="SHIPPED" value={projects.length - inProgress} />
 
-                        {/* Totals */}
-                        <div id="total" className="scroll-mt-6 space-y-1.5 text-[15px] sm:text-base">
-                            <Line label="TOTAL" value="3+ YRS EXPERIENCE" strong className="text-lg sm:text-xl" />
-                            <Line label="PAYMENT METHOD" value="FIRST CLASS HONOURS" />
-                            <Line label="TAX (BUGS)" value="0.00" />
-                            <Line label="CHANGE DUE" value="YOUR NEXT HIRE" strong />
-                        </div>
-                        <div className="text-center pt-6 pb-2">
-                            <Stamp className="text-xl sm:text-2xl">Paid in full</Stamp>
-                        </div>
+                    <Rule />
 
-                        <Rule double />
-
-                        {/* Footer */}
-                        <footer id="contact" className="text-center space-y-1">
-                            <p className="font-medium text-[var(--ink)] tracking-[0.2em]">THANK YOU FOR SCROLLING</p>
-                            <p>NO REFUNDS ON GOOD CODE</p>
-                            <p className="text-[var(--faded)] text-xs">KEEP THIS RECEIPT FOR YOUR RECORDS</p>
-
-                            <a href={`mailto:${EMAIL}`} className="block mt-6 text-[var(--ink)] hover:opacity-70 transition" aria-label={`Email ${EMAIL}`}>
-                                <Barcode text={EMAIL} />
-                                <p className="mt-1 text-xs tracking-[0.35em]">SCAN TO HIRE</p>
-                            </a>
-
-                            <div className="no-print mt-8 grid grid-cols-3 gap-2 text-xs font-medium tracking-[0.15em]">
-                                <a href="https://github.com/paulaji" target="_blank" rel="noopener noreferrer" className="key py-2.5">[ GITHUB ]</a>
-                                <a href="https://linkedin.com/in/paulaji/" target="_blank" rel="noopener noreferrer" className="key py-2.5">[ LINKEDIN ]</a>
-                                <a href={`mailto:${EMAIL}`} className="key py-2.5">[ EMAIL ]</a>
+                    {/* Skills */}
+                    <Heading id="skills">ITEMISED SKILLS</Heading>
+                    <div className="space-y-3">
+                        {skills.map((c) => (
+                            <div key={c.label}>
+                                <Line label={<span className="font-medium text-[var(--ink)] uppercase">{c.label}</span>} value={`x${c.items.length}`} />
+                                <p className="ln pl-4 text-xs text-[var(--faded)]">{c.items.join(', ')}</p>
                             </div>
-                            <button onClick={() => window.print()} className="no-print mt-3 w-full text-xs text-[var(--faded)] hover:text-[var(--ink)] underline decoration-dotted underline-offset-4">
-                                print a copy
-                            </button>
+                        ))}
+                    </div>
 
-                            <p className="pt-6 text-[var(--faded)] text-[11px]">&copy; {new Date().getFullYear()} PAUL AJI · DUBLIN</p>
-                        </footer>
-                    </article>
+                    <Rule />
+
+                    <p className="ln text-center text-xs tracking-[0.3em] text-[var(--faded)] mb-4">WE ACCEPT</p>
+                    <div className="ln text-[var(--ink)]">
+                        <TechBanner />
+                    </div>
+
+                    <Rule />
+
+                    {/* Education */}
+                    <Heading>EDUCATION</Heading>
+                    <div className="space-y-4">
+                        {education.map((e) => (
+                            <div key={e.degree} className="relative">
+                                <Line label={<span className="font-medium text-[var(--ink)] uppercase">{e.degree}</span>} value={e.grade} />
+                                <p className="ln text-xs text-[var(--faded)]">{e.school} · {e.when}</p>
+                                {e.stamp && <Stamp className="absolute right-2 -bottom-5 text-[11px]">{e.stamp}</Stamp>}
+                            </div>
+                        ))}
+                    </div>
+
+                    <Rule />
+
+                    {/* Extras */}
+                    <Heading>COMPLIMENTARY EXTRAS</Heading>
+                    <ul className="space-y-2">
+                        {extras.map((x) => (
+                            <li key={x.title}>
+                                <Line label={<span className="text-[var(--ink)] uppercase">{x.title}</span>} value="FREE" />
+                                <p className="ln text-xs text-[var(--faded)]">{x.note}</p>
+                            </li>
+                        ))}
+                    </ul>
+
+                    <Rule double />
+
+                    {/* Totals */}
+                    <div id="total" className="scroll-mt-8 space-y-1.5 text-[15px] sm:text-base">
+                        <Line label="TOTAL" value="3+ YRS EXPERIENCE" strong className="text-lg sm:text-xl" />
+                        <Line label="PAYMENT METHOD" value="FIRST CLASS HONOURS" />
+                        <Line label="TAX (BUGS)" value="0.00" />
+                        <Line label="CHANGE DUE" value="YOUR NEXT HIRE" strong />
+                    </div>
+                    <div className="ln text-center pt-6 pb-2">
+                        <Stamp className="text-xl sm:text-2xl">Paid in full</Stamp>
+                    </div>
+
+                    <Rule double />
+
+                    <footer className="text-center space-y-1">
+                        <p className="ln font-medium text-[var(--ink)] tracking-[0.2em]">THANK YOU FOR SCROLLING</p>
+                        <p className="ln">NO REFUNDS ON GOOD CODE</p>
+                        <p className="ln text-[var(--faded)] text-xs">{pad(linesPrinted, 4)} LINES PRINTED FOR YOU</p>
+
+                        <div className="no-print pt-8">
+                            <p className="ln tear">✂ TEAR HERE</p>
+                        </div>
+
+                        {/* Coupon */}
+                        <div className={`coupon ${torn ? 'torn' : ''} mt-4 text-left`}>
+                            <div className="ln border-2 border-dashed border-[var(--ink)]/50 p-5 sm:p-6">
+                                <div className="flex items-start justify-between gap-4">
+                                    <div>
+                                        <p className="text-[11px] tracking-[0.3em] text-[var(--faded)]">COUPON</p>
+                                        <p className="dot mt-2 text-2xl sm:text-3xl leading-none text-[var(--ink)]">ONE (1) COFFEE CHAT</p>
+                                        <p className="mt-2 text-xs">WITH PAUL AJI · NO EXPIRY · NOT TRANSFERABLE (IT IS, SHARE IT)</p>
+                                    </div>
+                                    {torn && <Stamp className="shrink-0 text-xs mt-1">Redeemed</Stamp>}
+                                </div>
+                                <div className="mt-5 text-[var(--ink)]">
+                                    <Barcode text={EMAIL} />
+                                    <p className="mt-1 text-center text-[10px] tracking-[0.35em] break-all">{EMAIL.toUpperCase()}</p>
+                                </div>
+                                <button onClick={redeem} className="no-print key mt-5 w-full py-2.5 text-xs font-medium tracking-[0.2em]">
+                                    {torn ? '[ OPEN EMAIL AGAIN ]' : '[ ✂ TEAR & REDEEM ]'}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="ln no-print mt-10 grid grid-cols-2 gap-2 text-xs font-medium tracking-[0.15em]">
+                            <a href={links.github} target="_blank" rel="noopener noreferrer" className="key py-2.5">[ GITHUB ]</a>
+                            <a href={links.linkedin} target="_blank" rel="noopener noreferrer" className="key py-2.5">[ LINKEDIN ]</a>
+                        </div>
+                        <p className="ln pt-2">
+                            <button onClick={() => window.print()} className="no-print text-xs text-[var(--faded)] hover:text-[var(--ink)] underline decoration-dotted underline-offset-4">
+                                print a real copy
+                            </button>
+                        </p>
+                        <p className="ln pt-4 text-[var(--faded)] text-[11px]">&copy; {new Date().getFullYear()} PAUL AJI · DUBLIN</p>
+                    </footer>
+                </article>
+
+                {/* The machine. Paper feeds up out of its slot as you scroll. */}
+                <div ref={machineRef} className="sticky bottom-0 z-30 -mx-4 px-2 sm:px-4 pointer-events-none">
+                    <div className="machine pointer-events-auto relative mx-auto max-w-[700px] rounded-t-[22px] px-3 sm:px-6 pt-3 pb-3 sm:pb-4">
+                        <div className="slot relative mx-auto max-w-[640px] h-3 rounded-sm">
+                            <div className="tearbar absolute inset-x-0 -top-1" aria-hidden="true" />
+                        </div>
+
+                        <div className="mt-3 flex items-center gap-2 sm:gap-4">
+                            <div className="plate shrink-0 flex items-center gap-1.5 rounded-sm px-1.5 sm:px-2 py-1.5">
+                                <span className="screw" />
+                                <div className="text-center leading-none">
+                                    <p className="text-[12px] sm:text-[14px] font-bold tracking-[0.16em]">PA-3000</p>
+                                    <p className="hidden sm:block mt-1 text-[7px] tracking-[0.25em] uppercase">Dublin · Est. 2022</p>
+                                </div>
+                                <span className="screw" />
+                            </div>
+
+                            <div className="odo shrink-0 flex items-center gap-[2px] rounded-sm p-[3px]" title="Lines printed" aria-label={`${linesPrinted} lines printed`}>
+                                {pad(linesPrinted % 10000, 4).split('').map((d, i) => (
+                                    <span key={i} className="w-3.5 sm:w-4 text-center text-[11px] sm:text-[12px] leading-5 font-medium rounded-[1px]">{d}</span>
+                                ))}
+                            </div>
+
+                            <div className="grille hidden md:block flex-1 h-6" aria-hidden="true" />
+
+                            <nav className="no-print ml-auto md:ml-0 flex items-center gap-1.5 sm:gap-2" aria-label="Sections">
+                                {[['#items', 'Items'], ['#skills', 'Skills'], ['#total', 'Total']].map(([href, label]) => (
+                                    <a key={href} href={href} className="keycap hidden sm:inline-block px-3 py-1.5 text-[11px] font-medium tracking-[0.12em] uppercase">{label}</a>
+                                ))}
+                                <a href="#items" className="keycap sm:hidden px-2 py-1.5 text-[10px] font-medium tracking-[0.08em] uppercase">Items</a>
+                                <button onClick={toggleSound} aria-pressed={sound} aria-label={sound ? 'Turn printer sound off' : 'Turn printer sound on'}
+                                    className="keycap flex items-center gap-1.5 px-2 sm:px-3 py-1.5 text-[10px] sm:text-[11px] font-medium tracking-[0.08em] sm:tracking-[0.12em] uppercase">
+                                    <span className={`lamp ${sound ? '' : 'off'} h-2 w-2 rounded-full`} aria-hidden="true" />
+                                    Sound
+                                </button>
+                            </nav>
+                        </div>
+                    </div>
                 </div>
             </main>
 
@@ -654,10 +596,10 @@ export default function Portfolio() {
             {lightbox && (
                 <div className="fixed inset-0 z-[100] bg-black/90 flex flex-col items-center justify-center p-4" onClick={() => setLightbox(null)}>
                     <div className="relative max-w-5xl w-full" onClick={(e) => e.stopPropagation()}>
-                        <img src={lightbox.images[lightbox.index]} alt={`${lightbox.title} screenshot ${lightbox.index + 1}`} className="w-full max-h-[80vh] object-contain" />
+                        <img src={lightbox.images[lightbox.index]} alt={`${lightbox.title} screenshot ${lightbox.index + 1}`} className="w-full max-h-[78vh] object-contain" />
                         <div className="mt-4 flex items-center justify-between text-xs tracking-[0.2em] text-[#C9C4BB]">
                             <button disabled={lightbox.index === 0} onClick={() => setLightbox({ ...lightbox, index: lightbox.index - 1 })} className="px-3 py-2 border border-current disabled:opacity-20 hover:bg-white hover:text-black transition">&lt; PREV</button>
-                            <span>{lightbox.title.toUpperCase()} · {lightbox.index + 1}/{lightbox.images.length}</span>
+                            <span className="text-center px-2">{lightbox.title.toUpperCase()} · {lightbox.index + 1}/{lightbox.images.length}</span>
                             <button disabled={lightbox.index === lightbox.images.length - 1} onClick={() => setLightbox({ ...lightbox, index: lightbox.index + 1 })} className="px-3 py-2 border border-current disabled:opacity-20 hover:bg-white hover:text-black transition">NEXT &gt;</button>
                         </div>
                         <button onClick={() => setLightbox(null)} className="absolute -top-2 right-0 -translate-y-full text-xs tracking-[0.2em] text-[#C9C4BB] hover:text-white">[ CLOSE X ]</button>
