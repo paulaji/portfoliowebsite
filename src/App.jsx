@@ -90,6 +90,7 @@ export default function Portfolio() {
     const projects = [
         {
             id: 0,
+            status: "PROCESSING",
             title: "Merchant Payments Platform",
             subtitle: "Settlement, Reconciliation & Billing",
             company: "Infinite Payment Technology",
@@ -109,6 +110,27 @@ export default function Portfolio() {
                 "Code goes through SonarQube static analysis, Trivy scans, and Copilot-assisted reviews; cross-team changes require code-captain sign-off. Day-to-day with Claude Code CLI, Copilot, JIRA/GitHub MCP; collaborate with design, BA, and devs",
             ],
             tech: ["NestJS", "TypeScript", "PostgreSQL", "Prisma", "AWS Lambda", "AWS RDS", "S3", "SQS", "Nx", "Vitest", "Jest", "Cucumber/Gherkin", "Docker", "CloudWatch", "GitHub Actions"],
+            images: [],
+        },
+        {
+            id: 9,
+            title: "Customer Billing Engine",
+            subtitle: "Monthly Fee Billing for a Payments Platform",
+            company: "Infinite Payment Technology",
+            role: "Full Stack Developer · Settle Team",
+            description: "Designed and built monthly customer billing for a merchant payments platform, end to end: the data model, a config-driven fee engine, and the scheduled Lambda that runs it. Two of six fee types are live, and the other four are designed to drop in as config rather than code.",
+            highlights: [
+                "Designed the billing data model in Prisma/PostgreSQL: one record per customer, fee type and billing month, with a unique key as the idempotency guarantee, so re-runs are safe and no status column or run-state table is needed",
+                "Stored the charge rate and VAT rate alongside every amount, so a bill stays explainable after Finance edits the product catalogue or the VAT tables",
+                "Built a config-driven fee engine: each fee is one config entry (eligibility, product prefix, boarding window), so the second fee type shipped with no new code",
+                "Money-safe arithmetic with BigNumber, matching the existing settlement engine: round the net to 2dp half-up first, take VAT from the rounded net, gross as the sum; proven at the half-cent boundaries",
+                "Resolved each customer's country to pick the product, currency and VAT rate, normalising UK to ISO GB",
+                "Isolated failures per customer and per fee with named, logged skip reasons, so one bad record never aborts the run, while the run still reports failure to the scheduler",
+                "Scheduled through EventBridge into the existing Lambda via a job router instead of a second function, keeping CI and deployment unchanged; added a replay-date parameter and a kill switch so it could deploy dark",
+                "Ran a five-day monthly retry window, free because already-billed fees skip, and delivered a verification pack mapping every Definition of Done item to the query that proves it",
+                "Renamed the host app ahead of the work in a standalone, no-behaviour-change PR, deliberately keeping deployed artefact names stable so infrastructure stayed out of scope",
+            ],
+            tech: ["TypeScript", "Prisma", "PostgreSQL", "AWS Lambda", "EventBridge", "SSM Parameter Store", "BigNumber.js", "Nx"],
             images: [],
         },
         {
@@ -452,7 +474,7 @@ export default function Portfolio() {
                                         <button onClick={() => toggle(p.id)} aria-expanded={open} className="item-btn w-full text-left">
                                             <Line
                                                 label={<><span className="text-[var(--faded)]">{pad(i + 1)}&nbsp;&nbsp;</span><span className="item-name font-medium text-[var(--ink)] uppercase px-0.5 -mx-0.5 transition-colors">{p.title}</span></>}
-                                                value={i === 0
+                                                value={p.status === 'PROCESSING'
                                                     ? <span className="font-medium text-[var(--stamp)]">PROCESSING<span className="blink">_</span></span>
                                                     : <span className="text-[var(--ink)]">SETTLED</span>}
                                             />
@@ -489,8 +511,8 @@ export default function Portfolio() {
 
                         <Rule />
                         <Line label="SUBTOTAL" value={`${projects.length} ITEMS`} strong />
-                        <Line label="ITEMS IN PROGRESS" value="1" />
-                        <Line label="ITEMS SETTLED" value={projects.length - 1} />
+                        <Line label="ITEMS IN PROGRESS" value={projects.filter((p) => p.status === 'PROCESSING').length} />
+                        <Line label="ITEMS SETTLED" value={projects.filter((p) => p.status !== 'PROCESSING').length} />
 
                         <Rule />
 
