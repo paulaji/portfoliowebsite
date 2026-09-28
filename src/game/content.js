@@ -42,18 +42,18 @@ export const SQUARES = [
         desc: 'MEng in Computer Vision and Artificial Intelligence, First Class Honours. Thesis: an AI tutor that teaches Python.',
         rows: ['First Class Honours', 'QCA 3.37', 'Thesis graded A1', 'Java teaching assistant'], tech: [],
     }),
-    { t: 'tax', n: 'Technical Debt', amt: 200, ic: '−', msg: 'The shortcut from last sprint came due.' },
-    { t: 'rail', n: 'Badminton Court', ic: '✕', desc: 'Where Paul goes to lose the laptop posture. Smashes welcome, line calls disputed.' },
+    { t: 'tax', n: 'Technical Debt', amt: 200, ic: '−', msg: 'That shortcut from last sprint? It has sent an invoice.' },
+    { t: 'rail', n: 'The Court', ic: '✕', desc: 'Badminton, mostly, plus whatever sport has a free slot. Line calls are disputed. Always.' },
     skill('Languages', 'steel', 100, ['Python', 'JavaScript', 'TypeScript', 'Java', 'SQL']),
     { t: 'wildcard' },
     skill('Frontend', 'steel', 100, ['React', 'Next.js', 'Redux', 'TailwindCSS', 'Material-UI']),
     skill('Backend', 'steel', 120, ['NestJS', 'Django', 'DRF', 'Flask', 'FastAPI', 'Node.js', 'Express']),
     { t: 'jail', big: 'Incident', small: 'Just visiting' },
     skill('Cloud', 'rose', 140, ['AWS', 'GCP', 'Lambda', 'RDS', 'S3', 'Firebase']),
-    { t: 'util', n: 'The Booth', ic: '♪', desc: 'House and techno. The 4am kind, even at 4pm.' },
+    { t: 'util', n: 'Café Circuit', ic: '◒', desc: 'Rates cafés on flat whites and wifi. The laptop comes along just in case. It is never just in case.' },
     skill('Databases', 'rose', 140, ['PostgreSQL', 'MySQL', 'MSSQL', 'MongoDB', 'Firestore', 'Prisma']),
     skill('DevOps', 'rose', 160, ['Docker', 'Nx', 'CI/CD', 'GitHub Actions', 'SonarQube', 'Trivy']),
-    { t: 'rail', n: 'Esports Arena', ic: '▲', desc: 'Front row for the finals. Strong opinions on every draft.' },
+    { t: 'rail', n: 'Esports Arena', ic: '▲', desc: 'Watches pros play at a level he will never reach, then critiques their drafts anyway.' },
     skill('Testing', 'amber', 180, ['Jest', 'Vitest', 'Pytest', 'Cucumber/Gherkin', 'LocalStack', 'TDD']),
     { t: 'treasury' },
     skill('APIs & Events', 'amber', 180, ['REST', 'OpenAPI', 'WebSockets', 'Socket.IO', 'Event-driven']),
@@ -78,7 +78,7 @@ export const SQUARES = [
         rows: ['Coordinated a three-person team', 'CloudFront over S3 with CloudWatch', 'PDFs sent via Twilio WhatsApp'],
         tech: ['React', 'Node.js', 'CloudFront', 'Twilio'],
     }),
-    { t: 'rail', n: 'Malayalam Cinema', ic: '◐', desc: 'New release on Friday? Paul has already seen it. Twice.' },
+    { t: 'rail', n: 'The Cinema', ic: '◐', desc: 'Malayalam films on release day, English ones too. Currently in a Guy Ritchie phase, so expect a heist plan for lunch.' },
     prop('Learning to Program', 'ochre', 260, {
         who: 'University of Limerick · MEng Thesis · A1',
         desc: 'An AI tutor that teaches Python with LLM-generated questions, feedback and tips.',
@@ -91,7 +91,7 @@ export const SQUARES = [
         rows: ['Led the Next.js + MySQL build', 'Custom CMS for all content', 'Lottie animation, Cloudflare edge caching'],
         tech: ['Next.js', 'MySQL', 'Tailwind', 'Cloudflare'],
     }),
-    { t: 'util', n: 'The Playlist', ic: '♫', desc: 'R&B and rap on repeat. The soundtrack to most of this board.' },
+    { t: 'util', n: 'After Dark', ic: '♪', desc: 'House, techno, R&B and rap. Pub crawls come with a route plan, because of course they do.' },
     skill('AI-Assisted', 'ochre', 280, ['Claude Code CLI', 'GitHub Copilot', 'LLMs', 'Prompt Engineering']),
     { t: 'gotojail', big: 'Go to', small: 'Incident' },
     prop('TrustPMS', 'forest', 300, {
@@ -113,7 +113,7 @@ export const SQUARES = [
         rows: ['Stripe Connect: intents, payouts, refunds', 'Node.js on Firestore with Firebase Auth', 'GitHub Actions CI/CD, zero-downtime deploys'],
         tech: ['Node.js', 'Firestore', 'Stripe Connect', 'Firebase'],
     }),
-    { t: 'rail', n: 'The Kitchen', ic: '◆', desc: 'Paul cooks. Measured by taste, not by the recipe.' },
+    { t: 'rail', n: 'The Kitchen', ic: '◆', desc: 'Cooks properly. Measures nothing. Somehow it works, much like early production code.' },
     { t: 'wildcard' },
     prop('Customer Billing Engine', 'navy', 350, {
         who: 'Infinite Payment Technology · Settle Team',
@@ -121,7 +121,7 @@ export const SQUARES = [
         rows: ['Idempotent by design: safe re-runs', 'New fee types ship as config, not code', 'BigNumber maths, per-fee failure isolation', 'EventBridge schedule, replay date, kill switch'],
         tech: ['TypeScript', 'Prisma', 'PostgreSQL', 'Lambda', 'EventBridge'],
     }),
-    { t: 'tax', n: 'Scope Creep', amt: 100, ic: '−', msg: '“Can it also do one more thing?”' },
+    { t: 'tax', n: 'Scope Creep', amt: 100, ic: '−', msg: '“Quick one: can it also do everything?”' },
     prop('Merchant Payments Platform', 'navy', 400, {
         who: 'Infinite Payment Technology · Full Stack Developer · Settle Team',
         desc: 'Settle core team on a merchant onboarding and payments platform: money movement, reconciliation, merchant billing and retries, integrating with acquirers like Worldline, ACI and Banking Circle.',
@@ -131,35 +131,38 @@ export const SQUARES = [
 ];
 
 export const WILDCARDS = [
-    { t: 'AI & Agentic Systems Consultant', d: 'Mentoring a medical company on agentic AI for sales. Collect consulting fee.', amt: 150 },
-    { t: 'Prompt Engineering Educator', d: 'Taught classes of 30–50 at Sevana Electricals and Biowel. Collect speaker fees.', amt: 50 },
-    { t: 'Lead Vocalist', d: 'College band, ASIET. Advance to The Playlist.', to: 28 },
-    { t: 'Student of the Year', d: 'Proficiency award and Student of the Year. Collect scholarship.', amt: 100 },
-    { t: 'Java Teaching Assistant', d: 'University of Limerick. Collect TA stipend.', amt: 20 },
-    { t: 'Frontend Developer at Edith', d: 'Shipped features for an EdTech startup. Advance to GO.', to: 0 },
-    { t: 'Malayalam movie night', d: 'Something good just dropped. Advance to Malayalam Cinema.', to: 25 },
+    { t: 'AI & Agentic Systems Consultant', d: 'Teaching a medical company to let AI agents do the selling. The agents have not asked for commission yet. Collect €150.', amt: 150 },
+    { t: 'Prompt Engineering Educator', d: 'Taught rooms of 30 to 50 people how to talk to computers politely. Collect speaker fees.', amt: 50 },
+    { t: 'Lead Vocalist', d: 'Fronted the college band at ASIET. The crowd was mostly friends. Advance to After Dark.', to: 28 },
+    { t: 'Student of the Year', d: 'Proficiency Award and Student of the Year. Peaked early, kept going anyway. Collect €100.', amt: 100 },
+    { t: 'Java Teaching Assistant', d: 'University of Limerick. Explained NullPointerExceptions for a living. Collect €20.', amt: 20 },
+    { t: 'Frontend Developer at Edith', d: 'Shipped features for an EdTech startup. Pixel pushing counts as cardio. Advance to GO.', to: 0 },
+    { t: 'Movie night', d: 'Something new just dropped. Phone on silent, opinions on loud. Advance to The Cinema.', to: 25 },
 ];
 
 export const TREASURY = [
-    { t: 'Bank error in your favour', d: 'Exactly €0.005, rounded half-up. Collect €0.01. (That is how Paul rounds.)', amt: 0.01 },
-    { t: 'Idempotency pays', d: 'A billing run failed halfway. Re-run it for free: nothing double-charges. Collect €100.', amt: 100 },
-    { t: 'LocalStack → Flocci', d: 'Swapped the AWS mocking layer for an open-source one. Collect savings.', amt: 40 },
-    { t: 'First-of-month fee bug', d: 'Diagnosed a recurring first-of-month fee bug. Pay for the hotfix.', amt: -50 },
-    { t: 'Coffee chat', d: 'Advance to Coffee. Someone wants to talk about payments.', to: 20 },
-    { t: 'Audit-log redaction', d: 'Caught tokens and salts leaking into audit logs. Collect a security bounty.', amt: 75 },
-    { t: 'Home-cooked, not takeaway', d: 'Collect what the takeaway would have cost.', amt: 30 },
-    { t: 'Five-set badminton', d: 'Won the decider. Advance to Badminton Court.', to: 5 },
-    { t: 'Esports final tonight', d: 'Second screen on. Advance to Esports Arena.', to: 15 },
+    { t: 'Bank error in your favour', d: 'Exactly €0.005, rounded half up. Collect €0.01. Try not to spend it all at once.', amt: 0.01 },
+    { t: 'Idempotency pays', d: 'A billing run died halfway. Re-ran it. Nobody got charged twice. Nobody even noticed. Collect €100.', amt: 100 },
+    { t: 'LocalStack → Flocci', d: 'Swapped one AWS mock for another. Thrilling stuff. Collect €40.', amt: 40 },
+    { t: 'First-of-month fee bug', d: 'A fee bug that only shows up on the 1st of the month. Of course it does. Pay €50 for the hotfix.', amt: -50 },
+    { t: 'Coffee chat', d: 'Someone wants to talk about payments. Voluntarily. Advance to Coffee.', to: 20 },
+    { t: 'Audit-log redaction', d: 'Found tokens and salts sitting in the audit logs. Seasoning belongs in The Kitchen. Collect €75.', amt: 75 },
+    { t: 'Home-cooked', d: 'Cooked instead of ordering in. Smug, but correct. Collect €30.', amt: 30 },
+    { t: 'Five-set badminton', d: 'Won the decider. Will mention it twice before lunch. Advance to The Court.', to: 5 },
+    { t: 'Esports final tonight', d: 'Second screen on, first screen pretending to be work. Advance to Esports Arena.', to: 15 },
+    { t: 'Touched grass', d: 'Went outdoors on purpose. No signal, no incidents, suspiciously calm. Collect €40.', amt: 40 },
+    { t: 'Pub crawl', d: 'Planned with a route, a schedule and a fallback pub. Your round. Pay €40.', amt: -40 },
+    { t: 'Café hopping', d: 'Three cafés, one afternoon, zero commits. Advance to Café Circuit.', to: 12 },
 ];
 
 export const POSTMORTEMS = [
-    'A retry storm hit the settlement queue. Postmortem: add backoff and jitter.',
-    'Fixed monthly charges hit the wrong pricing table. Postmortem: cover every charge type.',
-    'A transitive dependency broke CI. Postmortem: pin, then upgrade on purpose.',
+    'A retry storm hit the settlement queue. Turns out “try again” is not a strategy. Added backoff and jitter.',
+    'Fixed monthly charges landed in the wrong pricing table. The tests now cover every charge type, out of spite.',
+    'A transitive dependency broke CI. Nobody installed it, everybody inherited it. Pinned, then upgraded on purpose.',
 ];
 
 export const SUMMARY = {
-    lead: 'is a full-stack engineer in Dublin who builds the parts of payments where the money has to add up: settlement, reconciliation and billing, on the Settle team at Infinite Payment Technology. MEng in Computer Vision & AI, First Class Honours.',
+    lead: 'is a full-stack engineer in Dublin who works on the parts of payments where the maths actually has to add up: settlement, reconciliation and billing, on the Settle team at Infinite Payment Technology. MEng in Computer Vision & AI, First Class Honours, which mostly qualifies him to explain why the model is wrong.',
     facts: [['Experience', '3+ yrs'], ['Projects', '10'], ['Based', 'Dublin']],
 };
 
@@ -207,13 +210,15 @@ const STAT_TABLE = {
     'Customer Billing Engine': { money: 20, reliability: 14 },
     'Merchant Payments Platform': { money: 24, reliability: 12, scale: 8 },
     // hobbies: mostly Form, with a small perk each
-    'Badminton Court': { lead: 3 },
+    'The Court': { lead: 3 },
     'Esports Arena': { curiosity: 3 },
-    'Malayalam Cinema': { craft: 2 },
+    'The Cinema': { craft: 2 },
     'The Kitchen': { craft: 3 },
+    'Café Circuit': { curiosity: 2 },
+    'After Dark': { lead: 2 },
 };
 const FORM_TABLE = {
-    'Badminton Court': 12, 'Esports Arena': 8, 'Malayalam Cinema': 10, 'The Kitchen': 10, 'The Booth': 8, 'The Playlist': 8,
+    'The Court': 12, 'Esports Arena': 8, 'The Cinema': 10, 'The Kitchen': 10, 'Café Circuit': 8, 'After Dark': 8,
 };
 const FORM_START = 60;
 const WORK_FORM_COST = 4;
@@ -230,9 +235,9 @@ export const HONOURS = [
     { name: 'Settlement Specialist', note: 'Both navy deeds', need: ['Customer Billing Engine', 'Merchant Payments Platform'] },
     { name: 'Full Stack', note: 'Frontend, Backend and Databases', need: ['Frontend', 'Backend', 'Databases'] },
     { name: 'Ships Safely', note: 'Testing and DevOps', need: ['Testing', 'DevOps'] },
-    { name: 'Weekend Warrior', note: 'Badminton, Esports, Cinema and Kitchen', need: ['Badminton Court', 'Esports Arena', 'Malayalam Cinema', 'The Kitchen'] },
+    { name: 'Weekend Warrior', note: 'The Court, Esports Arena, The Cinema and The Kitchen', need: ['The Court', 'Esports Arena', 'The Cinema', 'The Kitchen'] },
     { name: 'The Academy', note: 'Both degrees', need: ['B.Tech Computer Science', 'MEng CV & AI'] },
-    { name: 'Selector', note: 'The Booth and The Playlist', need: ['The Booth', 'The Playlist'] },
+    { name: 'Night Owl', note: 'Café Circuit and After Dark', need: ['Café Circuit', 'After Dark'] },
 ].map((h) => ({ ...h, idx: h.need.map(indexOf) }));
 
 const FORM_STATES = [[35, 'Burnt out'], [55, 'Grinding'], [75, 'Balanced'], [101, 'In the zone']];

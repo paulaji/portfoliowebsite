@@ -60,8 +60,8 @@ export default function Binder({ onOpen, onPlay, modeSwitch }) {
                 })}
 
                 <section className="setblock">
-                    <div className="sethead"><i className="hollow" /><h2>Off the clock</h2><span>Where Paul recharges</span></div>
-                    <div className="minis">{[...rails, ...utils].map((r) => <div className="mini" key={r.n}><p className="caps">{r.t === 'util' ? 'Music' : 'Hobby'}</p><h3>{r.n}</h3><p>{r.desc}</p></div>)}</div>
+                    <div className="sethead"><i className="hollow" /><h2>Off the clock</h2><span>Where the Form comes from</span></div>
+                    <div className="minis">{[...rails, ...utils].map((r) => <div className="mini" key={r.n}><p className="caps">{r.t === 'util' ? 'Out & about' : 'Hobby'}</p><h3>{r.n}</h3><p>{r.desc}</p></div>)}</div>
                 </section>
                 <section className="closing" id="contact">
                     <p className="caps gold-text">Free parking</p>

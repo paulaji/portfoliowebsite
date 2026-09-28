@@ -10,7 +10,7 @@ function DeedSheet({ i, mode, money, dividend, owned: ownedSet, canSell, onBuy, 
     const s = SQUARES[i];
     const cost = priceOf(s);
     const color = s.t === 'prop' ? SETS[s.set].color : '#16140F';
-    const kicker = s.t === 'prop' ? SETS[s.set].name : s.t === 'rail' ? 'Off the clock' : 'Off the clock · Music';
+    const kicker = s.t === 'prop' ? SETS[s.set].name : s.t === 'rail' ? 'Off the clock' : 'Off the clock';
     const offset = s.t === 'prop' && s.rows.length < 6 ? 1 : 0;
     const others = new Set(ownedSet || []); others.delete(i);
     const gains = gainsOf(i, others);
@@ -33,7 +33,7 @@ function DeedSheet({ i, mode, money, dividend, owned: ownedSet, canSell, onBuy, 
         <div className={`sheet ${unlocked ? 'is-open' : 'is-sealed'} ${justBought ? 'just-unlocked' : ''}`}>
             <div className="deed" style={{ '--c': color }}>
                 <div className="fr">
-                    <div className="hd"><p className="caps">{s.t === 'prop' ? 'Title deed' : s.t === 'rail' ? 'Off the clock' : 'Music'}</p><h3>{labelOf(s)}</h3></div>
+                    <div className="hd"><p className="caps">{s.t === 'prop' ? 'Title deed' : s.t === 'rail' ? 'Off the clock' : 'Off the clock'}</p><h3>{labelOf(s)}</h3></div>
                     {s.t === 'prop' ? (
                         <>
                             <p className="lead">{s.who.split(' · ')[0]}</p>
@@ -90,7 +90,7 @@ function DeedSheet({ i, mode, money, dividend, owned: ownedSet, canSell, onBuy, 
                 {mode === 'owned' && dividend && (
                     <p className="dividend"><span className="caps">Dividend paid</span><b>+{fmt(dividend.amount)}</b>{dividend.doubled && <small>Doubled: you hold the full set</small>}</p>
                 )}
-                {mode === 'glimpse' && <p className="note">Land here and buy it to break the seal, or switch to Browse to read everything.</p>}
+                {mode === 'glimpse' && <p className="note">Land here and pay up to break the seal. Or switch to Browse and read everything for free. We won't tell.</p>}
 
                 <div className="acts">
                     {mode === 'offer' && !unlocked && (

@@ -36,12 +36,12 @@ function ModeSwitch({ mode, setMode }) {
 }
 
 const CORNER_INFO = {
-    go: { title: 'GO.', body: `Every lap is another year of shipping. Collect €${GO_BONUS} as you pass.` },
-    jail: { title: 'Incident.', body: 'Just visiting. Every incident here ended in a postmortem.' },
-    parking: { title: 'Coffee.', body: <>Free parking, and a free coffee. Say hi: <a href={`mailto:${EMAIL}`}>{EMAIL}</a></> },
-    gotojail: { title: 'Go to Incident.', body: 'Land here and it is straight to Incident.' },
-    wildcard: { title: 'Wildcard.', body: 'Achievements. Land here to draw one.' },
-    treasury: { title: 'Treasury.', body: 'Fun facts from the job. Land here to draw one.' },
+    go: { title: 'GO.', body: `Another lap, another year of shipping. Collect €${GO_BONUS} and pretend it was all planned.` },
+    jail: { title: 'Incident.', body: 'Just visiting. Everyone in here swears it worked on their machine.' },
+    parking: { title: 'Coffee.', body: <>Free parking and free coffee. Both rare in Dublin. Say hi: <a href={`mailto:${EMAIL}`}>{EMAIL}</a></> },
+    gotojail: { title: 'Go to Incident.', body: 'Land here and production finds you. Straight to Incident.' },
+    wildcard: { title: 'Wildcard.', body: 'Achievements, lightly humblebragged. Land here to draw one.' },
+    treasury: { title: 'Treasury.', body: 'Stories from the job that are only funny in hindsight. Land here to draw one.' },
 };
 
 export default function App() {
@@ -250,7 +250,7 @@ export default function App() {
                             <div className="dice"><Die n={dice[0]} rolling={rolling} /><Die n={dice[1]} rolling={rolling} /></div>
                             <button className="btn-gold btn-solid roll" onClick={roll} disabled={busy || g.current.over}>Roll the dice</button>
                         </div>
-                        <p className="hint">Win with a full colour set or any {WIN_DEEDS} deeds. <span className="keys"><kbd>Space</kbd> to roll · </span>Tap any square to read it.</p>
+                        <p className="hint">Buy a deed to break its seal and bank its stats. Work builds your card but drains your Form; hobbies top it back up. Sell whatever you regret. First to a full colour set or any {WIN_DEEDS} deeds wins. <span className="keys"><kbd>Space</kbd> to roll · </span>Tap any square to read it.</p>
                     </section>
 
                     <section className="stage" aria-label="Game board">
