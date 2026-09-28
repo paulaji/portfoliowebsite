@@ -56,6 +56,8 @@ export default function App() {
     const [sheet, setSheet] = useState(null);
     const [pulse, setPulse] = useState({ i: -1, n: 0 });
     const [flash, setFlash] = useState('');
+    const [pow, setPow] = useState(null);
+    const boom = (text, tone = '') => setPow({ text, tone, n: Date.now() + Math.random() });
 
     // The game runs as an async script; this ref is its source of truth.
     const g = useRef({ at: 0, money: START_MONEY, owned: new Set(), turns: 0, over: false });
@@ -114,6 +116,7 @@ export default function App() {
         if (s.t === 'gotojail') {
             await ask({ kind: 'message', kicker: 'Square 30 · Production incident', title: 'Go to Incident.', body: <>{pick(POSTMORTEMS)}<br />Pay {fmt(INCIDENT_FEE)} for the postmortem and carry on.</>, action: 'Write the postmortem' });
             addLog({ text: 'SENT TO INCIDENT' });
+            boom('BZZT!', 'red');
             g.current.at = 10;
             setAt(10);
             pay(-INCIDENT_FEE, 'POSTMORTEM');
@@ -128,6 +131,7 @@ export default function App() {
         if (g.current.owned.has(i)) {
             const dividend = dividendOf(i, g.current.owned);
             pay(dividend.amount, `DIVIDEND · ${labelOf(s).toUpperCase()}`);
+            boom(`+€${dividend.amount}!`, 'green');
             const c = await ask({ kind: 'deed', i, mode: 'owned', dividend, owned: g.current.owned, canSell: true });
             if (c === 'sell') sell(i);
             return;
@@ -139,6 +143,7 @@ export default function App() {
                 g.current.owned.add(i);
                 setOwned(new Set(g.current.owned));
                 pay(-priceOf(s), `UNLOCKED ${labelOf(s).toUpperCase()}`);
+                boom('KA-CHING!', 'gold');
                 const fresh = profileOf(g.current.owned).honours.filter((h) => !held.includes(h.name));
                 fresh.forEach((h) => addLog({ text: `HONOUR · ${h.name.toUpperCase()}` }));
                 return { honours: fresh };
@@ -151,6 +156,7 @@ export default function App() {
         g.current.owned.delete(i);
         setOwned(new Set(g.current.owned));
         pay(sellPriceOf(i), `SOLD ${labelOf(SQUARES[i]).toUpperCase()}`);
+        boom('SOLD!', 'red');
     };
 
     const reset = () => {
@@ -185,6 +191,7 @@ export default function App() {
         setRolling(false);
         g.current.turns++;
         addLog({ text: `ROLL ${a} + ${b} = ${a + b}${a === b ? ' · DOUBLES' : ''}` });
+        boom(a === b ? 'DOUBLES!' : `${a + b}!`);
         await move(a + b);
         await land(g.current.at);
         await checkEnd();
@@ -238,7 +245,7 @@ export default function App() {
                 <main className="app">
                     <section className="rail-top">
                         <p className="caps gold-text">Collector&rsquo;s edition · Paul Aji</p>
-                        <h1 className="title">The <em>Settlement</em> Game</h1>
+                        <h1 className="title"><span>The</span> Settlement <span>Game</span></h1>
                         {switcher}
 
                         <div className="purse">
@@ -274,6 +281,7 @@ export default function App() {
             )}
 
             {sheet && <Sheet spec={sheet} onResolve={resolveSheet} />}
+            {pow && <div key={pow.n} className={`pow ${pow.tone}`} aria-hidden="true" onAnimationEnd={() => setPow(null)}>{pow.text}</div>}
         </div>
     );
 }

@@ -82,19 +82,19 @@ export default function Banknote({ className = '', ink = '#1F4A42', paper = '#EF
 
             <text x="320" y="130" fontFamily="'Space Mono', monospace" fontSize="15" letterSpacing="1.8" fill="#A5312A">PA 0003 2026</text>
 
-            <text x={W - 56} y="160" textAnchor="end" fontFamily="'Bodoni Moda', serif" fontSize="120" fill={ink}>
+            <text x={W - 56} y="160" textAnchor="end" fontFamily="Bangers, Impact, sans-serif" fontSize="120" fill={ink}>
                 {denom}{plus && <tspan fontSize="52" dy="-58">+</tspan>}
             </text>
             <text x={W - 58} y="192" textAnchor="end" fontFamily="Inter, sans-serif" fontWeight="600" fontSize="11" letterSpacing="5.5" fill={ink}>{unit}</text>
 
             <g fill={ink} textAnchor="middle">
-                <text x="615" y="258" fontFamily="'Bodoni Moda', serif" fontStyle="italic" fontSize="22">Legal tender for one (1) conversation</text>
-                <text x="615" y="287" fontFamily="'Bodoni Moda', serif" fontStyle="italic" fontSize="22">with the bearer of this note</text>
+                <text x="615" y="258" fontFamily="Georgia, serif" fontStyle="italic" fontSize="22">Legal tender for one (1) conversation</text>
+                <text x="615" y="287" fontFamily="Georgia, serif" fontStyle="italic" fontSize="22">with the bearer of this note</text>
                 <text x="615" y="312" fontFamily="Inter, sans-serif" fontWeight="600" fontSize="9" letterSpacing="2.9">THE SETTLEMENT GAME · BANK OF DUBLIN</text>
             </g>
 
             <g fill={ink} textAnchor="middle">
-                <text x="465" y="370" fontFamily="'Bodoni Moda', serif" fontStyle="italic" fontSize="30" transform="rotate(-4 465 370)">Paul Aji</text>
+                <text x="465" y="370" fontFamily="Marker, cursive" fontSize="30" transform="rotate(-4 465 370)">Paul Aji</text>
                 <line x1="350" x2="580" y1="382" y2="382" stroke={ink} strokeWidth="1" />
                 <text x="465" y="397" fontFamily="Inter, sans-serif" fontWeight="600" fontSize="8.5" letterSpacing="2.4">CHIEF SETTLEMENT OFFICER</text>
             </g>
