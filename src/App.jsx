@@ -8,7 +8,7 @@ import Sheet from './game/Sheet';
 import PlayerCard from './game/PlayerCard';
 import {
     SQUARES, SETS, WILDCARDS, TREASURY, POSTMORTEMS, EMAIL,
-    START_MONEY, GO_BONUS, WIN_DEEDS, INCIDENT_FEE, priceOf, labelOf, fmt, profileOf, dividendOf,
+    START_MONEY, GO_BONUS, WIN_DEEDS, INCIDENT_FEE, priceOf, labelOf, fmt, profileOf, dividendOf, sellPriceOf,
 } from './game/content';
 
 const PIPS = {
@@ -128,12 +128,13 @@ export default function App() {
         if (g.current.owned.has(i)) {
             const dividend = dividendOf(i, g.current.owned);
             pay(dividend.amount, `DIVIDEND · ${labelOf(s).toUpperCase()}`);
-            await ask({ kind: 'deed', i, mode: 'owned', dividend });
+            const c = await ask({ kind: 'deed', i, mode: 'owned', dividend, owned: g.current.owned, canSell: true });
+            if (c === 'sell') sell(i);
             return;
         }
         const held = profileOf(g.current.owned).honours.map((h) => h.name);
         const choice = await ask({
-            kind: 'deed', i, mode: 'offer', money: g.current.money,
+            kind: 'deed', i, mode: 'offer', money: g.current.money, owned: g.current.owned,
             onBuy: () => {
                 g.current.owned.add(i);
                 setOwned(new Set(g.current.owned));
@@ -144,6 +145,12 @@ export default function App() {
             },
         });
         if (choice === 'pass') addLog({ text: `PASSED ON ${labelOf(s).toUpperCase()}` });
+    };
+
+    const sell = (i) => {
+        g.current.owned.delete(i);
+        setOwned(new Set(g.current.owned));
+        pay(sellPriceOf(i), `SOLD ${labelOf(SQUARES[i]).toUpperCase()}`);
     };
 
     const reset = () => {
@@ -190,7 +197,9 @@ export default function App() {
         if (busy || sheetRef.current) return;
         const s = SQUARES[i];
         if (s.t === 'prop' || s.t === 'rail' || s.t === 'util') {
-            await ask({ kind: 'deed', i, mode: g.current.owned.has(i) ? 'owned' : 'glimpse' });
+            const mine = g.current.owned.has(i);
+            const c = await ask({ kind: 'deed', i, mode: mine ? 'owned' : 'glimpse', owned: g.current.owned, canSell: mine && !g.current.over });
+            if (c === 'sell') { sell(i); await checkEnd(); }
             return;
         }
         const info = CORNER_INFO[s.t] || { title: `${s.n}.`, body: s.msg };
@@ -224,7 +233,7 @@ export default function App() {
     return (
         <div className="felt">
             {mode === 'browse' ? (
-                <Binder onOpen={(i) => ask({ kind: 'deed', i, mode: 'full' })} onPlay={() => setMode('play')} modeSwitch={switcher} />
+                <Binder onOpen={(i) => ask({ kind: 'deed', i, mode: 'full', owned: new Set() })} onPlay={() => setMode('play')} modeSwitch={switcher} />
             ) : (
                 <main className="app">
                     <section className="rail-top">

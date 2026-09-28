@@ -43,17 +43,17 @@ export const SQUARES = [
         rows: ['First Class Honours', 'QCA 3.37', 'Thesis graded A1', 'Java teaching assistant'], tech: [],
     }),
     { t: 'tax', n: 'Technical Debt', amt: 200, ic: '−', msg: 'The shortcut from last sprint came due.' },
-    { t: 'rail', n: 'Card Rail', ic: '◆', desc: "Card schemes route an authorisation from the merchant's acquirer to the cardholder's issuer in milliseconds, then clear and settle the money later. Most of Paul's day lives downstream of this." },
+    { t: 'rail', n: 'Badminton Court', ic: '✕', desc: 'Where Paul goes to lose the laptop posture. Smashes welcome, line calls disputed.' },
     skill('Languages', 'steel', 100, ['Python', 'JavaScript', 'TypeScript', 'Java', 'SQL']),
     { t: 'wildcard' },
     skill('Frontend', 'steel', 100, ['React', 'Next.js', 'Redux', 'TailwindCSS', 'Material-UI']),
     skill('Backend', 'steel', 120, ['NestJS', 'Django', 'DRF', 'Flask', 'FastAPI', 'Node.js', 'Express']),
     { t: 'jail', big: 'Incident', small: 'Just visiting' },
     skill('Cloud', 'rose', 140, ['AWS', 'GCP', 'Lambda', 'RDS', 'S3', 'Firebase']),
-    { t: 'util', n: 'The Court', ic: '◎', desc: 'Badminton first, then whatever else is on. Off court, Paul watches esports.' },
+    { t: 'util', n: 'The Booth', ic: '♪', desc: 'House and techno. The 4am kind, even at 4pm.' },
     skill('Databases', 'rose', 140, ['PostgreSQL', 'MySQL', 'MSSQL', 'MongoDB', 'Firestore', 'Prisma']),
     skill('DevOps', 'rose', 160, ['Docker', 'Nx', 'CI/CD', 'GitHub Actions', 'SonarQube', 'Trivy']),
-    { t: 'rail', n: 'SEPA Rail', ic: '◆', desc: 'SEPA moves euro bank transfers between 36 European countries on shared rules, including SEPA Instant for payments that land in seconds.' },
+    { t: 'rail', n: 'Esports Arena', ic: '▲', desc: 'Front row for the finals. Strong opinions on every draft.' },
     skill('Testing', 'amber', 180, ['Jest', 'Vitest', 'Pytest', 'Cucumber/Gherkin', 'LocalStack', 'TDD']),
     { t: 'treasury' },
     skill('APIs & Events', 'amber', 180, ['REST', 'OpenAPI', 'WebSockets', 'Socket.IO', 'Event-driven']),
@@ -78,7 +78,7 @@ export const SQUARES = [
         rows: ['Coordinated a three-person team', 'CloudFront over S3 with CloudWatch', 'PDFs sent via Twilio WhatsApp'],
         tech: ['React', 'Node.js', 'CloudFront', 'Twilio'],
     }),
-    { t: 'rail', n: 'SWIFT Rail', ic: '◆', desc: 'SWIFT is the messaging network banks use to instruct cross-border payments. The money moves through correspondent accounts; SWIFT carries the instructions.' },
+    { t: 'rail', n: 'Malayalam Cinema', ic: '◐', desc: 'New release on Friday? Paul has already seen it. Twice.' },
     prop('Learning to Program', 'ochre', 260, {
         who: 'University of Limerick · MEng Thesis · A1',
         desc: 'An AI tutor that teaches Python with LLM-generated questions, feedback and tips.',
@@ -91,7 +91,7 @@ export const SQUARES = [
         rows: ['Led the Next.js + MySQL build', 'Custom CMS for all content', 'Lottie animation, Cloudflare edge caching'],
         tech: ['Next.js', 'MySQL', 'Tailwind', 'Cloudflare'],
     }),
-    { t: 'util', n: 'Sound System', ic: '♪', desc: 'House, R&B, techno and rap. Music is the constant behind most of the work on this board.' },
+    { t: 'util', n: 'The Playlist', ic: '♫', desc: 'R&B and rap on repeat. The soundtrack to most of this board.' },
     skill('AI-Assisted', 'ochre', 280, ['Claude Code CLI', 'GitHub Copilot', 'LLMs', 'Prompt Engineering']),
     { t: 'gotojail', big: 'Go to', small: 'Incident' },
     prop('TrustPMS', 'forest', 300, {
@@ -113,7 +113,7 @@ export const SQUARES = [
         rows: ['Stripe Connect: intents, payouts, refunds', 'Node.js on Firestore with Firebase Auth', 'GitHub Actions CI/CD, zero-downtime deploys'],
         tech: ['Node.js', 'Firestore', 'Stripe Connect', 'Firebase'],
     }),
-    { t: 'rail', n: 'Faster Payments', ic: '◆', desc: "The UK's real-time bank transfer scheme: payments settle between banks in seconds, around the clock." },
+    { t: 'rail', n: 'The Kitchen', ic: '◆', desc: 'Paul cooks. Measured by taste, not by the recipe.' },
     { t: 'wildcard' },
     prop('Customer Billing Engine', 'navy', 350, {
         who: 'Infinite Payment Technology · Settle Team',
@@ -133,11 +133,11 @@ export const SQUARES = [
 export const WILDCARDS = [
     { t: 'AI & Agentic Systems Consultant', d: 'Mentoring a medical company on agentic AI for sales. Collect consulting fee.', amt: 150 },
     { t: 'Prompt Engineering Educator', d: 'Taught classes of 30–50 at Sevana Electricals and Biowel. Collect speaker fees.', amt: 50 },
-    { t: 'Lead Vocalist', d: 'College band, ASIET. Advance to Sound System.', to: 28 },
+    { t: 'Lead Vocalist', d: 'College band, ASIET. Advance to The Playlist.', to: 28 },
     { t: 'Student of the Year', d: 'Proficiency award and Student of the Year. Collect scholarship.', amt: 100 },
     { t: 'Java Teaching Assistant', d: 'University of Limerick. Collect TA stipend.', amt: 20 },
     { t: 'Frontend Developer at Edith', d: 'Shipped features for an EdTech startup. Advance to GO.', to: 0 },
-    { t: 'Malayalam movie night', d: 'Something good just dropped. Advance to Coffee and bring snacks.', to: 20 },
+    { t: 'Malayalam movie night', d: 'Something good just dropped. Advance to Malayalam Cinema.', to: 25 },
 ];
 
 export const TREASURY = [
@@ -147,8 +147,9 @@ export const TREASURY = [
     { t: 'First-of-month fee bug', d: 'Diagnosed a recurring first-of-month fee bug. Pay for the hotfix.', amt: -50 },
     { t: 'Coffee chat', d: 'Advance to Coffee. Someone wants to talk about payments.', to: 20 },
     { t: 'Audit-log redaction', d: 'Caught tokens and salts leaking into audit logs. Collect a security bounty.', amt: 75 },
-    { t: 'Home-cooked, not takeaway', d: 'Paul cooks. Collect what the takeaway would have cost.', amt: 30 },
-    { t: 'Esports final tonight', d: 'Second screen on. Advance to The Court.', to: 12 },
+    { t: 'Home-cooked, not takeaway', d: 'Collect what the takeaway would have cost.', amt: 30 },
+    { t: 'Five-set badminton', d: 'Won the decider. Advance to Badminton Court.', to: 5 },
+    { t: 'Esports final tonight', d: 'Second screen on. Advance to Esports Arena.', to: 15 },
 ];
 
 export const POSTMORTEMS = [
@@ -168,7 +169,10 @@ export const priceOf = (s) => (s.t === 'prop' ? s.price : s.t === 'rail' ? RAIL_
 export const labelOf = (s) => s.n || { treasury: 'Treasury', wildcard: 'Wildcard' }[s.t] || s.big;
 export const fmt = (n) => '€' + (Math.round(n * 100) / 100).toLocaleString('en-IE', { minimumFractionDigits: n % 1 ? 2 : 0 });
 
-/* ---------------- stats: what each unlocked deed builds ---------------- */
+/* ---------------- stats ----------------
+   Work deeds build the six stats but cost Form (the grind).
+   Hobbies restore Form, and Form multiplies every stat (0.75x to 1.25x).
+   A full colour set boosts that set's stats by 25%. Selling a deed takes it all back. */
 
 export const STATS = [
     { key: 'money', label: 'Money Moved', title: 'The Settler' },
@@ -182,34 +186,42 @@ export const STATS = [
 const STAT_TABLE = {
     'B.Tech Computer Science': { curiosity: 8, lead: 6 },
     'MEng CV & AI': { curiosity: 18, craft: 4 },
-    'Card Rail': { money: 6 },
     'Languages': { craft: 8, curiosity: 4 },
     'Frontend': { craft: 12 },
     'Backend': { reliability: 6, scale: 6 },
     'Cloud': { scale: 12 },
-    'The Court': { lead: 4 },
     'Databases': { reliability: 6, scale: 6 },
     'DevOps': { reliability: 10, scale: 4 },
-    'SEPA Rail': { money: 6 },
     'Testing': { reliability: 14 },
     'APIs & Events': { scale: 6, reliability: 4 },
     'Integrations': { money: 8, craft: 2 },
     'Discord Bots': { curiosity: 6, craft: 4 },
     'Biowel Website': { craft: 8 },
     'Carvetpro': { lead: 12, scale: 4 },
-    'SWIFT Rail': { money: 6 },
     'Learning to Program': { curiosity: 14, craft: 6 },
     'MahaMeru': { lead: 14, craft: 8 },
-    'Sound System': { craft: 4 },
     'AI-Assisted': { curiosity: 8 },
     'TrustPMS': { scale: 6, craft: 6 },
     'Trust Capital CRM': { money: 10, scale: 10 },
     'FindASide': { money: 16, reliability: 6 },
-    'Faster Payments': { money: 6 },
     'Customer Billing Engine': { money: 20, reliability: 14 },
     'Merchant Payments Platform': { money: 24, reliability: 12, scale: 8 },
+    // hobbies: mostly Form, with a small perk each
+    'Badminton Court': { lead: 3 },
+    'Esports Arena': { curiosity: 3 },
+    'Malayalam Cinema': { craft: 2 },
+    'The Kitchen': { craft: 3 },
 };
-SQUARES.forEach((s) => { if (STAT_TABLE[s.n]) s.st = STAT_TABLE[s.n]; });
+const FORM_TABLE = {
+    'Badminton Court': 12, 'Esports Arena': 8, 'Malayalam Cinema': 10, 'The Kitchen': 10, 'The Booth': 8, 'The Playlist': 8,
+};
+const FORM_START = 60;
+const WORK_FORM_COST = 4;
+SQUARES.forEach((s) => {
+    if (STAT_TABLE[s.n]) s.st = STAT_TABLE[s.n];
+    if (s.t === 'prop') s.form = -WORK_FORM_COST;
+    if (FORM_TABLE[s.n]) s.form = FORM_TABLE[s.n];
+});
 
 const STAT_MAX = Object.fromEntries(STATS.map(({ key }) => [key, SQUARES.reduce((sum, s) => sum + (s.st?.[key] || 0), 0)]));
 const indexOf = (name) => SQUARES.findIndex((s) => s.n === name);
@@ -218,32 +230,57 @@ export const HONOURS = [
     { name: 'Settlement Specialist', note: 'Both navy deeds', need: ['Customer Billing Engine', 'Merchant Payments Platform'] },
     { name: 'Full Stack', note: 'Frontend, Backend and Databases', need: ['Frontend', 'Backend', 'Databases'] },
     { name: 'Ships Safely', note: 'Testing and DevOps', need: ['Testing', 'DevOps'] },
-    { name: 'Rail Baron', note: 'All four payment rails', need: ['Card Rail', 'SEPA Rail', 'SWIFT Rail', 'Faster Payments'] },
+    { name: 'Weekend Warrior', note: 'Badminton, Esports, Cinema and Kitchen', need: ['Badminton Court', 'Esports Arena', 'Malayalam Cinema', 'The Kitchen'] },
     { name: 'The Academy', note: 'Both degrees', need: ['B.Tech Computer Science', 'MEng CV & AI'] },
-    { name: 'Off the Clock', note: 'The Court and Sound System', need: ['The Court', 'Sound System'] },
+    { name: 'Selector', note: 'The Booth and The Playlist', need: ['The Booth', 'The Playlist'] },
 ].map((h) => ({ ...h, idx: h.need.map(indexOf) }));
 
-// A 0-99 rating per stat, an overall rating, a title and the honours held.
-export function profileOf(owned) {
-    const raw = Object.fromEntries(STATS.map(({ key }) => [key, 0]));
-    owned.forEach((i) => Object.entries(SQUARES[i].st || {}).forEach(([k, v]) => { raw[k] += v; }));
-    const rating = Object.fromEntries(STATS.map(({ key }) => [key, Math.round((99 * raw[key]) / STAT_MAX[key])]));
-    const values = Object.values(rating);
-    const overall = Math.round(values.reduce((a, b) => a + b, 0) / values.length);
-    const top = STATS.reduce((best, s) => (rating[s.key] > rating[best.key] ? s : best), STATS[0]);
-    const title = rating[top.key] > 0 ? top.title : 'The Rookie';
-    const honours = HONOURS.filter((h) => h.idx.every((i) => owned.has(i)));
-    return { rating, overall, title, honours };
+const FORM_STATES = [[35, 'Burnt out'], [55, 'Grinding'], [75, 'Balanced'], [101, 'In the zone']];
+const fullSets = (owned) => new Set(Object.keys(SETS).filter((k) => SQUARES.every((s, i) => s.t !== 'prop' || s.set !== k || owned.has(i))));
+
+export function formOf(owned) {
+    let f = FORM_START;
+    owned.forEach((i) => { f += SQUARES[i].form || 0; });
+    return Math.max(5, Math.min(100, f));
 }
 
-// What unlocking square i adds, as ratings points.
-export const gainsOf = (i) => STATS.filter(({ key }) => SQUARES[i].st?.[key])
-    .map(({ key, label }) => ({ key, label, pts: Math.max(1, Math.round((99 * SQUARES[i].st[key]) / STAT_MAX[key])) }));
+// Ratings 0-99, overall, title, form and honours for a set of owned squares.
+export function profileOf(owned) {
+    const sets = fullSets(owned);
+    const raw = Object.fromEntries(STATS.map(({ key }) => [key, 0]));
+    owned.forEach((i) => {
+        const s = SQUARES[i];
+        const boost = s.t === 'prop' && sets.has(s.set) ? 1.25 : 1;
+        Object.entries(s.st || {}).forEach(([k, v]) => { raw[k] += v * boost; });
+    });
+    const form = formOf(owned);
+    const mult = 0.75 + (0.5 * form) / 100;
+    const rating = Object.fromEntries(STATS.map(({ key }) => [key, Math.min(99, Math.round((99 * raw[key] * mult) / STAT_MAX[key]))]));
+    const values = Object.values(rating);
+    const overall = Math.round(values.reduce((a, b) => a + b, 0) / values.length);
+    const top = STATS.reduce((best, x) => (rating[x.key] > rating[best.key] ? x : best), STATS[0]);
+    const title = rating[top.key] > 0 ? top.title : 'The Rookie';
+    const formState = FORM_STATES.find(([lim]) => form < lim)[1];
+    const honours = HONOURS.filter((h) => h.idx.every((i) => owned.has(i)));
+    return { rating, overall, title, form, formState, mult, sets: [...sets], honours };
+}
+
+// What unlocking square i would change on the card right now.
+export function gainsOf(i, owned = new Set()) {
+    const before = profileOf(owned);
+    const after = profileOf(new Set([...owned, i]));
+    const out = STATS.map(({ key, label }) => ({ key, label, pts: after.rating[key] - before.rating[key] })).filter((g) => g.pts !== 0);
+    const df = after.form - before.form;
+    if (df) out.push({ key: 'form', label: 'Form', pts: df });
+    return out;
+}
+
+export const sellPriceOf = (i) => Math.round(priceOf(SQUARES[i]) / 2);
 
 // Landing on a deed you already hold pays a dividend; double for a full colour set.
 export function dividendOf(i, owned) {
     const s = SQUARES[i];
     const base = Math.max(10, Math.round((priceOf(s) * 0.15) / 5) * 5);
-    const fullSet = s.t === 'prop' && SQUARES.every((x, j) => x.t !== 'prop' || x.set !== s.set || owned.has(j));
+    const fullSet = s.t === 'prop' && fullSets(owned).has(s.set);
     return { amount: fullSet ? base * 2 : base, doubled: fullSet };
 }

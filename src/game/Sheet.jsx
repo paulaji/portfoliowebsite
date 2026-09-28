@@ -2,17 +2,18 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import Banknote from './Banknote';
 import Building from './Building';
-import { SQUARES, SETS, EMAIL, LINKS, STATS, HONOURS, priceOf, labelOf, fmt, gainsOf } from './content';
+import { SQUARES, SETS, EMAIL, LINKS, STATS, HONOURS, priceOf, labelOf, fmt, gainsOf, sellPriceOf } from './content';
 
 const RENT = ['Rent', 'With 1 house', 'With 2 houses', 'With 3 houses', 'With 4 houses', 'With hotel'];
 
-function DeedSheet({ i, mode, money, dividend, onBuy, onResolve }) {
+function DeedSheet({ i, mode, money, dividend, owned: ownedSet, canSell, onBuy, onResolve }) {
     const s = SQUARES[i];
     const cost = priceOf(s);
     const color = s.t === 'prop' ? SETS[s.set].color : '#16140F';
-    const kicker = s.t === 'prop' ? SETS[s.set].name : s.t === 'rail' ? 'Payment rail' : 'Utility · After hours';
+    const kicker = s.t === 'prop' ? SETS[s.set].name : s.t === 'rail' ? 'Off the clock' : 'Off the clock · Music';
     const offset = s.t === 'prop' && s.rows.length < 6 ? 1 : 0;
-    const gains = gainsOf(i);
+    const others = new Set(ownedSet || []); others.delete(i);
+    const gains = gainsOf(i, others);
 
     // glimpse: sealed preview · offer: sealed, can buy · owned: yours · full: browse view
     const [unlocked, setUnlocked] = useState(mode === 'owned' || mode === 'full');
@@ -32,7 +33,7 @@ function DeedSheet({ i, mode, money, dividend, onBuy, onResolve }) {
         <div className={`sheet ${unlocked ? 'is-open' : 'is-sealed'} ${justBought ? 'just-unlocked' : ''}`}>
             <div className="deed" style={{ '--c': color }}>
                 <div className="fr">
-                    <div className="hd"><p className="caps">{s.t === 'prop' ? 'Title deed' : s.t === 'rail' ? 'Payment rail' : 'Utility'}</p><h3>{labelOf(s)}</h3></div>
+                    <div className="hd"><p className="caps">{s.t === 'prop' ? 'Title deed' : s.t === 'rail' ? 'Off the clock' : 'Music'}</p><h3>{labelOf(s)}</h3></div>
                     {s.t === 'prop' ? (
                         <>
                             <p className="lead">{s.who.split(' · ')[0]}</p>
@@ -42,7 +43,7 @@ function DeedSheet({ i, mode, money, dividend, onBuy, onResolve }) {
                                 </div>
                             ))}
                         </>
-                    ) : <p className={`lead lead-long ${sealedNow ? 'blurred' : ''}`}>{s.desc}</p>}
+                    ) : <p className="lead lead-long">{s.desc}</p>}
                     <div className="ft"><b>{fmt(cost)}</b>Square {i} · {kicker}</div>
                 </div>
                 {sealedNow && <div className="wax"><span>Sealed</span></div>}
@@ -54,14 +55,14 @@ function DeedSheet({ i, mode, money, dividend, onBuy, onResolve }) {
                 <p className="caps gold-text">Square {i} · {kicker}</p>
                 <h2>{labelOf(s)}</h2>
                 {s.who && <p className="who">{s.who}</p>}
-                <p className={`desc ${sealedNow && s.t !== 'prop' ? 'blurred' : ''}`}>{s.t === 'prop' || unlocked ? s.desc : 'Unlock this deed to read it.'}</p>
+                <p className="desc">{s.desc}</p>
 
                 {gains.length > 0 && (
                     <div className="gains">
-                        <p className="caps">{unlocked ? (justBought ? 'Credited to your player card' : 'Adds to your player card') : 'Unlocking adds'}</p>
+                        <p className="caps">{justBought ? 'Credited to your player card' : unlocked ? 'Worth to your player card' : 'Unlocking changes'}</p>
                         <div className="gain-row">
                             {gains.map((g, k) => (
-                                <span className={`gain ${justBought ? 'credited' : ''}`} style={{ '--k': k }} key={g.key}><b>+{g.pts}</b>{g.label}</span>
+                                <span className={`gain ${justBought ? 'credited' : ''} ${g.pts < 0 ? 'neg' : ''} ${g.key === 'form' ? 'form' : ''}`} style={{ '--k': k }} key={g.key}><b>{g.pts > 0 ? '+' : '−'}{Math.abs(g.pts)}</b>{g.label}</span>
                             ))}
                         </div>
                     </div>
@@ -101,6 +102,7 @@ function DeedSheet({ i, mode, money, dividend, onBuy, onResolve }) {
                         </>
                     )}
                     {mode === 'offer' && unlocked && <button className="btn-gold btn-solid" onClick={() => onResolve('bought')} data-primary autoFocus>Continue</button>}
+                    {mode === 'owned' && canSell && <button className="btn-gold" onClick={() => onResolve('sell')}>Sell · +{fmt(sellPriceOf(i))}</button>}
                     {mode !== 'offer' && <button className="btn-gold" onClick={() => onResolve('pass')} data-primary>Back to the board</button>}
                 </div>
             </div>

@@ -10,7 +10,7 @@ function useDelta(value) {
     useEffect(() => {
         const d = value - prev.current;
         prev.current = value;
-        if (d > 0) {
+        if (d !== 0) {
             setDelta({ d, id: Date.now() });
             const t = setTimeout(() => setDelta(null), 1600);
             return () => clearTimeout(t);
@@ -25,7 +25,7 @@ function Stat({ label, value }) {
         <div className="stat">
             <div className="stat-top">
                 <span className="caps">{label}</span>
-                <b>{value}{delta && <i key={delta.id} className="rise">+{delta.d}</i>}</b>
+                <b>{value}{delta && <i key={delta.id} className={`rise ${delta.d < 0 ? 'down' : ''}`}>{delta.d > 0 ? '+' : '−'}{Math.abs(delta.d)}</i>}</b>
             </div>
             <div className="track"><div className="fill" style={{ width: `${value}%` }} /></div>
         </div>
@@ -43,10 +43,16 @@ export default function PlayerCard({ profile, deeds, onOpenHonours }) {
                     <p className="player-title">{profile.title}</p>
                 </div>
                 <div className="overall" aria-label={`Overall rating ${profile.overall}`}>
-                    <b>{profile.overall}{overallDelta && <i key={overallDelta.id} className="rise">+{overallDelta.d}</i>}</b>
+                    <b>{profile.overall}{overallDelta && <i key={overallDelta.id} className={`rise ${overallDelta.d < 0 ? 'down' : ''}`}>{overallDelta.d > 0 ? '+' : '−'}{Math.abs(overallDelta.d)}</i>}</b>
                     <span className="caps">Overall</span>
                 </div>
             </header>
+            <div className={`form-row f-${profile.formState.split(' ')[0].toLowerCase()}`}>
+                <span className="caps">Form</span>
+                <div className="form-track"><div className="form-fill" style={{ width: `${profile.form}%` }} /></div>
+                <span className="form-state">{profile.formState}</span>
+                <span className="mult">×{profile.mult.toFixed(2)}</span>
+            </div>
             <div className="stats">
                 {STATS.map((s) => <Stat key={s.key} label={s.label} value={profile.rating[s.key]} />)}
             </div>
@@ -58,7 +64,7 @@ export default function PlayerCard({ profile, deeds, onOpenHonours }) {
                         return <i key={h.name} className={won ? 'won' : ''} title={won ? h.name : 'Locked'} />;
                     })}
                 </span>
-                <span className="count">{profile.honours.length} / {HONOURS.length}</span>
+                <span className="count">{profile.sets.length > 0 && <em>{profile.sets.length} set bonus · </em>}{profile.honours.length} / {HONOURS.length}</span>
             </button>
         </section>
     );
