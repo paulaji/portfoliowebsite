@@ -229,7 +229,7 @@ export default function App() {
                             <div className="dice"><Die n={dice[0]} rolling={rolling} /><Die n={dice[1]} rolling={rolling} /></div>
                             <button className="btn-gold btn-solid roll" onClick={roll} disabled={busy || g.current.over}>Roll the dice</button>
                         </div>
-                        <p className="hint">Win with a full colour set or any {WIN_DEEDS} deeds. <span className="keys"><kbd>Space</kbd> to roll · </span>tap any square to read it.</p>
+                        <p className="hint">Win with a full colour set or any {WIN_DEEDS} deeds. <span className="keys"><kbd>Space</kbd> to roll · </span>Tap any square to read it.</p>
                     </section>
 
                     <section className="stage" aria-label="Game board">

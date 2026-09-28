@@ -50,7 +50,7 @@ export const SQUARES = [
     skill('Backend', 'steel', 120, ['NestJS', 'Django', 'DRF', 'Flask', 'FastAPI', 'Node.js', 'Express']),
     { t: 'jail', big: 'Incident', small: 'Just visiting' },
     skill('Cloud', 'rose', 140, ['AWS', 'GCP', 'Lambda', 'RDS', 'S3', 'Firebase']),
-    { t: 'util', n: 'The Studio', ic: '✎', desc: 'Paul makes art after hours. The gallery is being hung: pieces coming soon.' },
+    { t: 'util', n: 'The Court', ic: '◎', desc: 'Badminton first, then whatever else is on. Off court, Paul watches esports.' },
     skill('Databases', 'rose', 140, ['PostgreSQL', 'MySQL', 'MSSQL', 'MongoDB', 'Firestore', 'Prisma']),
     skill('DevOps', 'rose', 160, ['Docker', 'Nx', 'CI/CD', 'GitHub Actions', 'SonarQube', 'Trivy']),
     { t: 'rail', n: 'SEPA Rail', ic: '◆', desc: 'SEPA moves euro bank transfers between 36 European countries on shared rules, including SEPA Instant for payments that land in seconds.' },
@@ -91,7 +91,7 @@ export const SQUARES = [
         rows: ['Led the Next.js + MySQL build', 'Custom CMS for all content', 'Lottie animation, Cloudflare edge caching'],
         tech: ['Next.js', 'MySQL', 'Tailwind', 'Cloudflare'],
     }),
-    { t: 'util', n: 'Sound System', ic: '♪', desc: 'Techno and EDM: the soundtrack to most of the work on this board.' },
+    { t: 'util', n: 'Sound System', ic: '♪', desc: 'House, R&B, techno and rap. Music is the constant behind most of the work on this board.' },
     skill('AI-Assisted', 'ochre', 280, ['Claude Code CLI', 'GitHub Copilot', 'LLMs', 'Prompt Engineering']),
     { t: 'gotojail', big: 'Go to', small: 'Incident' },
     prop('TrustPMS', 'forest', 300, {
@@ -137,6 +137,7 @@ export const WILDCARDS = [
     { t: 'Student of the Year', d: 'Proficiency award and Student of the Year. Collect scholarship.', amt: 100 },
     { t: 'Java Teaching Assistant', d: 'University of Limerick. Collect TA stipend.', amt: 20 },
     { t: 'Frontend Developer at Edith', d: 'Shipped features for an EdTech startup. Advance to GO.', to: 0 },
+    { t: 'Malayalam movie night', d: 'Something good just dropped. Advance to Coffee and bring snacks.', to: 20 },
 ];
 
 export const TREASURY = [
@@ -146,6 +147,8 @@ export const TREASURY = [
     { t: 'First-of-month fee bug', d: 'Diagnosed a recurring first-of-month fee bug. Pay for the hotfix.', amt: -50 },
     { t: 'Coffee chat', d: 'Advance to Coffee. Someone wants to talk about payments.', to: 20 },
     { t: 'Audit-log redaction', d: 'Caught tokens and salts leaking into audit logs. Collect a security bounty.', amt: 75 },
+    { t: 'Home-cooked, not takeaway', d: 'Paul cooks. Collect what the takeaway would have cost.', amt: 30 },
+    { t: 'Esports final tonight', d: 'Second screen on. Advance to The Court.', to: 12 },
 ];
 
 export const POSTMORTEMS = [

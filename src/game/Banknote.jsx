@@ -1,6 +1,6 @@
 import React, { useId, useMemo } from 'react';
 
-import portrait from '../assets/portrait.jpg';
+import engraved from '../assets/engraved.png';
 
 const W = 940;
 const H = 440;
@@ -54,18 +54,6 @@ export default function Banknote({ className = '', ink = '#1F4A42', paper = '#EF
         <svg viewBox={`0 0 ${W} ${H}`} className={`banknote ${className}`} role="img" aria-label={`Banknote: ${denom}${plus ? '+' : ''} ${unit.toLowerCase()}, legal tender for one conversation with Paul Aji`}>
             <defs>
                 <clipPath id={`oval-${id}`}><ellipse cx="175" cy="220" rx="112" ry="142" /></clipPath>
-                {/* map the photo's luminance onto the note's ink */}
-                <filter id={`engrave-${id}`} colorInterpolationFilters="sRGB">
-                    <feColorMatrix type="saturate" values="0" />
-                    <feComponentTransfer>
-                        <feFuncR type="table" tableValues="0.12 0.94" />
-                        <feFuncG type="table" tableValues="0.29 0.91" />
-                        <feFuncB type="table" tableValues="0.26 0.85" />
-                    </feComponentTransfer>
-                </filter>
-                <pattern id={`lines-${id}`} width="3" height="3" patternUnits="userSpaceOnUse">
-                    <rect width="3" height="1.2" fill={paper} />
-                </pattern>
                 <linearGradient id={`holo-${id}`} x1="0" y1="0" x2="1" y2="1">
                     <stop offset="0" stopColor="#d5f4ff" /><stop offset=".25" stopColor="#f6cbff" /><stop offset=".5" stopColor="#fff4bf" />
                     <stop offset=".75" stopColor="#c5ffe0" /><stop offset="1" stopColor="#cbd4ff" />
@@ -87,8 +75,7 @@ export default function Banknote({ className = '', ink = '#1F4A42', paper = '#EF
                     <ellipse cx="175" cy="220" rx="120" ry="150" fill="none" stroke={ink} strokeWidth="1.5" />
                     <ellipse cx="175" cy="220" rx="126" ry="156" fill="none" stroke={ink} strokeWidth=".5" />
                     <g clipPath={`url(#oval-${id})`}>
-                        <image href={portrait} x="55" y="70" width="240" height="300" preserveAspectRatio="xMidYMid slice" filter={`url(#engrave-${id})`} />
-                        <rect x="55" y="70" width="240" height="300" fill={`url(#lines-${id})`} opacity=".55" />
+                        <image href={engraved} x="55" y="70" width="240" height="300" preserveAspectRatio="xMidYMid slice" />
                     </g>
                 </g>
             )}
@@ -113,8 +100,9 @@ export default function Banknote({ className = '', ink = '#1F4A42', paper = '#EF
             </g>
 
             <g transform="translate(640 322)">
+                <clipPath id={`holoclip-${id}`}><rect width="70" height="86" rx="6" /></clipPath>
                 <rect width="70" height="86" rx="6" fill={`url(#holo-${id})`} stroke="#fff" strokeOpacity=".8" />
-                <text x="35" y="54" textAnchor="middle" fontFamily="'Bodoni Moda', serif" fontStyle="italic" fontSize="30" fill={ink} opacity=".55">P</text>
+                <image href={engraved} x="-4" y="4" width="78" height="97" clipPath={`url(#holoclip-${id})`} opacity=".45" />
             </g>
             <text x={W - 60} y={H - 50} textAnchor="end" fontFamily="'Space Mono', monospace" fontSize="15" letterSpacing="1.8" fill="#A5312A">PA 0003 2026</text>
         </svg>

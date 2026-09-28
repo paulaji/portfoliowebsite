@@ -65,7 +65,10 @@ export default function Binder({ onOpen, onPlay, modeSwitch }) {
                 </section>
                 <section className="setblock">
                     <div className="sethead"><i className="hollow" /><h2>After hours</h2><span>The utilities</span></div>
-                    <div className="minis">{utils.map((r) => <div className="mini" key={r.n}><p className="caps">Utility</p><h3>{r.n}</h3><p>{r.desc}</p></div>)}</div>
+                    <div className="minis">
+                        {utils.map((r) => <div className="mini" key={r.n}><p className="caps">Utility</p><h3>{r.n}</h3><p>{r.desc}</p></div>)}
+                        <div className="mini"><p className="caps">Off the board</p><h3>Kitchen &amp; cinema</h3><p>Cooking at home, and Malayalam movies whenever something good drops.</p></div>
+                    </div>
                 </section>
 
                 <section className="closing" id="contact">

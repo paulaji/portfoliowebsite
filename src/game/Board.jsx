@@ -1,6 +1,7 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
 
 import { SQUARES, SETS, isCorner, priceOf, labelOf } from './content';
+import face from '../assets/face.png';
 
 // Grid cell and side for square i: GO at bottom-right, then clockwise.
 function place(i) {
@@ -76,7 +77,7 @@ export default function Board({ at, owned, pulse, onSquare }) {
             </div>
 
             {token && (
-                <div key={at} className="token hop" style={{ left: token.x, top: token.y }} aria-hidden="true">P</div>
+                <div key={at} className="token hop" style={{ left: token.x, top: token.y }} aria-hidden="true"><img src={face} alt="" /></div>
             )}
         </div>
     );
